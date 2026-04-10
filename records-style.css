@@ -1,0 +1,88 @@
+.container {
+    padding: 20px 40px;
+    flex: 1; /* Pushes footer down */
+}
+
+.page-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.page-title h1 {
+    color: var(--primary-green);
+    font-size: 1.5rem;
+}
+
+.table-actions {
+    display: flex;
+    gap: 10px;
+}
+
+#searchBar {
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.filter-btn {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 8px 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+/* Table Design */
+.table-container {
+    background: rgb(207, 228, 219);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+thead {
+    background-color: var(--light-green);
+    color: var(--primary-green);
+}
+
+th, td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.status-tag {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-tag.verified {
+    background-color: #dcedc8;
+    color: #33691e;
+}
+
+.status-tag.pending {
+    background-color: #fff9c4;
+    color: #f57f17;
+}
+
+.edit-icon {
+    background: none;
+    border: none;
+    color: var(--primary-green);
+    cursor: pointer;
+    font-size: 1.2rem;
+}

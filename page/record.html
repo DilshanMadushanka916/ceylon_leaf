@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supply Records - Ceylon Leaf</title>
+    <link rel="stylesheet" href="/componet/hfstyle.css">
+    <link rel="stylesheet" href="/records-style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+    <div id="header"></div>
+
+    <main class="container">
+        <header class="page-title">
+            <h1>Supply Records</h1>
+            <div class="table-actions">
+                <input type="text" placeholder="Search Supplier ID..." id="searchBar">
+                <button class="filter-btn"><i class="ph ph-funnel"></i> Filter</button>
+            </div>
+        </header>
+
+        <section class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Supplier ID</th>
+                        <th>Field No</th>
+                        <th>Kilos Collected</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>04/08/2026</td>
+                        <td>SUP-001</td>
+                        <td>Field 4B</td>
+                        <td>125.5 kg</td>
+                        <td><span class="status-tag verified">Verified</span></td>
+                        <td><button class="edit-icon"><i class="ph ph-pencil-simple"></i></button></td>
+                    </tr>
+                    <tr>
+                        <td>04/08/2026</td>
+                        <td>SUP-042</td>
+                        <td>Field 2A</td>
+                        <td>88.2 kg</td>
+                        <td><span class="status-tag pending">Pending</span></td>
+                        <td><button class="edit-icon"><i class="ph ph-pencil-simple"></i></button></td>
+                    </tr>
+                    
+                    </tbody>
+            </table>
+        </section>
+    </main>
+
+    <div id="footer"></div>
+
+    <script src="/js/script.js"></script>
+     <script src="/componet/hfscript.js"></script>
+</body>
+</html>
