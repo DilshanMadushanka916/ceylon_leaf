@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ceylon Leaf - Accountant Dashboard</title>
+    <link rel="stylesheet" href="/Acc.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo-section">
+                <div class="logo-placeholder"></div>
+                <h2>Ceylon Leaf</h2>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="#"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fas fa-users"></i> Suppliers</a></li>
+                <li><a href="#"><i class="fas fa-file-invoice-dollar"></i> Tea Bills</a></li>
+                <li><a href="#"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                <li><a href="#"><i class="fas fa-credit-card"></i> Payments</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+            <button class="logout-btn">Logout</button>
+        </nav>
+
+        <main class="main-content">
+            <header>
+                <h1>Accountant Dashboard</h1>
+                <div class="header-right">
+                    <span>April 2026</span>
+                    <div class="profile-circle"></div>
+                </div>
+            </header>
+
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <p>Price per Kilo</p>
+                    <h3>Rs. 120</h3>
+                </div>
+                <div class="stat-card">
+                    <p>Total Tea</p>
+                    <h3>12,500 Kg</h3>
+                </div>
+                <div class="stat-card">
+                    <p>Total Payments</p>
+                    <h3>Rs. 1,200,000</h3>
+                </div>
+                <div class="stat-card">
+                    <p>Pending</p>
+                    <h3 class="text-danger">Rs. 300,000</h3>
+                </div>
+            </section>
+
+            <section class="details-container">
+                <div class="details-card">
+                    <h3>Suppliers to be Paid</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supplier-list">
+                            <tr onclick="loadSupplier('S001')">
+                                <td>S001</td>
+                                <td>Nimal</td>
+                                <td>25,000</td>
+                            </tr>
+                            <tr onclick="loadSupplier('S002')">
+                                <td>S002</td>
+                                <td>Sunil</td>
+                                <td>18,500</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="details-card">
+                    <h3>Supplier Details</h3>
+                    <div id="detail-view">
+                        <p><strong>ID:</strong> <span id="disp-id">S001</span></p>
+                        <p><strong>Name:</strong> <span id="disp-name">Dilshan</span></p>
+                        <p><strong>Field:</strong> Field A</p>
+                        
+                        <div class="bill-box">
+                            <h4>Tea Bill</h4>
+                            <div class="bill-row">
+                                <span>Date: 2026-04-01</span>
+                                <span>100 Kg</span>
+                                <span>120 /kg</span>
+                                <strong>12,000</strong>
+                            </div>
+                            <hr>
+                            <p>Transport: Rs. 2,000</p>
+                            <p>Advance: Rs. 5,000</p>
+                            <p class="final-amt">Final Amount: Rs. 5,000</p>
+                        </div>
+                        <button class="download-btn">Download PDF</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="/js/Acc.js"></script>
+</body>
+</html>
