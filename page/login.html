@@ -9,7 +9,7 @@
 <body>
 <section>
   <div class ="login-box">
-  <form action="../php/login_process.php" method="post">
+  <form id="loginForm" action="/page/login.html" method="post">
     <h2>Login</h2>
     <div class ="input-box">
      <span class ="icon"><ion-icon name="mail"></ion-icon></span>
@@ -27,4 +27,36 @@
 </body>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<script>
+document.getElementById("loginForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const email = document.querySelector('[name="email"]').value;
+    const password = document.querySelector('[name="password"]').value;
+
+    fetch('http://localhost:3000/api/login', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Invalid Credentials");
+        return res.json();
+    })
+    .then(data => {
+        alert("Login Success ✅");
+
+        // FIX: Redirect using local folder names
+        if (data.role === "collector") {
+            window.location.href = "collerctor.html"; 
+        } else if (data.role === "accountant") {
+            window.location.href = "Accountant.html";
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Invalid email or password ❌");
+    });
+});
+</script>
 </html>

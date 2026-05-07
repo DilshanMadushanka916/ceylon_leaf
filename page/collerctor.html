@@ -17,7 +17,7 @@
     <div class="container">
     <h2>Tea Collection Entry</h2>
 
-    <form action="save_collection.php" method="post">
+    <form >
         
         <label>Date</label>
         <input type="date" name="collection_date" required>
@@ -42,6 +42,28 @@
   <script src="/js/script.js"></script>
   <script src="/componet/hfscript.js"></script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script>
+document.querySelector("form").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const data = {
+        date: document.querySelector('[name="collection_date"]').value,
+        field: document.querySelector('[name="field_no"]').value,
+        supplier: document.querySelector('[name="supplier_id"]').value,
+        kilos: document.querySelector('[name="kilos_collected"]').value
+    };
+
+    fetch('http://localhost:3000/api/collection/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.text())
+    .then(msg => {
+        alert(msg);
+    });
+});
+</script>
 
   <footer id="footer"></footer>
 </body>
