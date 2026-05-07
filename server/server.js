@@ -34,7 +34,7 @@ app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
 
     // DEBUG: Check your terminal after clicking login
-    console.log("Login attempt for:", [email], "with password:", [password],"..........");
+    console.log("Login attempt for:", [email], "with password:", [password]);
     
     const sql = "SELECT * FROM users WHERE email = ? AND password = ?";
     
