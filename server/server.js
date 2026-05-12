@@ -61,3 +61,59 @@ const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Server: http://localhost:${PORT}/page/login.html`);
 });
+
+
+
+
+
+
+// --- TEA COLLECTION ROUTE ---
+app.post('/api/collect', (req, res) => {
+    const { 
+        collection_date, 
+        field_no, 
+        supplier_id, 
+        kilos_collected, 
+        advance_requested, 
+        advance_amount,
+        collector_email 
+    } = req.body;
+
+    // --- FIX 1: Force 0 if checkbox is false ---
+    const finalAmount = (advance_requested == 1 || advance_requested === true) ? advance_amount : 0;
+
+    const sql = `INSERT INTO tea_collections 
+                 (collector_email, collection_date, field_no, supplier_id, kilos_collected, advance_requested, advance_amount) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+    // --- FIX 2: CREATE THE MISSING 'values' ARRAY ---
+    const values = [
+        collector_email || "unknown@ceylonleaf.com",
+        collection_date, 
+        field_no, 
+        supplier_id, 
+        kilos_collected, 
+        advance_requested ? 1 : 0, 
+        finalAmount 
+    ];
+
+    // Now db.query can actually find the 'values' variable
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error("❌ SQL Error:", err.message);
+            return res.status(500).json({ success: false, message: err.message });
+        }
+
+        // --- SHOW IN TERMINAL ---
+        console.log("-----------------------------------------");
+        console.log("✅ DATA SAVED TO DATABASE");
+        console.log(`👤 Collector: ${collector_email}`);
+        console.log(`🍃 Kilos:     ${kilos_collected}kg`);
+        console.log(`💰 Advance:   ${advance_requested ? 'YES' : 'NO'} (Rs. ${finalAmount})`);
+        console.log("-----------------------------------------");
+
+        res.status(200).json({ success: true, message: "Inserted ID: " + result.insertId });
+    });
+});
+
+

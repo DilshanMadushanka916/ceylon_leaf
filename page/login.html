@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/ceylon_leaf/style.css">
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <section>
@@ -27,6 +27,7 @@
 </body>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<script src="/ceylon_leaf/script.js"></script>
 <script>
 document.getElementById("loginForm").addEventListener("submit", function(e) {
     e.preventDefault();
@@ -58,5 +59,16 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
         alert("Invalid email or password ❌");
     });
 });
+
+
+
+// Inside your login response logic:
+if (result.success) {
+    // THIS LINE IS THE KEY:
+    localStorage.setItem('userEmail', email); 
+    
+    // Then redirect
+    window.location.href = 'collector.html';
+}
 </script>
 </html>

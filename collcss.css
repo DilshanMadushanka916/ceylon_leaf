@@ -63,6 +63,90 @@ body {
         color: #1b5e20;
         margin-bottom: 10px;
     }
+    /* Card Container */
+.advance-card {
+    background: #fdfdfd;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 20px 0;
+    transition: all 0.3s ease;
+}
+
+.advance-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-weight: 600;
+}
+
+/* The Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px; width: 18px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider { background-color: #2e7d32; } /* Tea Green */
+input:checked + .slider:before { transform: translateX(22px); }
+
+/* Hidden Field Animation */
+.hidden-field {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.advance-card.active .hidden-field {
+    max-height: 100px;
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+.number-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 10%;
+    height: auto;
+    padding-left: 10%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 @media (max-width: 480px) {
     .container {
         width: 95%;
