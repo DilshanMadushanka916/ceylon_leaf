@@ -158,3 +158,22 @@ app.get('/api/supplier-field/:id', (req, res) => {
         }
     });
 });
+
+
+
+
+app.get('/api/records', (req, res) => {
+    const sql = "SELECT * FROM tea_collections";
+    
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error("Database Query Error:", err);
+            return res.status(500).json({ error: err.message });
+        }
+        
+        // ADD THIS LOG: It will show you the exact column names in your terminal
+        console.log("Data being sent to frontend:", results[0]); 
+        
+        res.json(results);
+    });
+});
