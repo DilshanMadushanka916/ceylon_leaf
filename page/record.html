@@ -16,6 +16,7 @@
         <header class="page-title">
             <h1>Supply Records</h1>
             <div class="table-actions">
+                <!-- ID "searchBar" is used by the script to filter rows -->
                 <input type="text" placeholder="Search Supplier ID..." id="searchBar">
                 <button class="filter-btn"><i class="ph ph-funnel"></i> Filter</button>
             </div>
@@ -33,32 +34,17 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>04/08/2026</td>
-                        <td>SUP-001</td>
-                        <td>Field 4B</td>
-                        <td>125.5 kg</td>
-                        <td><span class="status-tag verified">Verified</span></td>
-                        <td><button class="edit-icon"><i class="ph ph-pencil-simple"></i></button></td>
-                    </tr>
-                    <tr>
-                        <td>04/08/2026</td>
-                        <td>SUP-042</td>
-                        <td>Field 2A</td>
-                        <td>88.2 kg</td>
-                        <td><span class="status-tag pending">Pending</span></td>
-                        <td><button class="edit-icon"><i class="ph ph-pencil-simple"></i></button></td>
-                    </tr>
-                    
-                    </tbody>
+                <!-- This ID is critical for the JavaScript link -->
+                <tbody id="records-data">
+                    <!-- Data will be loaded here dynamically -->
+                </tbody>
             </table>
         </section>
     </main>
 
     <div id="footer"></div>
-
+    s
     <script src="/js/script.js"></script>
-     <script src="/componet/hfscript.js"></script>
+    <script src="/componet/hfscript.js"></script>
 </body>
 </html>

@@ -22,11 +22,12 @@
         <label>Date</label>
         <input type="date" name="collection_date" required>
 
-        <label>Field No</label> 
-        <input type="text" name="field_no" placeholder="Enter Field Number" required>
+       <label>Supplier ID</label>
+       <input type="number" id="supplier_id_input" name="supplier_id" placeholder="Enter Supplier ID" required>
 
-        <label>Supplier ID</label>
-        <input type="number" name="supplier_id" placeholder="Enter Supplier ID" required>
+       <label>Field No (Auto-filled)</label> 
+     <input type="text" id="field_no_input" name="field_no" placeholder="Waiting for ID..." readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+       
 
         <label>Kilos Collected (kg)</label>
         <input type="number" step="0.01" name="kilos_collected" placeholder="Enter kilos" required>
@@ -78,7 +79,7 @@ document.querySelector('form').addEventListener('submit', async (e) => {
         kilos_collected: formData.get('kilos_collected'),
         advance_requested: document.getElementById('requestAdvance').checked,
         advance_amount: formData.get('advance_amount') || 0,
-        collector_email: "test@example.com" // You can change this to a real email later
+        collector_email: "Dilshan@gmail.com" // You can change this to a real email later
     };
 
     try {
@@ -161,6 +162,8 @@ if (collectionForm) {
             }
         } catch (error) {
             console.error('Error:', error);
+
+            
         } finally {
             // Re-enable after the process is done
             isSubmitting = false;
@@ -171,14 +174,47 @@ if (collectionForm) {
 });
 </script>
 
+  <script>
+
+    // Auto-fetch Field No when Supplier ID is entered
+const supplierInput = document.getElementById('supplier_id_input');
+const fieldInput = document.getElementById('field_no_input');
+
+supplierInput.addEventListener('change', async () => {
+    const supplierId = supplierInput.value;
+    
+    if (!supplierId) {
+        fieldInput.value = "";
+        return;
+    }
+
+    try {
+        fieldInput.value = "Searching...";
+        const response = await fetch(`http://localhost:3000/api/supplier-field/${supplierId}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            fieldInput.value = data.field_no; // Automatically sets the field number
+        } else {
+            fieldInput.value = "Not Found";
+            console.warn("Supplier ID not found in database");
+             alert("⚠️ No supplier found ");
+        }
+    } catch (error) {
+        console.error("Error fetching field:", error);
+        fieldInput.value = "Error";
+    }
+});
+  </script>
+
+
+
 
   <script src="/js/script.js"></script>
   <script src="/componet/hfscript.js"></script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
-  <script>
-    
-  </script>
+
 
   <footer id="footer"></footer>
 </body>

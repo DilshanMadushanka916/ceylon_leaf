@@ -88,7 +88,7 @@ app.post('/api/collect', (req, res) => {
 
     // --- FIX 2: CREATE THE MISSING 'values' ARRAY ---
     const values = [
-        collector_email || "unknown@ceylonleaf.com",
+        collector_email ,
         collection_date, 
         field_no, 
         supplier_id, 
@@ -117,3 +117,44 @@ app.post('/api/collect', (req, res) => {
 });
 
 
+app.get('/api/records', (req, res) => {
+    // Add a log here to see if the browser is actually hitting this route
+    console.log("Fetching records from database..."); 
+
+    const sql = "SELECT * FROM tea_collections";
+    
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error("Database Query Error:", err);
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(results);
+    });
+});
+
+
+
+
+
+// --- GET SUPPLIER FIELD ROUTE (CORRECTED) ---
+app.get('/api/supplier-field/:id', (req, res) => {
+    const supplierId = req.params.id;
+    
+    // Updated to use 'sup_id' and 'supplier' table
+    const sql = "SELECT supplier_field FROM supplier WHERE sup_id = ?"; 
+
+    db.query(sql, [supplierId], (err, results) => {
+        if (err) {
+            console.error("❌ Database Error:", err.message);
+            return res.status(500).json({ error: "Database error" });
+        }
+        
+        if (results.length > 0) {
+            console.log(`✅ Found field ${results[0].supplier_field} for Supplier ${supplierId}`);
+            res.json({ field_no: results[0].supplier_field });
+        } else {
+            console.log(`⚠️ No supplier found with sup_id: ${supplierId}`);
+            res.status(404).json({ message: "Supplier not found" });
+        }
+    });
+});
