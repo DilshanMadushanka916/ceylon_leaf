@@ -98,96 +98,239 @@ body {
     border-top: 1px solid rgba(255,255,255,0.1);
     margin: 0;
 }
+.factory-title {
+    color: var(--text-white); /* Header background eka dark nisa */
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    letter-spacing: 1px;
+    margin: 0;
+    line-height: 1.1;
+    display: flex;
+    flex-direction: column; /* Text eka pela dekkata ganna */
+}
+
+.factory-title .leaf-text {
+    color: var(--accent-green); /* Leaf green highlight eka */
+}
+
+.factory-title small {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 4px;
+    color: rgba(255, 255, 255, 0.6); /* Thawa tikak fade karanna */
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+/* Header eke logo eka saha title eka madata divider ekak danna (optional) */
+.logo {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    padding-right: 20px;
+    margin-right: 20px;
+}
+
+/* --- Navigation Bar Styles --- */
+.main-nav {
+    flex: 1; /* Takes up the available middle space */
+    margin-left: 40px;
+}
+
+.main-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+    margin: 0;
+    padding: 0;
+}
+
+.main-nav ul li a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.main-nav ul li a i {
+    font-size: 1.2rem;
+}
+
+/* Hover & Active States */
+.main-nav ul li a:hover {
+    color: var(--text-white);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Active Navigation Link */
+.main-nav ul li a {
+    color: var(--text-white);
+    background: var(--accent-green);
+    box-shadow: 0 4px 10px rgba(55, 167, 124, 0.3);
+}
+
+
+/* Adjusting your existing .logo to fix alignment */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    padding-right: 25px;
+    /* Remove the margin-right: 20px you had earlier to keep it tight */
+}
+
+.logo img {
+    width: 60px; /* Reduced from 90px to fit the industrial header better */
+    height: auto;
+}
+
+/* Ensure the header doesn't get too cramped on smaller screens */
+@media (max-width: 1024px) {
+    .main-nav {
+        display: none; /* Usually, you'd switch to a hamburger menu here */
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* Footer Styles */
 .main-footer {
-    background-color: #2e5a4d;
-    color: rgba(255, 255, 255, 0.8);
-    padding: 10px 30px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    align-items: center;
-    margin-top: auto;
+    background-color: #2a4d44; /* Dark elegant background */
+    color: #e0e0e0;
+    padding: 60px 20px 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.footer-nav {
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
-    gap: 25px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 40px;
 }
 
-.nav-item {
+.footer-brand {
+    flex: 1;
+    min-width: 250px;
+}
+
+.footer-brand h3 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.footer-brand .dot {
+    color: #4CAF50; /* Signature Green */
+}
+
+.social-icons {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+.social-icons a {
+    color: #fff;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #4CAF50;
+}
+
+.footer-links h4, .footer-contact h4 {
+    color: #fff;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links ul li {
+    margin-bottom: 10px;
+}
+
+.footer-links ul li a {
+    color: #bbb;
     text-decoration: none;
-    color: inherit;
+    transition: color 0.3s;
+}
+
+.footer-links ul li a:hover {
+    color: #fff;
+    padding-left: 5px;
+}
+
+.footer-contact p {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    font-size: 0.75rem;
-    gap: 4px;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: #bbb;
 }
 
-.nav-item.active {
-    color: #a5d6a7;
+.footer-divider {
+    border: 0;
+    border-top: 1px solid #333;
+    margin: 40px 0 20px;
 }
 
-.nav-item i {
-    font-size: 1.4rem;
-}
-
-.footer-info {
-    text-align: center;
-    font-size: 0.7rem;
-    line-height: 1.4;
-}
-
-.footer-actions {
+.footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.legal-links {
+    display: flex;
     gap: 20px;
 }
 
-.user-footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 0.75rem;
+.legal-links a {
+    color: #777;
+    text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-bottom {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
 }
 
 
-@media (max-width: 480px) {
 
-    /* Header stack slightly */
-    .main-header {
-        flex-direction: row;
-        padding: 5px;
-    }
 
-    .logo span {
-        display: none; /* hide text, keep icon if any */
-    }
 
-    /* Profile */
-    .profile-trigger span {
-        display: none; /* hide username */
-    }
-
-    /* Dropdown full width feel */
-    .dropdown-menu {
-        right: 0;
-        left: auto;
-        width: 160px;
-    }
-
-    /* Footer nav icons only (clean UI) */
-    .nav-item span {
-        display: none;
-    }
-
-    .nav-item i {
-        font-size: 1.6rem;
-    }
-
-    .footer-info {
-        font-size: 0.65rem;
-    }
-}

@@ -10,28 +10,39 @@
 <body>
 
     <header class="main-header">
-        <div class="logo">
-            
-            <span> <img src="/assets/Logo.png" alt="Logo" width="90px" height="90px" ></span>
-           
-        
-        </div>
-        
-        <div class="profile-section">
-            <div class="profile-trigger" id="profileTrigger" onclick="toggleMenu()">
-                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Profile" class="avatar">
-                <i class="ph ph-caret-down"></i>
-            </div>
+    <div class="logo">
+        <img src="/assets/Logo.png" alt="Logo">
+        <h1 class="factory-title">
+            CEYLON <span class="leaf-text">LEAF</span> 
+            <small>TEA FACTORY</small>
+        </h1>
+    </div>
 
-            <div class="dropdown-menu" id="dropdownMenu">
-                <a href="#"><i class="ph ph-gear"></i> Settings</a>
-                <a href="#"><i class="ph ph-shield-check"></i> Privacy</a>
-                <hr>
-                <a href="/page/login.html" class="logout"><i class="ph ph-sign-out"></i> Logout</a>
-            </div>
+    <!-- New Navigation Bar -->
+    <nav class="main-nav">
+        <ul>
+            <li><a href="/page/collerctor.html" class=""><i class="ph ph-chart-line"></i> Dashboard</a></li>
+            <li><a href="/page/record.html"><i class="ph ph-package"></i> Supply Records</a></li>
+            <li><a href="#"><i class="ph ph-chart-line-up"></i> Reports</a></li>
+            <li><a href="#"><i class="ph ph-test-tube"></i> Quality</a></li>
+            <li><a href="#"><i class="ph ph-users"></i> Staff</a></li>
+        </ul>
+    </nav>
+    
+    <div class="profile-section">
+        <div class="profile-trigger" id="profileTrigger" onclick="toggleMenu()">
+            <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Profile" class="avatar">
+            <i class="ph ph-caret-down"></i>
         </div>
-    </header>
 
+        <div class="dropdown-menu" id="dropdownMenu">
+            <a href="#"><i class="ph ph-gear"></i> Settings</a>
+            <a href="#"><i class="ph ph-shield-check"></i> Privacy</a>
+            <hr>
+            <a href="/page/login.html" class="logout"><i class="ph ph-sign-out"></i> Logout</a>
+        </div>
+    </div>
+</header>
     <main class="content-area">
         </main>
 
