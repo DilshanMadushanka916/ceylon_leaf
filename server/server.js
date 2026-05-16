@@ -177,3 +177,33 @@ app.get('/api/records', (req, res) => {
         res.json(results);
     });
 });
+
+
+
+
+router.get('/api/user/profile', async (req, res) => {
+    // 1. Check if user is authenticated (using sessions as an example)
+    if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized access" });
+    }
+
+    try {
+        // 2. Fetch the logged-in user's specific data from MySQL
+        const userId = req.session.userId; // e.g., identifying by email or primary key ID
+        const [rows] = await pool.execute(
+            'SELECT username, email, phone_number, address, role FROM users WHERE email = ?', 
+            [userId]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // 3. Send the single user object back to the frontend
+        res.json(rows[0]);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Database error occurred" });
+    }
+});

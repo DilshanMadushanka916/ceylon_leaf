@@ -69,15 +69,8 @@ th, td {
     font-weight: 600;
 }
 
-.status-tag.verified {
-    background-color: #dcedc8;
-    color: #33691e;
-}
 
-.status-tag.pending {
-    background-color: #fff9c4;
-    color: #f57f17;
-}
+
 
 .edit-icon {
     background: none;
@@ -86,3 +79,229 @@ th, td {
     cursor: pointer;
     font-size: 1.2rem;
 }
+
+
+
+.table-container {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+th {
+    background: #f8f9fa;
+    color: #2a4d44;
+    text-align: left;
+    padding: 12px;
+    border-bottom: 2px solid #eee;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.status-tag {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+.action-btn:hover { color: #2a4d44; }
+
+.status-tag {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: capitalize;
+}
+
+
+.status-pending {
+    background-color: #fff3e0;
+    color: #ef6c00;
+    border: 1px solid #ffe0b2;
+}
+
+.status-completed {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+
+.status-rejected {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+
+
+
+.top-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Sidebar එකට ඉඩ තබා ඉතිරි කොටස පුරා යාමට width සහ margin සකස් කිරීම */
+    width: calc(100% ); /* 280px වෙනුවට ඔයාගේ sidebar width එක දෙන්න */
+  
+    margin-top: 0;
+    margin-right: 15px;
+    padding: 15px 30px;
+    border-radius: 20px; /* රවුම් corners */
+    
+    /* Glassmorphism Effect */
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+    
+    position: sticky;
+    top: 15px;
+    z-index: 999;
+    box-sizing: border-box;
+}
+
+/* Dashboard Title */
+.nav-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2c3e50;
+    font-family: sans-serif;
+}
+
+/* Profile Section */
+.nav-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    position: relative;
+    padding: 5px 10px;
+    border-radius: 50px;
+    transition: background 0.3s ease;
+}
+
+.nav-profile:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.profile-name {
+    font-weight: 600;
+    color: #34495e;
+    font-size: 0.95rem;
+}
+
+.profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #27ae60; /* Tea Factory නිසා කොළ පාට border එකක් */
+}
+
+.drop-arrow {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    transition: transform 0.3s ease;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    position: absolute;
+    top: 55px;
+    right: 0;
+    width: 220px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    padding: 10px 0;
+    display: none; /* Default hidden */
+    flex-direction: column;
+    border: 1px solid #f0f0f0;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+.dropdown-menu.show {
+    display: flex;
+}
+
+.dropdown-header {
+    padding: 10px 20px;
+}
+
+.user-role {
+    font-weight: 600;
+    margin: 0;
+    color: #dadada;
+    font-size: 0.9rem;
+}
+
+.dropdown-header small {
+    color: #7f8c8d;
+}
+
+.dropdown-menu hr {
+    border: 0;
+    border-top: 1px solid #f5f5f5;
+    margin: 5px 0;
+}
+
+.dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    color: #555;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f8f9fa;
+    color: #b5e7ca;
+}
+
+.dropdown-menu a i {
+    font-size: 1.1rem;
+}
+
+.dropdown-menu a.logout-btn {
+    color: #e74c3c;
+}
+.dropdown-menu a.logout-btn:hover {
+    background-color: #fdf2f2;
+    color: #c0392b;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Ceylon Leaf</title>
+    <link rel="stylesheet" href="/profile.css">
+</head>
+<body>
+
+    <!-- BACK TO DASHBOARD BUTTON -->
+    <div style="margin: 20px 0 0 20px;">
+        <a href="/page/collerctor.html" style="text-decoration: none; color: #27ae60; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">
+            <i class="ph ph-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="profile-container">
+        <!-- Glassmorphism Card -->
+        <div class="profile-card">
+            <div class="profile-header-main">
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" alt="User Profile" class="profile-avatar">
+                <h2 id="profName">Loading...</h2>
+                <span class="badge" id="profRole">Collector</span>
+            </div>
+            
+            <hr class="profile-hr">
+
+            <div class="profile-details">
+    <div class="detail-group">
+        <label><i class="ph ph-envelope"></i> Email Address</label>
+        <p id="profEmail">loading@gmail.com</p>
+    </div>
+
+    <div class="detail-group">
+        <label><i class="ph ph-phone"></i> Phone Number</label>
+        <p id="profPhone">Loading...</p>
+    </div>
+
+    <!-- Swapped Joined Date for your actual Address column -->
+    <div class="detail-group">
+        <label><i class="ph ph-map-pin"></i> Home Address</label>
+        <p id="profAddress">Loading...</p>
+    </div>
+</div>
+            <button class="edit-profile-btn" onclick="alert('Edit functionality coming soon!')">Edit Profile</button>
+        </div>
+    </div>
+
+   <!-- Phosphor Icons Script -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        // Fetch the user data when the page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Adjust the URL endpoint based on your backend routing
+                const response = await fetch('/api/user/profile'); 
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile data');
+                }
+
+                const userData = await response.json();
+
+                // Dynamically update the HTML elements with MySQL data
+                document.getElementById('profName').textContent = userData.username;
+                document.getElementById('profRole').textContent = userData.role;
+                document.getElementById('profEmail').textContent = userData.email;
+                document.getElementById('profPhone').textContent = userData.phone_number;
+                document.getElementById('profAddress').textContent = userData.address;
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                // Fallback UI in case of failure
+                document.getElementById('profName').textContent = "Error Loading Profile";
+            }
+        });
+    </script>
+</body>
+</html>
+    
+</body>
+</html>
+   
+</body>
+   
+</body>
+
+
+</html>

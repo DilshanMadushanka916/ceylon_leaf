@@ -4,72 +4,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/componet/hfstyle.css">
+    
     <link rel="stylesheet" href="/collcss.css">
    
 </head>
 
 <body>
-   <div id="header"></div>
-    <main class="content-area">
-     <div id="header"></div>
-     
-    <div class="container">
-    <h2>Tea Collection Entry</h2>
 
-    <form >
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+<div class="logo">
+        <img src="/assets/Logo.png" alt="Logo">
+        <h1 class="factory-title">
+            CEYLON <span class="leaf-text">LEAF</span> 
+            <small>TEA FACTORY</small>
+        </h1>
+    </div>
         
-        <label>Date</label>
-        <input type="date" name="collection_date" required>
 
-       <label>Supplier ID</label>
-       <input type="text" id="supplier_id_input" name="supplier_id" placeholder="Enter Supplier ID" required>
+        <!-- Navigation -->
 
-       <label>Field No (Auto-filled)</label> 
-     <input type="text" id="field_no_input" name="field_no" placeholder="Waiting for ID..." readonly style="background-color: #f0f0f0; cursor: not-allowed;">
-       
+        <ul class="nav-links">
 
-        <label>Kilos Collected (kg)</label>
-        <input type="number" step="0.01" name="kilos_collected" placeholder="Enter kilos" required>
-         
+            <li class="active">
+                <a href="/page/collerctor.html">
+                    <i class="ph ph-house"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
 
-   <div class="advance-card">
-    <div class="advance-header">
-        <i class="ph ph-hand-coins"></i> <!-- Phosphor icon -->
-        <span>Request Advance?</span>
-        <label class="switch">
-            <input type="checkbox" id="requestAdvance">
-            <span class="slider round"></span>
-        </label>
+            <li>
+                <a href="/page/record.html">
+                    <i class="ph ph-package"></i>
+                    <span>Supply Records</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="ph ph-chart-line-up">
+                    <i class="ph ph-chart-line-up"></i>
+                    <span>Reports</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="suppliers.html">
+                    <i class="ph ph-test-tube"></i>
+                    <span>Quality</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="reports.html">
+                    <i class="ph ph-users"></i>
+                    <span>Staff</span>
+                </a>
+            </li>
+
+        </ul>
+
+
     </div>
 
-    <div id="advanceAmountField" class="hidden-field">
-        <label>Amount (LKR)</label>
-        <div class="input-wrapper">
-            <span class="currency-prefix"></span>
-            <input type="number" name="advance_amount" placeholder="0.00" >
+    
+    <header>
+        <!-- TOP NAVBAR -->
+<div class="top-navbar">
+    <div class="nav-title">Tea Collector Dashboard</div>
+    <div class="nav-profile" id="profileDropdownBtn">
+        <span class="profile-name" id="userProfileName">Dilshan</span>
+        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="profile-img">
+        <i class="ph ph-caret-down drop-arrow"></i>
+        
+        <!-- Dropdown Menu -->
+        <div class="dropdown-menu" id="profileDropdownMenu">
+            <div class="dropdown-header">
+                <p class="user-role">Collector Account</p>
+                <small id="userProfileEmail">Dilshan@gmail.com</small>
+            </div>
+            <hr>
+            <a href="/page/profile.html"><i class="ph ph-user"></i> My Profile</a>
+            <a href="/page/settings.html"><i class="ph ph-gear"></i> Settings</a>
+            <a href="#" class="logout-btn" id="logoutBtn"><i class="ph ph-sign-out"></i> Log Out</a>
         </div>
     </div>
 </div>
+    </header> 
 
 
 
-<form id="collectionForm">
-    <button type="submit">Save Data</button>
-</form>
-        
 
-    </form>
-</div>
- <div>
-    
 
-        </main>
+
+    <main class="content-area">
+    <div class="main-wrapper">
+        <!-- LEFT SIDE: Your existing Form -->
+        <div class="container">
+            <h2>Tea Collection Entry</h2>
+            <form id="collectionFormMain">
+                <label>Date</label>
+                <input type="date" name="collection_date" required>
+
+                <label>Supplier ID</label>
+                <input type="text" id="supplier_id_input" name="supplier_id" placeholder="Enter Supplier ID" required>
+
+                <label>Field No (Auto-filled)</label> 
+                <input type="text" id="field_no_input" name="field_no" placeholder="Waiting for ID..." readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+
+                <label>Kilos Collected (kg)</label>
+                <input type="number" step="0.01" name="kilos_collected" id="kilos_input" placeholder="Enter kilos" required>
+
+                <div class="advance-card">
+                    <div class="advance-header">
+                        <i class="ph ph-hand-coins"></i>
+                        <span>Request Advance?</span>
+                        <label class="switch">
+                            <input type="checkbox" id="requestAdvance">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div id="advanceAmountField" class="hidden-field">
+                        <label>Amount (LKR)</label>
+                        <div class="input-wrapper">
+                            <input type="number" name="advance_amount" placeholder="0.00">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit">Save Data</button>
+            </form>
+        </div>
+
+        <!-- RIGHT SIDE: New Price & Chart Div -->
+        <div class="dashboard-sidebar">
+            <div class="price-gradient-card">
+                <span class="side-label">Today's Market Price</span>
+                <div class="side-value">LKR 245.00</div>
+                <hr style="opacity: 0.2; margin: 15px 0;">
+                <span class="side-label"></span>
+                <div class="side-value"><span id="displayTotal"></span> </div>
+            </div>
+
+            
+        </div>
+    </div>
+</main>
   
 
 <script>
 document.querySelector('form').addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // 1. Get the real logged-in email from localStorage right at submission time
+    const loggedInEmail = localStorage.getItem('userEmail');
+
+    // 2. Safety Check: If the user is not logged in, stop them!
+    if (!loggedInEmail) {
+        alert('❌ Error: You are not logged in. Please log in first!');
+        window.location.href = 'login.html'; // Redirect to login page
+        return;
+    }
 
     const formData = new FormData(e.target);
     const data = {
@@ -79,7 +173,9 @@ document.querySelector('form').addEventListener('submit', async (e) => {
         kilos_collected: formData.get('kilos_collected'),
         advance_requested: document.getElementById('requestAdvance').checked,
         advance_amount: formData.get('advance_amount') || 0,
-        collector_email: "Dilshan@gmail.com" // You can change this to a real email later
+        
+        // 3. Changed from "Dilshan@gmail.com" to your real dynamic variable
+        collector_email: loggedInEmail 
     };
 
     try {
@@ -96,12 +192,17 @@ document.querySelector('form').addEventListener('submit', async (e) => {
         if (result.success) {
             alert('✅ Data saved to database!');
             e.target.reset();
+            
+            // Optional: If you use the advance field toggle, reset its visibility here
+            const advanceField = document.getElementById('advanceAmountField');
+            if (advanceField) advanceField.classList.add('hidden-field');
         }
     } catch (error) {
         console.error('Fetch Error:', error);
         alert('❌ Could not connect to server. Make sure your Node.js terminal is running.');
     }
 });
+
 // Inside your Login script, after getting a successful response:
 if (result.success) {
     // Save the email so other pages can use it
@@ -205,17 +306,70 @@ supplierInput.addEventListener('change', async () => {
         fieldInput.value = "Error";
     }
 });
+
   </script>
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+    const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+    const dropArrow = profileDropdownBtn.querySelector('.drop-arrow');
+
+    // 1. Dropdown එක Click කරාම open/close කරන්න
+    profileDropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // document click එක trigger වීම වැළැක්වීමට
+        profileDropdownMenu.classList.toggle('show');
+        
+        // ඊතලය කරකවන්න (Animation)
+        if(profileDropdownMenu.classList.contains('show')) {
+            dropArrow.style.transform = 'rotate(180deg)';
+        } else {
+            dropArrow.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    // 2. Dropdown එකෙන් පිට ඕනෑම තැනක click කරොත් menu එක close කරන්න
+    document.addEventListener('click', () => {
+        if (profileDropdownMenu.classList.contains('show')) {
+            profileDropdownMenu.classList.remove('show');
+            dropArrow.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    // 3. LocalStorage එකෙන් Login වෙච්ච user ගේ email එක අරන් navbar එකට දාන්න
+    const savedEmail = localStorage.getItem('userEmail');
+    if (savedEmail) {
+        document.getElementById('userProfileEmail').textContent = savedEmail;
+        
+        // Email එකෙන් නම විතරක් වෙන් කරලා ගන්න (උදා: Dilshan@gmail.com -> Dilshan)
+        const namePart = savedEmail.split('@')[0];
+        const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+        document.getElementById('userProfileName').textContent = capitalizedName;
+    }
+
+    // 4. Log Out button එක ක්‍රියා කරවීම
+    const logoutBtn = document.getElementById('logoutBtn');
+    if(logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('userEmail'); // session clear කරන්න
+            alert('Logging out...');
+            window.location.href = 'login.html'; // ඔයාගේ login page එකේ නම දෙන්න
+        });
+    }
+});
 
 
+</script>
+ 
+   
 
-
+ 
   <script src="/js/script.js"></script>
   <script src="/componet/hfscript.js"></script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
 
 
-  <footer id="footer"></footer>
+  
 </body>
 </html>

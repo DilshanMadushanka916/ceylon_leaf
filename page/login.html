@@ -45,13 +45,17 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
         return res.json();
     })
     .then(data => {
+        // --- THE FIX IS HERE ---
+        // 1. Save the typed email to localStorage immediately on successful login
+        localStorage.setItem('userEmail', email); 
+        
         alert("Login Success ✅");
 
-        // FIX: Redirect using local folder names
+        // 2. Redirect based on role using your exact file paths
         if (data.role === "collector") {
-            window.location.href = "collerctor.html"; 
+            window.location.href = "/page/collerctor.html";  
         } else if (data.role === "Accountant") {
-            window.location.href = "Accountant.html";
+            window.location.href = "/page/Accountant.html"; // Fixed path structure if needed
         }
     })
     .catch(err => {
@@ -59,16 +63,6 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
         alert("Invalid email or password ❌");
     });
 });
-
-
-
-// Inside your login response logic:
-if (result.success) {
-    // THIS LINE IS THE KEY:
-    localStorage.setItem('userEmail', email); 
-    
-    // Then redirect
-    window.location.href = 'collector.html';
-}
 </script>
+
 </html>

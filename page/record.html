@@ -4,13 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supply Records - Ceylon Leaf</title>
-    <link rel="stylesheet" href="/componet/hfstyle.css">
+   
     <link rel="stylesheet" href="/records-style.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
+     <header>
+        <!-- TOP NAVBAR -->
+<div class="top-navbar">
+    <div style="margin: 20px 0 0 20px;">
+        <a href="/page/collerctor.html" style="text-decoration: none; color: #27ae60; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">
+            <i class="ph ph-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    <div class="nav-profile" id="profileDropdownBtn">
+        <span class="profile-name" id="userProfileName">Dilshan</span>
+        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="profile-img">
+        <i class="ph ph-caret-down drop-arrow"></i>
+        
+        <!-- Dropdown Menu -->
+        <div class="dropdown-menu" id="profileDropdownMenu">
+            <div class="dropdown-header">
+                <p class="user-role">Collector Account</p>
+                <small id="userProfileEmail">Dilshan@gmail.com</small>
+            </div>
+            <hr>
+            <a href="/page/profile.html"><i class="ph ph-user"></i> My Profile</a>
+            <a href="/page/settings.html"><i class="ph ph-gear"></i> Settings</a>
+            <a href="#" class="logout-btn" id="logoutBtn"><i class="ph ph-sign-out"></i> Log Out</a>
+        </div>
+    </div>
+</div>
+    </header> 
 
-    <div id="header"></div>
+    
 
     <main class="container">
         <header class="page-title">
@@ -43,6 +70,138 @@
     </main>
 
     <div id="footer"></div>
+     <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    fetchRecords();
+
+    // Search function logic
+    const searchBar = document.getElementById('searchBar');
+    if (searchBar) {
+        searchBar.addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#records-data tr');
+            
+            rows.forEach(row => {
+                const supplierId = row.cells[1].textContent.toLowerCase();
+                if (supplierId.includes(term)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+    }
+});
+
+async function fetchRecords() {
+    
+    const tableBody = document.getElementById('records-data');
+    
+    try {
+        const response = await fetch('http://localhost:3000/api/records');
+        const data = await response.json();
+
+        if (!data || data.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No records found.</td></tr>';
+            return;
+        }
+
+        // Table eka clear karala data tika add karanawa
+        tableBody.innerHTML = "";
+        
+
+        data.forEach(record => {
+    const date = new Date(record.Collection_Date).toLocaleDateString();
+    const supplier = record.Supplier_ID || 'N/A';
+    const field = record.Field_No || 'N/A';
+    const kilos = record.Kilos_Collected || '0.00';
+    
+    // 1. Status eka database eken ganna (e.g., record.Status)
+    // Naththam default ekak danna 'Pending' wage
+    const currentStatus = record.status || 'pending'; 
+
+    // 2. Status eka anuwa CSS class eka thoranna
+    let statusClass = 'status-pending';
+    if (currentStatus.toLowerCase() === 'completed') statusClass = 'status-completed';
+    if (currentStatus.toLowerCase() === 'rejected') statusClass = 'status-rejected';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td>${date}</td>
+        <td><strong>${supplier}</strong></td>
+        <td>${field}</td>
+        <td>${kilos} kg</td>
+        <td><span class="status-tag ${statusClass}">${currentStatus}</span></td> <td>
+            <button class="action-btn" onclick="viewDetails('${record.id}')">
+                <i class="ph ph-eye"></i>
+            </button>
+        </td>
+    `;
+    tableBody.appendChild(tr);
+});
+    } catch (error) {
+        console.error("Error fetching records:", error);
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error loading data. Check server connection.</td></tr>';
+    }
+}
+
+    function viewDetails(id) {
+     alert("Viewing details for record ID: " + id);
+     }
+     
+     </script>
+     <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+    const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+    const dropArrow = profileDropdownBtn.querySelector('.drop-arrow');
+
+    // 1. Dropdown එක Click කරාම open/close කරන්න
+    profileDropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // document click එක trigger වීම වැළැක්වීමට
+        profileDropdownMenu.classList.toggle('show');
+        
+        // ඊතලය කරකවන්න (Animation)
+        if(profileDropdownMenu.classList.contains('show')) {
+            dropArrow.style.transform = 'rotate(180deg)';
+        } else {
+            dropArrow.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    // 2. Dropdown එකෙන් පිට ඕනෑම තැනක click කරොත් menu එක close කරන්න
+    document.addEventListener('click', () => {
+        if (profileDropdownMenu.classList.contains('show')) {
+            profileDropdownMenu.classList.remove('show');
+            dropArrow.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    // 3. LocalStorage එකෙන් Login වෙච්ච user ගේ email එක අරන් navbar එකට දාන්න
+    const savedEmail = localStorage.getItem('userEmail');
+    if (savedEmail) {
+        document.getElementById('userProfileEmail').textContent = savedEmail;
+        
+        // Email එකෙන් නම විතරක් වෙන් කරලා ගන්න (උදා: Dilshan@gmail.com -> Dilshan)
+        const namePart = savedEmail.split('@')[0];
+        const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+        document.getElementById('userProfileName').textContent = capitalizedName;
+    }
+
+    // 4. Log Out button එක ක්‍රියා කරවීම
+    const logoutBtn = document.getElementById('logoutBtn');
+    if(logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('userEmail'); // session clear කරන්න
+            alert('Logging out...');
+            window.location.href = 'login.html'; // ඔයාගේ login page එකේ නම දෙන්න
+        });
+    }
+});
+
+
+</script>
  
     <script src="/js/script.js"></script>
     <script src="/componet/hfscript.js"></script>
