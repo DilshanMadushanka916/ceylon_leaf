@@ -181,7 +181,7 @@ app.get('/api/records', (req, res) => {
 
 
 
-router.get('/api/user/profile', async (req, res) => {
+app.get('/api/user/profile', async (req, res) => {
     // 1. Check if user is authenticated (using sessions as an example)
     if (!req.session || !req.session.userId) {
         return res.status(401).json({ message: "Unauthorized access" });
