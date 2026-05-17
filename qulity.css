@@ -79,7 +79,7 @@ body{
 }
 
 .nav-links li a:hover,
-.nav-links .active b{
+.nav-links .active a{
     background:#377a6a !important;
 }
 
