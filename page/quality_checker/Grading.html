@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grading Enter Dashboard</title>
+<link rel="stylesheet" href="/qulity.css">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+
+<body>
+
+    <!-- Sidebar Section -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="/assets/Logo.png" alt="Logo">
+            <h1 class="factory-title">
+                CEYLON <span class="leaf-text">LEAF</span> 
+                <small>TEA FACTORY</small>
+            </h1>
+        </div>
+        
+        <!-- Navigation Link Setup -->
+        <ul class="nav-links">
+            <li >
+                <a href="/page/quality_checker/Dashbord.html">
+                    <i class="ph ph-house"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="/page/quality_checker/Grading.html">
+                    <i class="ph ph-package"></i>
+                    <span>Grading</span>
+                </a>
+            </li>
+            <li>
+                <a href="/page/reports.html"> 
+                    <i class="ph ph-chart-line-up"></i>
+                    <span>Reports</span>
+                </a>
+            </li>
+            <li>
+                <a href="suppliers.html">
+                    <i class="ph ph-test-tube"></i>
+                    <span>Quality</span>
+                </a>
+            </li>
+            <li>
+                <a href="staff.html"> 
+                    <i class="ph ph-users"></i>
+                    <span>Staff</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="main">
+        
+        <header>
+            <!-- TOP NAVBAR -->
+            <div class="top-navbar">
+                <div class="nav-title">Grading Enter Dashboard</div>
+                <div class="nav-profile" id="profileDropdownBtn">
+                    <span class="profile-name" id="userProfileName">Dilshan</span>
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="profile-img">
+                    <i class="ph ph-caret-down drop-arrow"></i>
+                    
+                    <!-- Dropdown Menu -->
+                    <div class="dropdown-menu" id="profileDropdownMenu">
+                        <div class="dropdown-header">
+                            <p class="user-role">Collector Account</p>
+                            <small id="userProfileEmail">Dilshan@gmail.com</small>
+                        </div>
+                        <hr>
+                        <a href="/page/profile.html"><i class="ph ph-user"></i> My Profile</a>
+                        <a href="/page/settings.html"><i class="ph ph-gear"></i> Settings</a>
+                        <a href="#" class="logout-btn" id="logoutBtn"><i class="ph ph-sign-out"></i> Log Out</a>
+                    </div>
+                </div>
+            </div>
+        </header> 
+
+        <!-- Form Section -->
+        <section class="form-section">
+            <div class="section-header">
+                <i class="fa-solid fa-clipboard-check"></i>
+                <h3>Enter Grading Details</h3>
+            </div>
+
+            <div class="form-layout">
+                <!-- Form -->
+                <form id="gradingForm">
+                    <div class="grid">
+                        <div class="input-group">
+                            <label>Date *</label>
+                            <input type="date" id="date">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Field No *</label>
+                            <input type="text" id="fieldNo" placeholder="Enter Field No">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Supplier ID</label>
+                            <input type="text" placeholder="Auto Generated" readonly>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Weight (kg)</label>
+                            <input type="number" step="0.01" id="weight" placeholder="Enter Weight">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Moisture Deduction (kg)</label>
+                            <input type="number" step="0.01" id="moistureDeduction" placeholder="Enter Moisture Deduction">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Grade *</label>
+                            <select id="grade">
+                                <option>Select Grade</option>
+                                <option>A</option>
+                                <option>B</option>
+                                <option>C</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Net Weight (kg)</label>
+                            <input id="remarks" placeholder="Auto Calculate">    
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="buttons">
+                        <button type="submit" class="save">
+                            <i class="fa-solid fa-floppy-disk"></i> Save
+                        </button>
+                        <button type="reset" class="reset">
+                            <i class="fa-solid fa-rotate-right"></i> Reset
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Grade Reference -->
+                <div class="grade-box">
+                    <h3>Grade Reference</h3>
+                    <div class="grade-item">
+                        <span class="circle green">A</span>
+                        <div>
+                            <h4>Grade A</h4>
+                            <p>Premium Quality</p>
+                        </div>
+                    </div>
+
+                    <div class="grade-item">
+                        <span class="circle blue">B</span>
+                        <div>
+                            <h4>Grade B</h4>
+                            <p>Good Quality</p>
+                        </div>
+                    </div>
+
+                    <div class="grade-item">
+                        <span class="circle orange">C</span>
+                        <div>
+                            <h4>Grade C</h4>
+                            <p>Average Quality</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Table -->
+        <section class="records">
+            <div class="table-header">
+                <h3>Recent Grading Records</h3>
+                <button class="view-all">
+                    <i class="fa-solid fa-list"></i> View All
+                </button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Supplier ID</th>
+                        <th>Date</th>
+                        <th>Field No</th>
+                        <th>Grade</th>
+                        <th>Net Weight (kg)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td>BATCH-0001</td>
+                        <td>23/05/2025</td>
+                        <td>F-12</td>
+                        <td>
+                            <span class="badge green-badge">A</span>
+                        </td>
+                        <td>2.5</td>
+                        <td class="actions">
+                            <button class="edit">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- JavaScript Code -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+        const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+        const dropArrow = profileDropdownBtn.querySelector('.drop-arrow');
+
+        profileDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdownMenu.classList.toggle('show');
+            
+            if(profileDropdownMenu.classList.contains('show')) {
+                dropArrow.style.transform = 'rotate(180deg)';
+            } else {
+                dropArrow.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        document.addEventListener('click', () => {
+            if (profileDropdownMenu.classList.contains('show')) {
+                profileDropdownMenu.classList.remove('show');
+                dropArrow.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        const savedEmail = localStorage.getItem('userEmail');
+        if (savedEmail) {
+            document.getElementById('userProfileEmail').textContent = savedEmail;
+            const namePart = savedEmail.split('@')[0];
+            const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+            document.getElementById('userProfileName').textContent = capitalizedName;
+        }
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        if(logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('userEmail');
+                alert('Logging out...');
+                window.location.href = 'login.html';
+            });
+        }
+    });
+    </script>
+
+    <script src="/page/grade.html"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</body>
+</html>

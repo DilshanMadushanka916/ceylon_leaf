@@ -10,6 +10,7 @@ app.use(cors());
 app.use(express.json()); // Parses JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parses form-encoded bodies
 
+
 // Serve static files from the root directory
 app.use(express.static(path.join(__dirname, '../')));
 
@@ -207,3 +208,5 @@ app.get('/api/user/profile', async (req, res) => {
         res.status(500).json({ message: "Database error occurred" });
     }
 });
+
+

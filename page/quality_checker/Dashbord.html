@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grading Dashboard</title>
+<link rel="stylesheet" href="/DashbordQ.css">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+
+<body>
+
+    <!-- Sidebar Section -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="/assets/Logo.png" alt="Logo">
+            <h1 class="factory-title">
+                CEYLON <span class="leaf-text">LEAF</span> 
+                <small>TEA FACTORY</small>
+            </h1>
+        </div>
+        
+        <!-- Navigation Link Setup -->
+        <ul class="nav-links">
+            <li class="active">
+                <a href="/page/quality_checker/Dashbord.html">
+                    <i class="ph ph-house"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li >
+                <a href="/page/quality_checker/Grading.html">
+                    <i class="ph ph-package"></i>
+                    <span>Grading</span>
+                </a>
+            </li>
+            <li>
+                <a href="/page/reports.html"> 
+                    <i class="ph ph-chart-line-up"></i>
+                    <span>Reports</span>
+                </a>
+            </li>
+            <li>
+                <a href="suppliers.html">
+                    <i class="ph ph-test-tube"></i>
+                    <span>Quality</span>
+                </a>
+            </li>
+            <li>
+                <a href="staff.html"> 
+                    <i class="ph ph-users"></i>
+                    <span>Staff</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="main">
+        
+        <header>
+            <!-- TOP NAVBAR -->
+            <div class="top-navbar">
+                <div class="nav-title">Grading Dashboard</div>
+                <div class="nav-profile" id="profileDropdownBtn">
+                    <span class="profile-name" id="userProfileName">Dilshan</span>
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="profile-img">
+                    <i class="ph ph-caret-down drop-arrow"></i>
+                    
+                    <!-- Dropdown Menu -->
+                    <div class="dropdown-menu" id="profileDropdownMenu">
+                        <div class="dropdown-header">
+                            <p class="user-role">Collector Account</p>
+                            <small id="userProfileEmail">Dilshan@gmail.com</small>
+                        </div>
+                        <hr>
+                        <a href="/page/profile.html"><i class="ph ph-user"></i> My Profile</a>
+                        <a href="/page/settings.html"><i class="ph ph-gear"></i> Settings</a>
+                        <a href="#" class="logout-btn" id="logoutBtn"><i class="ph ph-sign-out"></i> Log Out</a>
+                    </div>
+                </div>
+            </div>
+        </header> 
+
+       <main class="main-content">
+        
+       
+
+        <div class="dashboard-grid-row">
+            
+
+           
+        </div>
+
+        <div class="dashboard-charts-row">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Weekly Collection Trend</h3>
+                    <span class="chart-subtitle">Net weight collected per week</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="weeklyTrendChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Monthly Quality Distribution</h3>
+                    <span class="chart-subtitle">Tea grade breakdown by weight</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="monthlyQualityChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            
+            // --- 1. WEEKLY TREND CHART SETUP ---
+            const ctxWeekly = document.getElementById('weeklyTrendChart').getContext('2d');
+            const primaryGreen = '#2d6a4f';
+
+            const weeklyTrendChart = new Chart(ctxWeekly, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'], 
+                    datasets: [{
+                        label: 'Net Weight (kg)',
+                        data: [1420, 1680, 1210, 1950, 1820, 2100], 
+                        borderColor: primaryGreen,
+                        backgroundColor: 'rgba(45, 106, 79, 0.08)',
+                        borderWidth: 3,
+                        tension: 0.35,
+                        fill: true,
+                        pointBackgroundColor: primaryGreen,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            grid: { color: '#f1f3f5' },
+                            ticks: { callback: value => value + ' kg', color: '#6c757d' }
+                        },
+                        x: { grid: { display: false }, ticks: { color: '#6c757d' } }
+                    }
+                }
+            });
+
+            // --- 2. MONTHLY QUALITY CHART SETUP ---
+            const ctxMonthly = document.getElementById('monthlyQualityChart').getContext('2d');
+
+            const monthlyQualityChart = new Chart(ctxMonthly, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'], 
+                    datasets: [
+                        {
+                            label: 'Grade A (Premium)',
+                            data: [600, 750, 580, 820, 950],
+                            backgroundColor: '#52b788',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Grade B (Good)',
+                            data: [400, 480, 510, 580, 620],
+                            backgroundColor: '#74c69d',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Grade C (Average)',
+                            data: [150, 220, 180, 200, 240],
+                            backgroundColor: '#b7e4c7',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { boxWidth: 12, padding: 15, color: '#495057' }
+                        }
+                    },
+                    scales: {
+                        x: { stacked: true, grid: { display: false }, ticks: { color: '#6c757d' } },
+                        y: { stacked: true, grid: { color: '#f1f3f5' }, ticks: { callback: value => value + ' kg', color: '#6c757d' } }
+                    }
+                }
+            });
+        });
+    </script>
+       
+    
+
+    <!-- JavaScript Code -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+        const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+        const dropArrow = profileDropdownBtn.querySelector('.drop-arrow');
+
+        profileDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdownMenu.classList.toggle('show');
+            
+            if(profileDropdownMenu.classList.contains('show')) {
+                dropArrow.style.transform = 'rotate(180deg)';
+            } else {
+                dropArrow.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        document.addEventListener('click', () => {
+            if (profileDropdownMenu.classList.contains('show')) {
+                profileDropdownMenu.classList.remove('show');
+                dropArrow.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        const savedEmail = localStorage.getItem('userEmail');
+        if (savedEmail) {
+            document.getElementById('userProfileEmail').textContent = savedEmail;
+            const namePart = savedEmail.split('@')[0];
+            const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+            document.getElementById('userProfileName').textContent = capitalizedName;
+        }
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        if(logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('userEmail');
+                alert('Logging out...');
+                window.location.href = 'login.html';
+            });
+        }
+    });
+    </script>
+
+    <script src="/page/grade.html"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</body>
+</html>

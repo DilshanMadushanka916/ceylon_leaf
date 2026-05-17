@@ -56,7 +56,10 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
             window.location.href = "/page/collerctor.html";  
         } else if (data.role === "Accountant") {
             window.location.href = "/page/Accountant.html"; // Fixed path structure if needed
+        }else if (data.role === "Qulity Checker") {
+            window.location.href = "/page/quality_checker/Dashbord.html"; // Fixed path structure if needed
         }
+
     })
     .catch(err => {
         console.error(err);
