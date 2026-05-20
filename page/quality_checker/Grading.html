@@ -73,8 +73,8 @@
                     <!-- Dropdown Menu -->
                     <div class="dropdown-menu" id="profileDropdownMenu">
                         <div class="dropdown-header">
-                            <p class="user-role">Collector Account</p>
-                            <small id="userProfileEmail">Dilshan@gmail.com</small>
+                          <p id="userProfileRole" class="user-role">Loading...</p>
+                            <small id="userProfileEmail">Loading...</small>
                         </div>
                         <hr>
                         <a href="/page/profile.html"><i class="ph ph-user"></i> My Profile</a>
@@ -102,15 +102,15 @@
                         </div>
 
                         <div class="input-group">
-                            <label>Field No *</label>
-                            <input type="text" id="fieldNo" placeholder="Enter Field No">
+                            <label>Field No</label>
+                            <input type="text" id="fieldNo"  placeholder="Auto Generated" readonly>
                         </div>
 
-                        <div class="input-group">
-                            <label>Supplier ID</label>
-                            <input type="text" placeholder="Auto Generated" readonly>
-                        </div>
-
+                      <!-- CHANGE THIS LINE IN YOUR HTML -->
+                           <div class="input-group">
+                            <label>Supplier ID *</label>
+                         <input type="text" id="supplierId" placeholder="Enter Supplier ID">
+                             </div>
                         <div class="input-group">
                             <label>Weight (kg)</label>
                             <input type="number" step="0.01" id="weight" placeholder="Enter Weight">
@@ -130,11 +130,11 @@
                                 <option>C</option>
                             </select>
                         </div>
-
-                        <div class="input-group">
-                            <label>Net Weight (kg)</label>
-                            <input id="remarks" placeholder="Auto Calculate">    
-                        </div>
+<!-- Locate this element in your HTML and replace it to keep structure clean -->
+                       <div class="input-group">
+                       <label>Net Weight (kg)</label>
+                         <input type="number" step="0.01" id="netWeight" placeholder="Auto Calculate" readonly>    
+                          </div>
                     </div>
 
                     <!-- Buttons -->
@@ -198,25 +198,7 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
-                    <tr>
-                        <td>BATCH-0001</td>
-                        <td>23/05/2025</td>
-                        <td>F-12</td>
-                        <td>
-                            <span class="badge green-badge">A</span>
-                        </td>
-                        <td>2.5</td>
-                        <td class="actions">
-                            <button class="edit">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <button class="delete">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
+                
             </table>
         </section>
     </main>
@@ -252,6 +234,7 @@
             const namePart = savedEmail.split('@')[0];
             const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
             document.getElementById('userProfileName').textContent = capitalizedName;
+            document.getElementById('userProfileRole').textContent = 'Quality Checker';
         }
 
         const logoutBtn = document.getElementById('logoutBtn');
@@ -265,6 +248,158 @@
         }
     });
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    // UI Elements Hook Selection
+    const supplierInput = document.getElementById('supplierId');
+    const dateInput = document.getElementById('date');
+    const fieldNoInput = document.getElementById('fieldNo');
+    const weightInput = document.getElementById('weight');
+    const moistureInput = document.getElementById('moistureDeduction');
+    const netWeightInput = document.getElementById('netWeight');
+    const gradeSelect = document.getElementById('grade');
+    const gradingForm = document.getElementById('gradingForm');
+    const tableElement = document.querySelector('.records table');
+
+    // Get today's local date string formatted exactly like the HTML input date (YYYY-MM-DD)
+    const todayString = new Date().toISOString().split('T')[0];
+
+    // Automatically set default date value to today
+    dateInput.value = todayString;
+
+    // 1. SMART LOOKUP LOGIC: Runs instantly when user tabs/clicks away from Supplier ID field
+    supplierInput.addEventListener('blur', () => {
+        const inputId = supplierInput.value.trim();
+        if (!inputId) return;
+
+        // Fetching profile or current processing weights safely
+        fetch(`http://localhost:3000/api/collection-lookup/${encodeURIComponent(inputId)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Not found across systems');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Populate the inputs automatically
+                fieldNoInput.value = data.field_no ? data.field_no : "N/A";
+                weightInput.value = data.weight !== undefined ? parseFloat(data.weight).toFixed(2) : "0.00";
+                
+                // Immediately call calculation engine to process the load weight values
+                calculateNetWeight();
+            })
+            .catch(err => {
+                console.warn("Lookup Error Handler:", err.message);
+                alert(`⚠️ Notice: Supplier ID '${inputId}' cannot be verified inside the collection list or profile database registration system.`);
+                
+                // Flush values to clear old session cache footprints
+                fieldNoInput.value = '';
+                weightInput.value = '';
+                netWeightInput.value = '';
+            });
+    });
+
+    // 2. MATH ENGINE: Automated net calculation logic parameters
+    function calculateNetWeight() {
+        const totalWeight = parseFloat(weightInput.value) || 0;
+        const totalDeductions = parseFloat(moistureInput.value) || 0;
+        
+        // Deduction constraint logic: prevent net results falling below zero
+        const cleanNetResult = Math.max(0, totalWeight - totalDeductions);
+        netWeightInput.value = cleanNetResult.toFixed(2);
+    }
+
+    // Monitor value entries across elements dynamically
+    moistureInput.addEventListener('input', calculateNetWeight);
+    weightInput.addEventListener('input', calculateNetWeight);
+
+    // 3. SUBMIT PACKET ROUTE PROCESSING
+    gradingForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const inputDateValue = dateInput.value;
+
+        // CRITICAL CHECK: Block submission immediately if the calendar date is not today
+        if (inputDateValue !== todayString) {
+            alert("❌ Validation Failure: You can only save tea grading records for today's date!");
+            return;
+        }
+
+        const dataPayload = {
+            supplier_id: supplierInput.value.trim(),
+            grading_date: inputDateValue,
+            field_no: fieldNoInput.value,
+            weight: parseFloat(weightInput.value) || 0,
+            moisture_deduction: parseFloat(moistureInput.value) || 0,
+            net_weight: parseFloat(netWeightInput.value) || 0,
+            grade: gradeSelect.value
+        };
+
+        // Standard validation: Missing supplier profile or quality selections
+        if (!dataPayload.supplier_id || gradeSelect.value === "Select Grade" || !dataPayload.grade) {
+            alert("🔴 Please assign a Quality Grade status and add Supplier ID criteria details!");
+            return;
+        }
+
+        // Send payload to backend since it passed the date checks
+        fetch('http://localhost:3000/api/grading', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dataPayload)
+        })
+        .then(res => res.json())
+        .then(resData => {
+            if (resData.success) {
+                alert('✅Success: Factory quality grade metrics saved to server data maps.');
+                gradingForm.reset();
+                dateInput.value = todayString; // Force calendar back to today's timestamp
+                fetchRecentGrades(); // Live reload log views
+            } else {
+                alert('Error Processing Operation: ' + resData.message);
+            }
+        })
+        .catch(err => console.error("Critical submission payload crash encountered:", err));
+    });
+
+    // 4. RENDERING SYSTEM: Build and draw the recent logs live to dashboard table view
+    function fetchRecentGrades() {
+        fetch('http://localhost:3000/api/grading-records')
+            .then(res => res.json())
+            .then(recordsList => {
+                let tbody = tableElement.querySelector('tbody');
+                if (!tbody) {
+                    tbody = document.createElement('tbody');
+                    tableElement.appendChild(tbody);
+                }
+                tbody.innerHTML = ''; // Wipe older visual entries
+
+                recordsList.forEach(item => {
+                    const tr = document.createElement('tr');
+                    
+                    let colorCircle = "orange";
+                    if (item.grade === 'A') colorCircle = "green";
+                    if (item.grade === 'B') colorCircle = "blue";
+
+                    tr.innerHTML = `
+                        <td><strong>${item.supplier_id}</strong></td>
+                        <td>${new Date(item.grading_date).toLocaleDateString()}</td>
+                        <td>Field ${item.field_no}</td>
+                        <td><span class="circle ${colorCircle}" style="display:inline-block; width:24px; height:24px; text-align:center; border-radius:50%; color:#fff; line-height:24px; font-weight:bold;">${item.grade}</span></td>
+                        <td><strong>${parseFloat(item.net_weight).toFixed(2)} kg</strong></td>
+                        <td><button style="border:none; padding:5px 10px; cursor:pointer;" onclick="alert('Grading entry identifier index: ${item.id}')"><i class="fa-solid fa-eye"></i> View</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(err => console.error("Table processing log drawing failure error state:", err));
+    }
+
+    // Call dynamic history data build engine on screen mount initialization
+    fetchRecentGrades();
+});
+</script>
+   
+       
 
     <script src="/page/grade.html"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
