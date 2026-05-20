@@ -73,7 +73,7 @@
             document.getElementById('profName').textContent = userData.username || "Unnamed User";
             document.getElementById('profRole').textContent = userData.role || "COLLECTOR";
             document.getElementById('profEmail').textContent = userData.email || savedEmail;
-            document.getElementById('profPhone').textContent = userData.phone_number ;
+            document.getElementById('profPhone').textContent = userData.phone_number || "Not provided";
             document.getElementById('profAddress').textContent = userData.address || "No address on file";
 
         } catch (error) {
@@ -87,6 +87,51 @@
             document.getElementById('profAddress').textContent = "Check browser F12 Console for error details.";
         }
     });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    
+    // --- ඔයාගේ අනිත් code (Chart, Dropdown) මෙතන තියෙනවා ---
+
+    // 🔴 LOGOUT LOGIC
+    const logoutButton = document.getElementById('logoutBtn');
+
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function(event) {
+            event.preventDefault(); // Anchor tag එකෙන් පිටුව reload වෙන එක නවත්තනවා
+
+            // User ගෙන් ඇත්තටම log out වෙන්න ඕනෙද කියලා අහනවා (Optional)
+            if (confirm("Are you sure you want to log out?")) {
+                
+                // 1. Browser එකේ local storage / session storage වල data තියෙනවා නම් ඒවා අයින් කරනවා
+                localStorage.clear();
+                sessionStorage.clear();
+
+                // 2. Backend එකේ session/cookies නැති කරන්න API එකට කතා කරනවා
+                fetch('http://localhost:3000/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 3. සාර්ථක නම් user ව login page එකට redirect කරනවා
+                        window.location.href = '/login.html'; // 👈 Oyage login page එකේ path එක දන්න
+                    } else {
+                        alert("Logout failed. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error("❌ Logout Error:", error);
+                    // Server එක වැඩ නැතත් ආරක්ෂාවට user ව login එකට යවනවා
+                    window.location.href = '/login.html'; 
+                });
+            }
+        });
+    }
+});
 </script>
     
 </body>

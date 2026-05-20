@@ -139,17 +139,22 @@
         <div class="dashboard-sidebar">
             <div class="price-gradient-card">
                 <span class="side-label">Today's Market Price</span>
-                <div class="side-value">LKR 245.00</div>
+                <div class="side-value" id="todayPriceDisplay">LKR Loading..</div>
                 <hr style="opacity: 0.2; margin: 15px 0;">
                 <span class="side-label"></span>
                 <div class="side-value"><span id="displayTotal"></span> </div>
             </div>
-
-            
+            <div class="chart-card" >
+            <h3 >Monthly Price Trend (LKR)</h3>
+            <div style="width: 100%; height: 375px;">
+            <canvas id="monthlyPriceChart"></canvas>
+             </div>
+              </div>
         </div>
     </div>
 </main>
   
+
 
 <script>
 document.querySelector('form').addEventListener('submit', async (e) => {
@@ -358,16 +363,98 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
 </script>
- 
-   
 
+//chart js code
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let priceChartInstance = null;
+
+function initializePriceChart() {
+    const canvasElement = document.getElementById('monthlyPriceChart');
+    // Card eke price eka danna ona element eka methanadi select karagannawa
+    const todayPriceElement = document.getElementById('todayPriceDisplay'); 
+    
+    if (!canvasElement) {
+        console.error("❌ Canvas element 'monthlyPriceChart' not found.");
+        return;
+    }
+    
+    const ctx = canvasElement.getContext('2d');
+
+    fetch(`http://localhost:3000/api/price-trend?t=${new Date().getTime()}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(result => {
+            console.log("Frontend Received Payload Data:", result);
+
+            if (result.success && result.labels && result.data && result.data.length > 0) {
+                
+                // ==========================================
+                // 🔥 1. Anthima Data එක Card එකට දාන කොටස
+                // ==========================================
+                if (todayPriceElement) {
+                    // Array eke anthima element eka gannawa: result.data[result.data.length - 1]
+                    const latestPrice = result.data[result.data.length - 1];
+                    todayPriceElement.innerText = `LKR ${latestPrice.toFixed(2)}`;
+                }
+                // ==========================================
+
+                if (priceChartInstance) {
+                    priceChartInstance.destroy();
+                }
+
+                priceChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: result.labels, 
+                        datasets: [{
+                            label: 'Tea Price (LKR)',
+                            data: result.data,     
+                            borderColor: '#2e7d32',
+                            backgroundColor: 'rgba(46, 125, 50, 0.08)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                grace: '10%', 
+                                ticks: { 
+                                    callback: function(value) { 
+                                        return 'Rs. ' + value; 
+                                    } 
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.warn("Chart data values array empty or misconfigured mapping properties.");
+                if (todayPriceElement) todayPriceElement.innerText = "LKR --";
+            }
+        })
+        .catch(error => {
+            console.error("❌ Fetch / Rendering Exception Logic:", error);
+            if (todayPriceElement) todayPriceElement.innerText = "Error";
+        });
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    initializePriceChart();
+});
+</script>
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
  
-  <script src="/js/script.js"></script>
-  <script src="/componet/hfscript.js"></script>
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  
 
 
   

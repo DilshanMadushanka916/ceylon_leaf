@@ -345,10 +345,7 @@ app.get('/api/grading-records', (req, res) => {
 });
 
 
-
-
-
-
+// --- USER PROFILE ROUTE
 app.get('/api/user/profile', (req, res) => {
     // Explicit safety headers just in case
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -393,5 +390,43 @@ app.get('/api/user/profile', (req, res) => {
             console.warn(`🔍 [Profile API] 404 - Email "${email.trim()}" not found in MySQL database.`);
             return res.status(404).json({ error: "User record not found in system database maps." });
         }
+    });
+});
+
+
+
+// API Endpoint
+app.get('/api/price-trend', (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
+    const sqlQuery = `
+        SELECT price_date, price_per_kg 
+        FROM tea_market_prices 
+        ORDER BY price_date ASC;
+    `;
+
+    db.query(sqlQuery, (err, results) => {
+        if (err) {
+            console.error('❌ Database query failed:', err.message);
+            return res.status(500).json({ success: false, error: err.message });
+        }
+
+        console.log("Raw SQL Output Rows:", results);
+
+        // Date structure eka mokak unath safe widiyata parse karamu
+        const monthsArray = results.map(row => {
+            const dateObj = new Date(row.price_date);
+            return dateObj.toLocaleString('en-US', { month: 'short' });
+        });
+
+        const pricesArray = results.map(row => parseFloat(row.price_per_kg));
+
+        res.json({
+            success: true,
+            labels: monthsArray,
+            data: pricesArray
+        });
     });
 });

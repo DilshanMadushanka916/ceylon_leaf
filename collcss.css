@@ -485,6 +485,10 @@ input:checked + .slider:before { transform: translateX(22px); }
     color: #c0392b;
 }
 
+
+
+
+
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
@@ -497,37 +501,113 @@ input:checked + .slider:before { transform: translateX(22px); }
     margin-top: 20px;
 }
 
+/* --- UPDATED FORM CONTAINER --- */
+.container {
+    width: 520px;          /* Increased from 400px to make the form physically larger */
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 35px 40px;    /* Increased padding for an airy, premium dashboard feel */
+    border-radius: 16px;   /* Slightly punchier rounding */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
 
+h2 {
+    text-align: center;
+    color: #2a4d44;
+    margin-bottom: 28px;
+    font-size: 26px;       /* Increased text size to match the larger form */
+}
 
+label {
+    font-weight: bold;
+    color: #333;
+    font-size: 15px;       /* Increased slightly for better accessibility */
+}
 
+/* --- UPDATED INPUT FIELDS --- */
+input {
+    width: 100%;
+    padding: 13px 16px;    /* Taller inputs (from 10px) for easier clicking/typing */
+    margin: 8px 0 20px;    /* Generous spacing between input sections */
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 15px;       /* Increased text size for input fields */
+    transition: 0.3s;
+}
 
+/* --- UPDATED SUBMIT BUTTON --- */
+button {
+    width: 100%;
+    padding: 14px;         /* Made the main button larger and taller */
+    background: #2a4d44;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 17px;       /* Bigger button text */
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
 
+/* --- GENERAL LAYOUT FIX --- */
+.main-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;              /* Increased gap between form and sidebar to look natural */
+    padding: 20px;
+    max-width: 1200px;      /* Increased layout boundary from 1000px to accept the larger form */
+    margin: 0 auto;
+}
 
+/* Chart Card Container */
+.chart-card {
+    margin-top: 20px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eef2f5; /* Subtle border to define the card edge */
+}
 
+/* Card Heading */
+.chart-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333333;
+    font-size: 16px;
+    font-weight: 600;
+}
 
-
-
-
-/* Responsiveness: Stack them on mobile */
-@media (max-width: 850px) {
-    .main-wrapper {
-        flex-direction: column;
-        align-items: center;
-    }
-    .dashboard-sidebar {
-        width: 100%;
-        margin-top: 0;
-    }
-    .container {
-        width: 100%;
-    }
+/* Canvas Wrapper for Chart.js Responsiveness */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 220px;
 }
 
 
 
 
 
-
+/* --- MEDIA QUERY REPAIR --- */
+/* Changed breakpoint from 850px to 950px so layout transitions gracefully before elements overlap */
+@media (max-width: 950px) {
+    .main-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+    .dashboard-sidebar {
+        width: 100%;
+        max-width: 520px;   /* Forces sidebar to mimic the form size on small screens */
+        margin-top: 0;
+    }
+    .container {
+        width: 100%;
+        max-width: 520px;
+    }
+}
 
 @media (max-width: 480px) {
     .container {
@@ -535,22 +615,15 @@ input:checked + .slider:before { transform: translateX(22px); }
         padding: 20px;
         margin: 20px auto;
     }
-
     h2 {
-        font-size: 10px;
+        font-size: 20px;    /* Fixed the tiny 10px bug from your previous media query */
     }
-
-    .logo {
-        font-size: 10px;
-    }
-
     input {
-        padding: 10px;
-        font-size: 12px;
+        padding: 11px;
+        font-size: 14px;
     }
-
     button {
-        padding: 10px;
-        font-size: 10px;
+        padding: 12px;
+        font-size: 15px;
     }
 }
