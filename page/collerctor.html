@@ -166,7 +166,7 @@ document.querySelector('form').addEventListener('submit', async (e) => {
     // 2. Safety Check: If the user is not logged in, stop them!
     if (!loggedInEmail) {
         alert('❌ Error: You are not logged in. Please log in first!');
-        window.location.href = 'login.html'; // Redirect to login page
+        window.location.href = '/page/login.html'; // Redirect to login page
         return;
     }
 
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             localStorage.removeItem('userEmail'); // session clear කරන්න
             alert('Logging out...');
-            window.location.href = 'login.html'; // ඔයාගේ login page එකේ නම දෙන්න
+            window.location.href = '/page/login.html'; // ඔයාගේ login page එකේ නම දෙන්න
         });
     }
 });

@@ -11,7 +11,6 @@ app.use(cors());
 app.use(express.json()); // Parses JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parses form-encoded bodies
 
-
 // Serve static files from the root directory
 app.use(express.static(path.join(__dirname, '../')));
 
@@ -59,10 +58,11 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server: http://localhost:${PORT}/page/login.html`);
+app.get('/api/test-api', (req, res) => {
+    res.json({ ok: true, message: 'Test API route is active' });
 });
+
+const PORT = 3000;
 
 
 
@@ -183,32 +183,8 @@ app.get('/api/records', (req, res) => {
 
 
 
-app.get('/api/user/profile', async (req, res) => {
-    // 1. Check if user is authenticated (using sessions as an example)
-    if (!req.session || !req.session.userId) {
-        return res.status(401).json({ message: "Unauthorized access" });
-    }
 
-    try {
-        // 2. Fetch the logged-in user's specific data from MySQL
-        const userId = req.session.userId; // e.g., identifying by email or primary key ID
-        const [rows] = await pool.execute(
-            'SELECT username, email, phone_number, address, role FROM users WHERE email = ?', 
-            [userId]
-        );
 
-        if (rows.length === 0) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        // 3. Send the single user object back to the frontend
-        res.json(rows[0]);
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Database error occurred" });
-    }
-});
 
 
 
@@ -344,7 +320,6 @@ app.get('/api/grading-records', (req, res) => {
     });
 });
 
-
 // --- USER PROFILE ROUTE
 app.get('/api/user/profile', (req, res) => {
     // Explicit safety headers just in case
@@ -429,4 +404,78 @@ app.get('/api/price-trend', (req, res) => {
             data: pricesArray
         });
     });
+});
+
+
+
+
+
+
+
+
+
+
+
+// --- DASHBOARD WEEKLY TREND ROUTE ---
+app.get('/api/dashboard/weekly-trends', (req, res) => {
+    const query = `
+        SELECT 
+            YEARWEEK(grading_date, 1) AS year_week,
+            CONCAT('W', WEEK(grading_date, 1)) AS week_name,
+            SUM(net_weight) AS total_weight
+        FROM grading_records
+        WHERE grading_date >= DATE_SUB(CURDATE(), INTERVAL 6 WEEK)
+        GROUP BY year_week, week_name
+        ORDER BY year_week ASC;
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('❌ Weekly trend query failed:', err.message);
+            return res.status(500).json({ error: 'Failed to fetch weekly metrics' });
+        }
+        res.json(results);
+    });
+});
+
+// --- DASHBOARD MONTHLY QUALITY DISTRIBUTION ROUTE ---
+app.get('/api/dashboard/quality-distribution', (req, res) => {
+    const query = `
+        SELECT 
+            YEAR(grading_date) AS yr,
+            MONTH(grading_date) AS month_num,
+            DATE_FORMAT(grading_date, '%b') AS month_name,
+            SUM(CASE WHEN UPPER(grade) = 'A' THEN net_weight ELSE 0 END) AS grade_a,
+            SUM(CASE WHEN UPPER(grade) = 'B' THEN net_weight ELSE 0 END) AS grade_b,
+            SUM(CASE WHEN UPPER(grade) = 'C' THEN net_weight ELSE 0 END) AS grade_c
+        FROM grading_records
+        WHERE grading_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+        GROUP BY yr, month_num, month_name
+        ORDER BY yr ASC, month_num ASC;
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('❌ Quality distribution query failed:', err.message);
+            return res.status(500).json({ error: 'Failed to fetch quality distribution' });
+        }
+        res.json(results);
+    });
+});
+
+// --- DEBUG ROUTE LIST ---
+console.log('DEBUG: router exists?', !!app._router);
+console.log('DEBUG: router stack length', app._router ? app._router.stack.length : 'none');
+if (app._router && app._router.stack) {
+    const routeList = app._router.stack
+        .filter(layer => layer.route && layer.route.path)
+        .map(layer => {
+            const methods = Object.keys(layer.route.methods).join(',').toUpperCase();
+            return `${methods} ${layer.route.path}`;
+        });
+    console.log('🧭 Registered routes:', routeList.join(' | '));
+}
+
+app.listen(PORT, () => {
+    console.log(`🚀 Server: http://localhost:${PORT}/page/login.html`);
 });

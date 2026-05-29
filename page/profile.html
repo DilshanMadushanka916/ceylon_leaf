@@ -56,82 +56,42 @@
         }
 
         try {
-            // FIX: Explicitly target your Node server on port 3000
-            const targetUrl = `http://localhost:3000/api/user/profile?email=${encodeURIComponent(savedEmail.trim())}`;
+            const trimmedEmail = savedEmail.trim();
+            const targetUrl = `http://localhost:3000/api/user/profile?email=${encodeURIComponent(trimmedEmail)}`;
             console.log("Sending fetch request to:", targetUrl);
 
-            const response = await fetch(targetUrl); 
-            
+            const response = await fetch(targetUrl);
             if (!response.ok) {
-                throw new Error(`Server returned error code status: ${response.status}`);
+                const errorBody = await response.text();
+                throw new Error(`Server returned status ${response.status}: ${errorBody}`);
             }
 
             const userData = await response.json();
             console.log("Data packet parsed successfully:", userData);
 
-            // Dynamically update your HTML profile card elements
-            document.getElementById('profName').textContent = userData.username || "Unnamed User";
-            document.getElementById('profRole').textContent = userData.role || "COLLECTOR";
-            document.getElementById('profEmail').textContent = userData.email || savedEmail;
-            document.getElementById('profPhone').textContent = userData.phone_number || "Not provided";
-            document.getElementById('profAddress').textContent = userData.address || "No address on file";
+            const defaultName = trimmedEmail.split('@')[0];
+            const displayName = userData.username || userData.name || userData.full_name || userData.displayName || defaultName;
+            const displayRole = userData.role || userData.user_role || userData.userRole || "COLLECTOR";
+            const displayPhone = userData.phone_number || userData.phone || userData.mobile || "Not provided";
+            const displayAddress = userData.address || userData.home_address || userData.location || "No address on file";
+
+            document.getElementById('profName').textContent = displayName;
+            document.getElementById('profRole').textContent = displayRole;
+            document.getElementById('profEmail').textContent = userData.email || trimmedEmail;
+            document.getElementById('profPhone').textContent = displayPhone;
+            document.getElementById('profAddress').textContent = displayAddress;
 
         } catch (error) {
             console.error('Network or database query failure caught:', error);
-            
-            // Fallback screen text mapping updates if connection drops or breaks
-            document.getElementById('profName').textContent = "Error Loading Profile";
-            document.getElementById('profRole').textContent = "ERROR";
-            document.getElementById('profEmail').textContent = savedEmail; // This is why only email shows!
-            document.getElementById('profPhone').textContent = "Profile Info Hidden";
-            document.getElementById('profAddress').textContent = "Check browser F12 Console for error details.";
+
+            const fallbackName = savedEmail.split('@')[0];
+            document.getElementById('profName').textContent = fallbackName.charAt(0).toUpperCase() + fallbackName.slice(1);
+            document.getElementById('profRole').textContent = "Unknown Role";
+            document.getElementById('profEmail').textContent = savedEmail;
+            document.getElementById('profPhone').textContent = "Not provided";
+            document.getElementById('profAddress').textContent = "No address on file";
         }
     });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-    
-    // --- ඔයාගේ අනිත් code (Chart, Dropdown) මෙතන තියෙනවා ---
-
-    // 🔴 LOGOUT LOGIC
-    const logoutButton = document.getElementById('logoutBtn');
-
-    if (logoutButton) {
-        logoutButton.addEventListener('click', function(event) {
-            event.preventDefault(); // Anchor tag එකෙන් පිටුව reload වෙන එක නවත්තනවා
-
-            // User ගෙන් ඇත්තටම log out වෙන්න ඕනෙද කියලා අහනවා (Optional)
-            if (confirm("Are you sure you want to log out?")) {
-                
-                // 1. Browser එකේ local storage / session storage වල data තියෙනවා නම් ඒවා අයින් කරනවා
-                localStorage.clear();
-                sessionStorage.clear();
-
-                // 2. Backend එකේ session/cookies නැති කරන්න API එකට කතා කරනවා
-                fetch('http://localhost:3000/api/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // 3. සාර්ථක නම් user ව login page එකට redirect කරනවා
-                        window.location.href = '/login.html'; // 👈 Oyage login page එකේ path එක දන්න
-                    } else {
-                        alert("Logout failed. Please try again.");
-                    }
-                })
-                .catch(error => {
-                    console.error("❌ Logout Error:", error);
-                    // Server එක වැඩ නැතත් ආරක්ෂාවට user ව login එකට යවනවා
-                    window.location.href = '/login.html'; 
-                });
-            }
-        });
-    }
-});
 </script>
     
 </body>

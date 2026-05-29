@@ -45,21 +45,21 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
         return res.json();
     })
     .then(data => {
-        // --- THE FIX IS HERE ---
-        // 1. Save the typed email to localStorage immediately on successful login
-        localStorage.setItem('userEmail', email); 
-        
         alert("Login Success ✅");
 
-        // 2. Redirect based on role using your exact file paths
-        if (data.role === "collector") {
-            window.location.href = "/page/collerctor.html";  
-        } else if (data.role === "Accountant") {
-            window.location.href = "/page/Accountant.html"; // Fixed path structure if needed
-        }else if (data.role === "Qulity Checker") {
-            window.location.href = "/page/quality_checker/Dashbord.html"; // Fixed path structure if needed
-        }
+        localStorage.setItem('userEmail', email); // store email for profile display
 
+        const role = (data.role || '').toString().trim().toLowerCase();
+
+        if (role === "collector") {
+            window.location.href = "/page/collerctor.html";
+        } else if (role === "accountant") {
+            window.location.href = "/page/Accountant/Accountant.html";
+        } else if (role.includes("quality") || role.includes("qulity")) {
+            window.location.href = "/page/quality_checker/Dashbord.html";
+        } else {
+            window.location.href = "/page/login.html";
+        }
     })
     .catch(err => {
         console.error(err);
@@ -67,5 +67,4 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
     });
 });
 </script>
-
 </html>

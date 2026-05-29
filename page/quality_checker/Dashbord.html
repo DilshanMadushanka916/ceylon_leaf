@@ -122,25 +122,30 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            
-            // --- 1. WEEKLY TREND CHART SETUP ---
-            const ctxWeekly = document.getElementById('weeklyTrendChart').getContext('2d');
-            const primaryGreen = '#2d6a4f';
+      document.addEventListener("DOMContentLoaded", function () {
+    const ctxWeekly = document.getElementById('weeklyTrendChart').getContext('2d');
+    const ctxMonthly = document.getElementById('monthlyQualityChart').getContext('2d');
 
-            const weeklyTrendChart = new Chart(ctxWeekly, {
+    // --- FETCH WEEKLY TREND DATA FROM BACKEND ---
+    fetch('/api/dashboard/weekly-trends')
+        .then(res => res.json())
+        .then(data => {
+            const labels = data.length ? data.map(item => item.week_name) : ['No Data'];
+            const chartData = data.length ? data.map(item => parseFloat(item.total_weight) || 0) : [0];
+
+            new Chart(ctxWeekly, {
                 type: 'line',
                 data: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'], 
+                    labels: labels,
                     datasets: [{
                         label: 'Net Weight (kg)',
-                        data: [1420, 1680, 1210, 1950, 1820, 2100], 
-                        borderColor: primaryGreen,
+                        data: chartData,
+                        borderColor: '#2d6a4f',
                         backgroundColor: 'rgba(45, 106, 79, 0.08)',
                         borderWidth: 3,
                         tension: 0.35,
                         fill: true,
-                        pointBackgroundColor: primaryGreen,
+                        pointBackgroundColor: '#2d6a4f',
                         pointHoverRadius: 6
                     }]
                 },
@@ -157,30 +162,39 @@
                     }
                 }
             });
+        })
+        .catch(err => console.error("Error loading weekly trend engine:", err));
 
-            // --- 2. MONTHLY QUALITY CHART SETUP ---
-            const ctxMonthly = document.getElementById('monthlyQualityChart').getContext('2d');
 
-            const monthlyQualityChart = new Chart(ctxMonthly, {
+    // --- FETCH MONTHLY QUALITY BREAKDOWN FROM BACKEND ---
+    fetch('/api/dashboard/quality-distribution')
+        .then(res => res.json())
+        .then(data => {
+            const labels = data.length ? data.map(item => item.month_name) : ['No Data'];
+            const gradeA = data.length ? data.map(item => parseFloat(item.grade_a) || 0) : [0];
+            const gradeB = data.length ? data.map(item => parseFloat(item.grade_b) || 0) : [0];
+            const gradeC = data.length ? data.map(item => parseFloat(item.grade_c) || 0) : [0];
+
+            new Chart(ctxMonthly, {
                 type: 'bar',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'], 
+                    labels: labels,
                     datasets: [
                         {
                             label: 'Grade A (Premium)',
-                            data: [600, 750, 580, 820, 950],
+                            data: gradeA,
                             backgroundColor: '#52b788',
                             borderRadius: 4
                         },
                         {
                             label: 'Grade B (Good)',
-                            data: [400, 480, 510, 580, 620],
+                            data: gradeB,
                             backgroundColor: '#74c69d',
                             borderRadius: 4
                         },
                         {
                             label: 'Grade C (Average)',
-                            data: [150, 220, 180, 200, 240],
+                            data: gradeC,
                             backgroundColor: '#b7e4c7',
                             borderRadius: 4
                         }
@@ -201,7 +215,9 @@
                     }
                 }
             });
-        });
+        })
+        .catch(err => console.error("Error loading quality breakdown context:", err));
+});
     </script>
        
     

@@ -170,8 +170,8 @@ body {
     justify-content: space-between;
     align-items: center;
     /* Sidebar එකට ඉඩ තබා ඉතිරි කොටස පුරා යාමට width සහ margin සකස් කිරීම */
-    width: calc(100% - 0px); /* 280px වෙනුවට ඔයාගේ sidebar width එක දෙන්න */
-    margin-left: 7px; /* sidebar එක ගාවින්ම පටන් ගන්න */
+    width: calc(100% - 25px); /* 280px වෙනුවට ඔයාගේ sidebar width එක දෙන්න */
+    margin-left: 25px; /* sidebar එක ගාවින්ම පටන් ගන්න */
     margin-top: 0;
     margin-right: 17px;
     padding: 15px 30px;
@@ -313,11 +313,10 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Content Area Fix */
-/* Navbar එක උඩින් ආපු නිසා content area එකේ margin එකක් තියාගන්න */
-.content-area {
-    margin-top: 10px;
-}
+
+
+
+
 
 
 *{
@@ -331,118 +330,68 @@ body{
     display:flex;
     background:#eef3ef;
 }
+
+
+
 .main-content{
     margin-left:240px;
     width:100%;
-    padding:60px;
-}
-/* CARDS */
-
-.top-cards{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:22px;
+    padding:30px;
 }
 
-.card{
+/* HEADER */
+
+.top-header{
+    margin-bottom:25px;
+}
+
+.top-header h1{
+    font-size:34px;
+    color:#133222;
+    margin-bottom:5px;
+}
+
+.top-header p{
+    color:#5f7467;
+}
+
+/* SEARCH BOX */
+
+.search-box{
     background:white;
-    border-radius:18px;
-    padding:25px;
+    width:350px;
     display:flex;
     align-items:center;
-    gap:18px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.05);
-    transition:0.3s;
-}
-
-.card:hover{
-    transform:translateY(-4px);
-}
-
-.icon{
-    width:65px;
-    height:65px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:24px;
-}
-
-/* ICON COLORS */
-
-.green{
-    background:#dff7e8;
-    color:#0b7d43;
-}
-
-.yellow{
-    background:#fff2d9;
-    color:#d89b00;
-}
-
-.blue{
-    background:#dfefff;
-    color:#1769c5;
-}
-
-.red{
-    background:#ffe0e0;
-    color:#e63946;
-}
-
-.card h4{
-    color:#65756b;
-    margin-bottom:8px;
-    font-size:15px;
-}
-
-.card h2{
-    color:#12251a;
-    font-size:28px;
-}
-
-/* CHART */
-
-.chart-card{
-    margin-top:28px;
-    background:white;
-    border-radius:18px;
-    padding:25px;
+    gap:10px;
+    padding:14px 18px;
+    border-radius:14px;
+     margin-top:25px;
+     margin-left:25px;
+    margin-bottom:12px;
     box-shadow:0 4px 12px rgba(0,0,0,0.05);
 }
 
-.chart-header{
-    margin-bottom:20px;
+.search-box i{
+    color:#0d5c36;
 }
 
-.chart-header h3{
-    color:#163524;
-    font-size:22px;
-}
-
-#teaChart{
+.search-box input{
+    border:none;
+    outline:none;
     width:100%;
-    height:350px !important;
+    font-size:15px;
 }
 
 /* TABLE */
 
+
+
 .table-card{
-    margin-top:28px;
     background:white;
     border-radius:18px;
     padding:25px;
+    margin-left:25px;
     box-shadow:0 4px 12px rgba(0,0,0,0.05);
-}
-
-.table-header{
-    margin-bottom:20px;
-}
-
-.table-header h3{
-    color:#163524;
-    font-size:22px;
 }
 
 table{
@@ -455,7 +404,6 @@ table th{
     color:#244635;
     text-align:left;
     padding:16px;
-    font-size:15px;
 }
 
 table td{
@@ -464,44 +412,30 @@ table td{
     color:#44534a;
 }
 
-.pending{
-    color:#e48b00;
-    font-weight:600;
-}
+/* STATUS */
 
-.paid{
+.active-status{
     color:#159947;
     font-weight:600;
 }
 
-/* RESPONSIVE */
-
-@media(max-width:1100px){
-
-    .top-cards{
-        grid-template-columns:repeat(2,1fr);
-    }
-
+.pending-status{
+    color:#e48b00;
+    font-weight:600;
 }
 
-@media(max-width:700px){
+/* BUTTON */
 
-    .sidebar{
-        width:85px;
-    }
+.view-btn{
+    background: #37a77c;;
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:0.3s;
+}
 
-    .logo h2,
-    .menu li{
-        display:none;
-    }
-
-    .main-content{
-        margin-left:85px;
-        padding:20px;
-    }
-
-    .top-cards{
-        grid-template-columns:1fr;
-    }
-
+.view-btn:hover{
+    background:#0a4026;
 }

@@ -6,6 +6,7 @@
     min-height: 80vh;
     padding: 20px;
     font-family: sans-serif;
+    
 }
 
 /* Glassmorphism Profile Card */
@@ -13,7 +14,7 @@
     background: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(33, 160, 84, 0.25);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
     border-radius: 24px;
     width: 100%;
