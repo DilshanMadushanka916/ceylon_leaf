@@ -105,10 +105,9 @@
             <form id="collectionFormMain">
                 <label>Date</label>
                 <input type="date" id="collection_date" name="collection_date" required>
-<label>Supplier ID / Name / Phone</label>
-<input type="text" id="supplier_id_input" name="supplier_id" list="supplierSuggestions" placeholder="Type ID, Name or Phone..." required>
 
-<datalist id="supplierSuggestions"></datalist>
+                <label>Supplier ID</label>
+                <input type="text" id="supplier_id_input" name="supplier_id" placeholder="Enter Supplier ID" required>
 
                 <label>Field No (Auto-filled)</label> 
                 <input type="text" id="field_no_input" name="field_no" placeholder="Waiting for ID..." readonly style="background-color: #f0f0f0; cursor: not-allowed;">
@@ -411,81 +410,8 @@ document.addEventListener("DOMContentLoaded", function() {
     initializePriceChart();
 });
 </script>
-<script>
-    const supplierInput = document.getElementById('supplier_id_input');
-const fieldInput = document.getElementById('field_no_input');
-const datalist = document.getElementById('supplierSuggestions');
-
-// Keep track of fetched suppliers globally to access their data on select
-let fetchedSuppliers = [];
-
-========== 1. FETCH MATCHES WHILE TYPING ==========
-supplierInput.addEventListener('input', async () => {
-    const query = supplierInput.value.trim();
-    
-    // Clear list if field drops below 1 character
-    if (query.length < 1) {
-        datalist.innerHTML = "";
-        return;
-    }
-
-    try {
-        // Query database via API for ID, Name, or Phone matches
-        const response = await fetch(`http://localhost:3000/api/suppliers/search?query=${encodeURIComponent(query)}`);
-        
-        if (response.ok) {
-            fetchedSuppliers = await response.json();
-            datalist.innerHTML = ""; // Clear old options
-
-            fetchedSuppliers.forEach(supplier => {
-                const option = document.createElement('option');
-                // Sets the actual value injected on select
-                option.value = supplier.supplier_id; 
-                // Displays descriptive label in the native browser dropdown
-                option.label = `${supplier.name} | 📞 ${supplier.phone_number || 'N/A'}`;
-                
-                datalist.appendChild(option);
-            });
-        }
-    } catch (error) {
-        console.error("Error fetching supplier matches:", error);
-    }
-});
-
-========== 2. DETECT SELECTION TO AUTO-FILL FIELD NO ==========
-supplierInput.addEventListener('change', () => {
-    const selectedId = supplierInput.value.trim();
-    
-    // Verify if chosen value matches an item in our fetched list
-    const exactMatch = fetchedSuppliers.find(s => s.supplier_id === selectedId);
-    
-    if (exactMatch) {
-        // Fetch field info automatically for the confirmed selection
-        fetchFieldNo(exactMatch.supplier_id);
-    }
-});
-
-// Extracted field info look-up logic
-async function fetchFieldNo(supplierId) {
-    if (!supplierId) return;
-    try {
-        fieldInput.value = "Searching...";
-        const response = await fetch(`http://localhost:3000/api/supplier-field/${supplierId}`);
-        if (response.ok) {
-            const data = await response.json();
-            fieldInput.value = data.field_no;
-        } else {
-            fieldInput.value = "Not Found";
-            console.warn("Field not configured for this ID.");
-        }
-    } catch (error) {
-        console.error("Error loading field info:", error);
-        fieldInput.value = "Error";
-    }
-}
-</script>
-
-<script src="https://unpkg.com/@phosphor-icons/web"></script> 
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+ 
 
 
   
