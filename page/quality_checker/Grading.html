@@ -262,10 +262,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableElement = document.querySelector('.records table');
 
     // Get today's local date string formatted exactly like the HTML input date (YYYY-MM-DD)
-    const todayString = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const todayString = `${year}-${month}-${day}`;
 
-    // Automatically set default date value to today
-    dateInput.value = todayString;
+    // Automatically set default date value to today, but allow manual changes
+    if (!dateInput.value) {
+        dateInput.value = todayString;
+    }
 
     // 1. SMART LOOKUP LOGIC: Runs instantly when user tabs/clicks away from Supplier ID field
     supplierInput.addEventListener('blur', () => {
@@ -319,9 +325,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const inputDateValue = dateInput.value;
 
-        // CRITICAL CHECK: Block submission immediately if the calendar date is not today
-        if (inputDateValue !== todayString) {
-            alert("❌ Validation Failure: You can only save tea grading records for today's date!");
+        if (!inputDateValue) {
+            alert("❌ Validation Failure: Please choose a valid grading date!");
             return;
         }
 

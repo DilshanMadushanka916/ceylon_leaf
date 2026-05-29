@@ -257,7 +257,7 @@ app.get('/api/collection-lookup/:supplierId', (req, res) => {
     });
 });
 
-// 2. SAVE GRADING RECORD: Strictly locks down inserts to today's date only
+// 2. SAVE GRADING RECORD: Allow valid grading dates without forcing today's date
 app.post('/api/grading', (req, res) => {
     const { 
         supplier_id, 
@@ -269,14 +269,18 @@ app.post('/api/grading', (req, res) => {
         grade 
     } = req.body;
 
-    // Secure Server-side Date Validation check
-    const todayLocal = new Date().toLocaleDateString('en-CA'); // Outputs strict YYYY-MM-DD template format
-    
-    if (grading_date !== todayLocal) {
-        console.warn(`[Security Alert] Rejected attempt to save data for an invalid date: ${grading_date}`);
+    if (!grading_date) {
         return res.status(400).json({ 
             success: false, 
-            message: "Validation Failure: You can only save tea grading records for today's date!" 
+            message: "Validation Failure: Grading date is required." 
+        });
+    }
+
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+    if (!datePattern.test(grading_date)) {
+        return res.status(400).json({ 
+            success: false, 
+            message: "Validation Failure: Grading date must use YYYY-MM-DD format." 
         });
     }
 
