@@ -108,9 +108,13 @@
 
                       <!-- CHANGE THIS LINE IN YOUR HTML -->
                            <div class="input-group">
-                            <label>Supplier ID *</label>
-                         <input type="text" id="supplierId" placeholder="Enter Supplier ID">
-                             </div>
+                            <label>Supplier ID or Name *</label>
+                            <div class="supplier-search-container">
+                                <input type="text" id="supplierSearch" placeholder="Enter Supplier ID or Name..." autocomplete="off">
+                                <div class="supplier-dropdown" id="supplierDropdown"></div>
+                            </div>
+                            <input type="hidden" id="supplierId">
+                           </div>
                         <div class="input-group">
                             <label>Weight (kg)</label>
                             <input type="number" step="0.01" id="weight" placeholder="Enter Weight">
@@ -251,7 +255,9 @@
     <script>
 document.addEventListener('DOMContentLoaded', () => {
     // UI Elements Hook Selection
-    const supplierInput = document.getElementById('supplierId');
+    const supplierSearchInput = document.getElementById('supplierSearch');
+    const supplierIdInput = document.getElementById('supplierId');
+    const supplierDropdown = document.getElementById('supplierDropdown');
     const dateInput = document.getElementById('date');
     const fieldNoInput = document.getElementById('fieldNo');
     const weightInput = document.getElementById('weight');
@@ -273,13 +279,77 @@ document.addEventListener('DOMContentLoaded', () => {
         dateInput.value = todayString;
     }
 
-    // 1. SMART LOOKUP LOGIC: Runs instantly when user tabs/clicks away from Supplier ID field
-    supplierInput.addEventListener('blur', () => {
-        const inputId = supplierInput.value.trim();
-        if (!inputId) return;
+    // SUPPLIER AUTOCOMPLETE FUNCTIONALITY
+    supplierSearchInput.addEventListener('input', async (e) => {
+        const query = e.target.value.trim();
+        
+        if (query.length < 1) {
+            supplierDropdown.classList.remove('show');
+            return;
+        }
 
-        // Fetching profile or current processing weights safely
-        fetch(`http://localhost:3000/api/collection-lookup/${encodeURIComponent(inputId)}`)
+        try {
+            const response = await fetch(`http://localhost:3000/api/suppliers-search?q=${encodeURIComponent(query)}`);
+            
+            if (response.ok) {
+                const suppliers = await response.json();
+                displaySupplierOptions(suppliers);
+            }
+        } catch (error) {
+            console.error('Error fetching suppliers:', error);
+        }
+    });
+
+    // Display supplier options in dropdown
+    function displaySupplierOptions(supplierList) {
+        supplierDropdown.innerHTML = '';
+        
+        if (supplierList.length === 0) {
+            supplierDropdown.innerHTML = '<div class="supplier-option" style="color: #999; cursor: default;">No suppliers found</div>';
+            supplierDropdown.classList.add('show');
+            return;
+        }
+
+        supplierList.forEach(supplier => {
+            const option = document.createElement('div');
+            option.className = 'supplier-option';
+            option.innerHTML = `
+                <div class="supplier-option-id">${supplier.sup_id}</div>
+                <div class="supplier-option-name">${supplier.supplier_name}</div>
+                <div class="supplier-option-field">Field: ${supplier.supplier_field}</div>
+            `;
+
+            option.addEventListener('click', () => {
+                selectSupplier(supplier);
+            });
+
+            supplierDropdown.appendChild(option);
+        });
+
+        supplierDropdown.classList.add('show');
+    }
+
+    // Select supplier and auto-fill field number
+    function selectSupplier(supplier) {
+        supplierSearchInput.value = `${supplier.sup_id} - ${supplier.supplier_name}`;
+        supplierIdInput.value = supplier.sup_id;
+        fieldNoInput.value = supplier.supplier_field;
+        supplierDropdown.classList.remove('show');
+        
+        // Fetch collection data for this supplier
+        fetchSupplierCollectionData(supplier.sup_id);
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.supplier-search-container')) {
+            supplierDropdown.classList.remove('show');
+        }
+    });
+
+    // SMART LOOKUP LOGIC: Fetch collection data when supplier is selected
+    function fetchSupplierCollectionData(supplierId) {
+        fetch(`http://localhost:3000/api/collection-lookup/${encodeURIComponent(supplierId)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Not found across systems');
@@ -296,14 +366,12 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(err => {
                 console.warn("Lookup Error Handler:", err.message);
-                alert(`⚠️ Notice: Supplier ID '${inputId}' cannot be verified inside the collection list or profile database registration system.`);
-                
-                // Flush values to clear old session cache footprints
+                // Don't show alert, just let user manually enter if needed
                 fieldNoInput.value = '';
                 weightInput.value = '';
                 netWeightInput.value = '';
             });
-    });
+    }
 
     // 2. MATH ENGINE: Automated net calculation logic parameters
     function calculateNetWeight() {
@@ -330,8 +398,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (!supplierIdInput.value) {
+            alert("❌ Please select a supplier from the dropdown");
+            supplierSearchInput.focus();
+            return;
+        }
+
         const dataPayload = {
-            supplier_id: supplierInput.value.trim(),
+            supplier_id: supplierIdInput.value.trim(),
             grading_date: inputDateValue,
             field_no: fieldNoInput.value,
             weight: parseFloat(weightInput.value) || 0,
@@ -358,6 +432,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('✅Success: Factory quality grade metrics saved to server data maps.');
                 gradingForm.reset();
                 dateInput.value = todayString; // Force calendar back to today's timestamp
+                supplierSearchInput.value = '';
+                supplierIdInput.value = '';
                 fetchRecentGrades(); // Live reload log views
             } else {
                 alert('Error Processing Operation: ' + resData.message);

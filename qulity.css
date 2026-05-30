@@ -358,6 +358,17 @@ input, select, textarea {
     transition: 0.3s;
 }
 
+/* Hide spinner arrows on number inputs */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
 input:focus, select:focus {
     border-color: #377a6a;
 }
@@ -552,4 +563,100 @@ th {
     .sidebar { width: 100%; height: auto; position: relative; }
     .main { margin-left: 0; padding: 15px; }
     .top-navbar { width: 100%; margin-left: 0; }
+}
+
+/* --- SUPPLIER AUTOCOMPLETE DROPDOWN STYLES --- */
+.supplier-search-container {
+    position: relative;
+    width: 100%;
+}
+
+#supplierSearch {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: 0.3s;
+    background: white;
+}
+
+#supplierSearch:focus {
+    border-color: #2a4d44;
+    box-shadow: 0 0 5px rgba(42, 77, 68, 0.3);
+}
+
+.supplier-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.supplier-dropdown.show {
+    display: block;
+}
+
+.supplier-option {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.supplier-option:last-child {
+    border-bottom: none;
+}
+
+.supplier-option:hover {
+    background-color: #e8f5e9;
+}
+
+.supplier-option-id {
+    font-weight: bold;
+    color: #2a4d44;
+    font-size: 13px;
+}
+
+.supplier-option-name {
+    color: #666;
+    font-size: 12px;
+}
+
+.supplier-option-field {
+    color: #999;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+/* Scrollbar styling for dropdown */
+.supplier-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.supplier-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.supplier-dropdown::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.supplier-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

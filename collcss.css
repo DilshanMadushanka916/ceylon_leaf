@@ -352,8 +352,8 @@ input:checked + .slider:before { transform: translateX(22px); }
     justify-content: space-between;
     align-items: center;
     /* Sidebar එකට ඉඩ තබා ඉතිරි කොටස පුරා යාමට width සහ margin සකස් කිරීම */
-    width: calc(100% - 280px); /* 280px වෙනුවට ඔයාගේ sidebar width එක දෙන්න */
-    margin-left: 280px; /* sidebar එක ගාවින්ම පටන් ගන්න */
+    width: calc(100% - 283px); /* 280px වෙනුවට ඔයාගේ sidebar width එක දෙන්න */
+    margin-left: 283px; /* sidebar එක ගාවින්ම පටන් ගන්න */
     margin-top: 0;
     margin-right: 15px;
     padding: 15px 30px;
@@ -536,6 +536,17 @@ input {
     transition: 0.3s;
 }
 
+/* Hide spinner arrows on number inputs */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
 /* --- UPDATED SUBMIT BUTTON --- */
 button {
     width: 100%;

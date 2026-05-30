@@ -331,7 +331,23 @@ app.post('/api/grading', (req, res) => {
             return res.status(500).json({ success: false, message: err.message });
         }
         console.log(`✅ GRADING RECORD SAVED: Supplier ${supplier_id} received Grade [${grade}]`);
-        res.status(200).json({ success: true, message: "Grading record successfully saved!" });
+            // After saving grading, mark matching collection records as 'Checked'
+            const updateSql = `
+                UPDATE tea_collections
+                SET status = 'Checked'
+                WHERE LOWER(Supplier_ID) = LOWER(?)
+                  AND DATE(collection_date) = DATE(?)
+            `;
+
+            db.query(updateSql, [supplier_id.trim(), grading_date], (uErr, uRes) => {
+                if (uErr) {
+                    console.error("⚠️ Failed to update collection status:", uErr.message);
+                    // don't fail the grading insert if status update fails
+                } else {
+                    console.log(`🔁 Updated tea_collections status to 'Checked' for supplier ${supplier_id} on ${grading_date}`);
+                }
+                res.status(200).json({ success: true, message: "Grading record successfully saved!" });
+            });
     });
 });
 
@@ -505,4 +521,45 @@ if (app._router && app._router.stack) {
 
 app.listen(PORT, () => {
     console.log(`🚀 Server: http://localhost:${PORT}/page/login.html`);
+});
+
+
+// Return a single collection record with supplier and grading details
+app.get('/api/records/:id', (req, res) => {
+    const recordId = req.params.id;
+
+    const sql = `
+        SELECT tc.*, s.name AS supplier_name
+        FROM tea_collections tc
+        LEFT JOIN Supplier s ON LOWER(s.sup_id) = LOWER(tc.Supplier_ID)
+        WHERE tc.id = ?
+        LIMIT 1
+    `;
+
+    db.query(sql, [recordId], (err, results) => {
+        if (err) {
+            console.error('❌ Error fetching record by id:', err.message);
+            return res.status(500).json({ error: err.message });
+        }
+
+        if (!results || results.length === 0) {
+            return res.status(404).json({ error: 'Record not found' });
+        }
+
+        const collection = results[0];
+
+        // Try to find a grading record for the same supplier on the same date
+        const gradingSql = `SELECT * FROM grading_records WHERE LOWER(supplier_id) = LOWER(?) AND DATE(grading_date) = DATE(?) ORDER BY created_at DESC LIMIT 1`;
+
+        db.query(gradingSql, [collection.Supplier_ID, collection.collection_date], (gErr, gResults) => {
+            if (gErr) {
+                console.error('❌ Error fetching grading record:', gErr.message);
+                return res.status(500).json({ error: gErr.message });
+            }
+
+            const grading = (gResults && gResults.length > 0) ? gResults[0] : null;
+
+            res.json({ collection, grading });
+        });
+    });
 });
