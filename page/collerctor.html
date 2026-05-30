@@ -106,11 +106,16 @@
                 <label>Date</label>
                 <input type="date" id="collection_date" name="collection_date" required>
 
-                <label>Supplier ID</label>
-                <input type="text" id="supplier_id_input" name="supplier_id" placeholder="Enter Supplier ID" required>
+                <label>Supplier Name or ID</label>
+                <div class="supplier-search-container">
+                    <input type="text" id="supplier_search" placeholder="Enter Supplier Name or ID..." autocomplete="off" required>
+                    <div class="supplier-dropdown" id="supplierDropdown"></div>
+                </div>
+
+                <input type="hidden" id="supplier_id_input" name="supplier_id">
 
                 <label>Field No (Auto-filled)</label> 
-                <input type="text" id="field_no_input" name="field_no" placeholder="Waiting for ID..." readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+                <input type="text" id="field_no_input" name="field_no" placeholder="Waiting for selection..." readonly style="background-color: #f0f0f0; cursor: not-allowed;">
 
                 <label>Kilos Collected (kg)</label>
                 <input type="number" step="0.01" name="kilos_collected" id="kilos_input" placeholder="Enter kilos" required>
@@ -198,6 +203,17 @@ document.querySelector('form').addEventListener('submit', async (e) => {
             alert('✅ Data saved to database!');
             e.target.reset();
             
+            // Reset supplier autocomplete fields
+            const supplierSearchInput = document.getElementById('supplier_search');
+            const supplierIdInput = document.getElementById('supplier_id_input');
+            const fieldNoInput = document.getElementById('field_no_input');
+            const supplierDropdown = document.getElementById('supplierDropdown');
+            
+            if (supplierSearchInput) supplierSearchInput.value = '';
+            if (supplierIdInput) supplierIdInput.value = '';
+            if (fieldNoInput) fieldNoInput.value = '';
+            if (supplierDropdown) supplierDropdown.classList.remove('show');
+            
             // Optional: If you use the advance field toggle, reset its visibility here
             const advanceField = document.getElementById('advanceAmountField');
             if (advanceField) advanceField.classList.add('hidden-field');
@@ -238,37 +254,87 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
   <script>
+    // Supplier Search and Autocomplete Functionality
+    const supplierSearchInput = document.getElementById('supplier_search');
+    const supplierDropdown = document.getElementById('supplierDropdown');
+    const supplierIdInput = document.getElementById('supplier_id_input');
+    const fieldNoInput = document.getElementById('field_no_input');
+    let suppliers = [];
 
-    // Auto-fetch Field No when Supplier ID is entered
-const supplierInput = document.getElementById('supplier_id_input');
-const fieldInput = document.getElementById('field_no_input');
-
-supplierInput.addEventListener('change', async () => {
-    const supplierId = supplierInput.value;
-    
-    if (!supplierId) {
-        fieldInput.value = "";
-        return;
-    }
-
-    try {
-        fieldInput.value = "Searching...";
-        const response = await fetch(`http://localhost:3000/api/supplier-field/${supplierId}`);
+    // Fetch suppliers when user types
+    supplierSearchInput.addEventListener('input', async (e) => {
+        const query = e.target.value.trim();
         
-        if (response.ok) {
-            const data = await response.json();
-            fieldInput.value = data.field_no; // Automatically sets the field number
-        } else {
-            fieldInput.value = "Not Found";
-            console.warn("Supplier ID not found in database");
-             alert("⚠️ No supplier found ");
+        if (query.length < 1) {
+            supplierDropdown.classList.remove('show');
+            return;
         }
-    } catch (error) {
-        console.error("Error fetching field:", error);
-        fieldInput.value = "Error";
-    }
-});
 
+        try {
+            const response = await fetch(`http://localhost:3000/api/suppliers-search?q=${encodeURIComponent(query)}`);
+            
+            if (response.ok) {
+                suppliers = await response.json();
+                displaySupplierOptions(suppliers);
+            }
+        } catch (error) {
+            console.error('Error fetching suppliers:', error);
+        }
+    });
+
+    // Display supplier options in dropdown
+    function displaySupplierOptions(supplierList) {
+        supplierDropdown.innerHTML = '';
+        
+        if (supplierList.length === 0) {
+            supplierDropdown.innerHTML = '<div class="supplier-option" style="color: #999; cursor: default;">No suppliers found</div>';
+            supplierDropdown.classList.add('show');
+            return;
+        }
+
+        supplierList.forEach(supplier => {
+            const option = document.createElement('div');
+            option.className = 'supplier-option';
+            option.innerHTML = `
+                <div class="supplier-option-id">${supplier.sup_id}</div>
+                <div class="supplier-option-name">${supplier.supplier_name}</div>
+                <div class="supplier-option-field">Field: ${supplier.supplier_field}</div>
+            `;
+
+            option.addEventListener('click', () => {
+                selectSupplier(supplier);
+            });
+
+            supplierDropdown.appendChild(option);
+        });
+
+        supplierDropdown.classList.add('show');
+    }
+
+    // Select supplier and auto-fill field number
+    function selectSupplier(supplier) {
+        supplierSearchInput.value = `${supplier.sup_id} - ${supplier.supplier_name}`;
+        supplierIdInput.value = supplier.sup_id;
+        fieldNoInput.value = supplier.supplier_field;
+        supplierDropdown.classList.remove('show');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.supplier-search-container')) {
+            supplierDropdown.classList.remove('show');
+        }
+    });
+
+    // Prevent form submission if supplier ID is not set
+    const collectionForm = document.getElementById('collectionFormMain');
+    collectionForm.addEventListener('submit', (e) => {
+        if (!supplierIdInput.value) {
+            e.preventDefault();
+            alert('Please select a supplier from the dropdown');
+            supplierSearchInput.focus();
+        }
+    });
   </script>
   <script>
 document.addEventListener('DOMContentLoaded', () => {

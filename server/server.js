@@ -142,8 +142,8 @@ app.get('/api/records', (req, res) => {
 app.get('/api/supplier-field/:id', (req, res) => {
     const supplierId = req.params.id;
     
-    // Updated to use 'sup_id' and 'supplier' table
-    const sql = "SELECT supplier_field FROM supplier WHERE sup_id = ?"; 
+    // Updated to use correct table name and columns
+    const sql = "SELECT supplier_field FROM Supplier WHERE sup_id = ?"; 
 
     db.query(sql, [supplierId], (err, results) => {
         if (err) {
@@ -158,6 +158,29 @@ app.get('/api/supplier-field/:id', (req, res) => {
             console.log(`⚠️ No supplier found with sup_id: ${supplierId}`);
             res.status(404).json({ message: "Supplier not found" });
         }
+    });
+});
+
+// --- SEARCH SUPPLIERS ROUTE (NEW) ---
+app.get('/api/suppliers-search', (req, res) => {
+    const query = req.query.q || '';
+    
+    const sql = `
+        SELECT sup_id, name as supplier_name, supplier_field 
+        FROM Supplier 
+        WHERE sup_id LIKE ? OR name LIKE ? 
+        LIMIT 10
+    `;
+    
+    const searchTerm = `%${query}%`;
+    
+    db.query(sql, [searchTerm, searchTerm], (err, results) => {
+        if (err) {
+            console.error("❌ Search Error:", err.message);
+            return res.status(500).json({ error: "Search failed" });
+        }
+        
+        res.json(results);
     });
 });
 
@@ -231,7 +254,7 @@ app.get('/api/collection-lookup/:supplierId', (req, res) => {
         
         const supplierSql = `
             SELECT supplier_field 
-            FROM supplier 
+            FROM Supplier 
             WHERE LOWER(sup_id) = ? 
             LIMIT 1
         `;
