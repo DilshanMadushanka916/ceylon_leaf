@@ -367,6 +367,12 @@ input[type="number"]::-webkit-inner-spin-button {
 
 input[type="number"] {
     -moz-appearance: textfield;
+    appearance: textfield; /* 💡 Added standard property here as well */
+}
+.radio-group {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
 input:focus, select:focus {

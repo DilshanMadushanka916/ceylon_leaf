@@ -126,14 +126,22 @@
                         </div>
 
                         <div class="input-group">
-                            <label>Grade *</label>
-                            <select id="grade">
-                                <option>Select Grade</option>
-                                <option>A</option>
-                                <option>B</option>
-                                <option>C</option>
-                            </select>
-                        </div>
+    <label>Grade *</label>
+    <div class="radio-group">
+        <label class="radio-label">
+            <input type="radio" name="teaGrade" value="A" required>
+            <span>Grade A</span>
+        </label>
+        <label class="radio-label">
+            <input type="radio" name="teaGrade" value="B">
+            <span>Grade B</span>
+        </label>
+        <label class="radio-label">
+            <input type="radio" name="teaGrade" value="C">
+            <span>Grade C</span>
+        </label>
+    </div>
+</div>
 <!-- Locate this element in your HTML and replace it to keep structure clean -->
                        <div class="input-group">
                        <label>Net Weight (kg)</label>

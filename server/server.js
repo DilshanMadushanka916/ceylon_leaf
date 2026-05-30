@@ -505,6 +505,28 @@ app.get('/api/dashboard/quality-distribution', (req, res) => {
         res.json(results);
     });
 });
+// --- DASHBOARD DAILY COLLECTION TREND ROUTE (ADDED SUPPLIER_ID) ---
+app.get('/api/dashboard/daily-trends', (req, res) => {
+    const query = `
+        SELECT 
+            DATE_FORMAT(collection_time, '%h:%i %p') AS hour_mark, 
+            Kilos_Collected AS current_weight,
+            Supplier_ID,
+            collection_time
+        FROM tea_collections 
+        WHERE Collection_Date = DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+        ORDER BY collection_time ASC;
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('❌ Daily trend query failed:', err.message);
+            return res.status(500).json({ error: 'Failed to fetch daily metrics' });
+        }
+        res.json(results);
+    });
+});
+
 
 // --- DEBUG ROUTE LIST ---
 console.log('DEBUG: router exists?', !!app._router);

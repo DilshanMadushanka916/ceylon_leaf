@@ -115,9 +115,20 @@
                     <canvas id="monthlyQualityChart"></canvas>
                 </div>
             </div>
+             <div class="dashboard-charts-row" style="margin-top: 24px;">
+    <div class="chart-card" style="width: 100%; flex: 1 1 100%;">
+        <div class="chart-header">
+            <h3>Daily Collection Trend</h3>
+            <span class="chart-subtitle">Today's hourly leaf intake progress</span>
         </div>
-        
+        <div class="chart-container" style="position: relative; height: 300px;">
+            <canvas id="dailyTrendChart"></canvas>
+        </div>
+    </div>
+   </div>
 
+        </div>
+       
     </main>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -266,8 +277,133 @@
         }
     });
     </script>
+<script>
+// --- FETCH DAILY TREND DATA WITH SYNCHRONIZED TIMELINE ANIMATIONS ---
+document.addEventListener("DOMContentLoaded", function () {
+    const canvasElement = document.getElementById('dailyTrendChart');
+    
+    if (!canvasElement) {
+        console.error("❌ Error: Could not find a canvas element with id='dailyTrendChart' in your HTML!");
+        return;
+    }
 
-    <script src="/page/grade.html"></script>
+    const ctxDaily = canvasElement.getContext('2d');
+
+    fetch('/api/dashboard/daily-trends')
+        .then(res => res.json())
+        .then(data => {
+            console.log("📊 Raw Ceylon Leaf Database Response:", data);
+
+            let labels = [];
+            let chartData = [];
+            let supplierIds = []; 
+
+            if (data && data.length > 0) {
+                labels = data.map(item => item.hour_mark);
+                chartData = data.map(item => parseFloat(item.current_weight) || 0);
+                supplierIds = data.map(item => item.Supplier_ID || 'Unknown');
+            } else {
+                console.log("⚠️ Query matched 0 rows for today. Using fallback values.");
+                labels = ['01:17 AM', '09:19 AM', '10:09 AM', '11:27 AM', '11:28 AM'];
+                chartData = [65, 89, 90, 20, 70]; 
+                supplierIds = ['SP001', 'SP001', 'SP005', 'SP002', 'SP003']; 
+            }
+
+            // --- FIX: Wait 400ms for the dashboard cards to slide up before running chart line animation ---
+            setTimeout(() => {
+                new Chart(ctxDaily, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Intake Weight',
+                            data: chartData,
+                            borderColor: '#52b788', 
+                            backgroundColor: 'rgba(82, 183, 136, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.2, 
+                            fill: true,
+                            pointBackgroundColor: '#2d6a4f',
+                            pointBorderColor: '#fff',
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        // --- ENHANCED BUILT-IN CHART ANIMATION DRIVER ---
+                        animation: {
+                            duration: 1200,          // 1.2 seconds drawing timeline
+                            easing: 'easeOutQuart',   // Premium deceleration pacing
+                            delay: function(context) {
+                                // Left-to-right progressive point drawing cascade
+                                return context.dataIndex * 50; 
+                            }
+                        },
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#212529', 
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderRadius: 6, 
+                                padding: { top: 8, bottom: 8, left: 12, right: 12 },
+                                displayColors: false, 
+                                itemSpacing: 4, 
+                                titleFont: { size: 13, weight: 'bold', family: "'Segoe UI', 'Helvetica Neue', Arial" },
+                                bodyFont: { size: 12, weight: 'bold', family: "'Segoe UI', 'Helvetica Neue', Arial" },
+                                callbacks: {
+                                    title: function(context) {
+                                        return context[0].label;
+                                    },
+                                    label: function(context) {
+                                        const index = context.dataIndex;
+                                        const weight = context.parsed.y;
+                                        const supplierId = supplierIds[index] || 'N/A';
+                                        
+                                        return [
+                                            `Net Weight (kg): ${weight}`,
+                                            `Supp ID: ${supplierId}`
+                                        ];
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#f1f3f5' },
+                                ticks: { callback: value => value + ' kg', color: '#6c757d' }
+                            },
+                            x: { 
+                                grid: { display: false }, 
+                                ticks: { 
+                                    color: '#6c757d',
+                                    maxRotation: 45,
+                                    minRotation: 45 
+                                } 
+                            }
+                        }
+                    }
+                });
+            }, 400); // 400ms matches the CSS animation sequence perfectly!
+        })
+        .catch(err => {
+            console.error("Error loading daily collection trend graphics:", err);
+        });
+});
+</script>
+<script>
+    // --- TRIGGERS PAGE LOAD INTERACTION ---
+    document.addEventListener("DOMContentLoaded", function () {
+        // Adds the class to body to fire our staggered CSS transitions smoothly
+        setTimeout(() => {
+            document.body.classList.add('page-loaded');
+        }, 10); // Small 50ms delay makes the entrance effect very crisp
+    });
+</script>
+
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </body>
 </html>

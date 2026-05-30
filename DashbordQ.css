@@ -342,6 +342,75 @@ body{
         }
 
 
+
+
+
+/* --- PREMIUM DASHBOARD ENTRANCE ANIMATIONS --- */
+
+/* Initial hidden states */
+.sidebar, 
+.top-navbar, 
+.chart-card {
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
+                transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Sidebar slides in from left instead of bottom */
+.sidebar {
+    transform: translateX(-20px);
+}
+
+/* Visible active states once page class triggers */
+body.page-loaded .sidebar {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+body.page-loaded .top-navbar {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.1s; /* Subtle delay after sidebar */
+}
+
+/* Staggered load effect for chart panels so they load one by one */
+body.page-loaded .chart-card:nth-child(1) {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.2s;
+}
+
+body.page-loaded .chart-card:nth-child(2) {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.3s;
+}
+
+body.page-loaded .dashboard-charts-row[style*="margin-top"] .chart-card {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.4s; /* Daily Trend Chart loads last */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ==========================================================================
    8. ANIMATIONS & RESPONSIVE MEDIA QUERIES
    ========================================================================== */
