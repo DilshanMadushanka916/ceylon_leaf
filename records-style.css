@@ -19,24 +19,82 @@
     display: flex;
     gap: 10px;
 }
+    
 
-#searchBar {
-    padding: 8px 15px;
+
+
+
+/* ==========================================================================
+   MULTI-FIELD FILTER STYLES
+   ========================================================================== */
+
+/* Container wrapping all inputs */
+.table-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    margin-top: 10px;
+}
+
+/* Base style for all search filters (text & date) */
+.table-actions input[type="text"],
+.table-actions input[type="date"] {
+    padding: 10px 14px;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    font-size: 14px;
+    color: #333;
     outline: none;
+    min-width: 180px;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+/* Highlight focus border matching Ceylon Leaf green theme */
+.table-actions input:focus {
+    border-color: #27ae60;
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+}
+
+/* Custom layout spacing specifically for the native date field picker */
+.table-actions input[type="date"] {
+    font-family: inherit;
+    cursor: pointer;
+    color: #666;
 }
 
 .filter-btn {
-    background: white;
-    border: 1px solid #ccc;
-    padding: 8px 15px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    background-color: #e74c3c; 
+    color: white; 
+    border: none;
+    padding: 10px 15px; 
+    border-radius: 8px; 
     cursor: pointer;
+    /* Smooth transition animation */
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
+
+/* --- HOVER EFFECT --- */
+.filter-btn:hover {
+    background-color: #c0392b; /* Slightly darker shade of red */
+}
+
+/* --- ACTIVE / CLICK EFFECT (Optional but nice) --- */
+.filter-btn:active {
+    transform: scale(0.98); /* Gives a realistic pressing down feedback */
+}
+
+
+
+
+
+
+
+
+
+
+
 
 /* Table Design */
 .table-container {
@@ -44,22 +102,25 @@
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     overflow: hidden;
+    
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    text-align: left;
+   
 }
 
 thead {
     background-color: var(--light-green);
     color: var(--primary-green);
+
 }
 
 th, td {
     padding: 15px 20px;
     border-bottom: 1px solid #eee;
+  
 }
 
 .status-tag {
@@ -145,18 +206,12 @@ td {
     border: 1px solid #ffe0b2;
 }
 
-.status-completed {
+.status-checked {
     background-color: #e8f5e9;
     color: #2e7d32;
     border: 1px solid #c8e6c9;
 }
 
-
-.status-rejected {
-    background-color: #ffebee;
-    color: #c62828;
-    border: 1px solid #ffcdd2;
-}
 
 
 

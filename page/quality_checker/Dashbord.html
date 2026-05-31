@@ -43,18 +43,8 @@
                     <span>Reports</span>
                 </a>
             </li>
-            <li>
-                <a href="suppliers.html">
-                    <i class="ph ph-test-tube"></i>
-                    <span>Quality</span>
-                </a>
-            </li>
-            <li>
-                <a href="staff.html"> 
-                    <i class="ph ph-users"></i>
-                    <span>Staff</span>
-                </a>
-            </li>
+            
+            
         </ul>
     </div>
 
@@ -292,31 +282,34 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch('/api/dashboard/daily-trends')
         .then(res => res.json())
         .then(data => {
-            console.log("📊 Raw Ceylon Leaf Database Response:", data);
+            console.log("📊 Raw Ceylon Leaf Database Response (Grading Times):", data);
 
             let labels = [];
             let chartData = [];
             let supplierIds = []; 
+            let grades = []; 
 
             if (data && data.length > 0) {
+                // Now cleanly mapping to the 'g.created_at' hour marks from your backend query
                 labels = data.map(item => item.hour_mark);
                 chartData = data.map(item => parseFloat(item.current_weight) || 0);
                 supplierIds = data.map(item => item.Supplier_ID || 'Unknown');
+                grades = data.map(item => item.grade || 'N/A'); 
             } else {
                 console.log("⚠️ Query matched 0 rows for today. Using fallback values.");
-                labels = ['01:17 AM', '09:19 AM', '10:09 AM', '11:27 AM', '11:28 AM'];
-                chartData = [65, 89, 90, 20, 70]; 
-                supplierIds = ['SP001', 'SP001', 'SP005', 'SP002', 'SP003']; 
+                labels = ['09:23 AM', '10:15 AM', '11:02 AM', '01:45 PM', '04:10 PM'];
+                chartData = [83.5, 65.0, 112.4, 45.0, 95.2]; 
+                supplierIds = ['SP001', 'SP002', 'SP005', 'SP001', 'SP003']; 
+                grades = ['B', 'A', 'A', 'C', 'B'];
             }
 
-            // --- FIX: Wait 400ms for the dashboard cards to slide up before running chart line animation ---
             setTimeout(() => {
                 new Chart(ctxDaily, {
                     type: 'line',
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Intake Weight',
+                            label: 'Graded Net Weight', 
                             data: chartData,
                             borderColor: '#52b788', 
                             backgroundColor: 'rgba(82, 183, 136, 0.1)',
@@ -332,12 +325,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        // --- ENHANCED BUILT-IN CHART ANIMATION DRIVER ---
                         animation: {
-                            duration: 1200,          // 1.2 seconds drawing timeline
-                            easing: 'easeOutQuart',   // Premium deceleration pacing
+                            duration: 1200,          
+                            easing: 'easeOutQuart',   
                             delay: function(context) {
-                                // Left-to-right progressive point drawing cascade
                                 return context.dataIndex * 50; 
                             }
                         },
@@ -355,15 +346,17 @@ document.addEventListener("DOMContentLoaded", function () {
                                 bodyFont: { size: 12, weight: 'bold', family: "'Segoe UI', 'Helvetica Neue', Arial" },
                                 callbacks: {
                                     title: function(context) {
-                                        return context[0].label;
+                                        return 'Graded At: ' + context[0].label;
                                     },
                                     label: function(context) {
                                         const index = context.dataIndex;
-                                        const weight = context.parsed.y;
+                                        const netWeight = context.parsed.y;
                                         const supplierId = supplierIds[index] || 'N/A';
+                                        const teaGrade = grades[index] || 'N/A';
                                         
                                         return [
-                                            `Net Weight (kg): ${weight}`,
+                                            `Net Weight: ${netWeight} kg`,
+                                            `Grade: ${teaGrade}`,
                                             `Supp ID: ${supplierId}`
                                         ];
                                     }
@@ -387,13 +380,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
                 });
-            }, 400); // 400ms matches the CSS animation sequence perfectly!
+            }, 400); 
         })
         .catch(err => {
             console.error("Error loading daily collection trend graphics:", err);
         });
 });
 </script>
+
 <script>
     // --- TRIGGERS PAGE LOAD INTERACTION ---
     document.addEventListener("DOMContentLoaded", function () {

@@ -279,6 +279,22 @@ app.get('/api/collection-lookup/:supplierId', (req, res) => {
         });
     });
 });
+// Change this in your server.js to test if data appears!
+app.get('/api/grading-records', (req, res) => {
+    // Removed 'WHERE DATE(grading_date) = CURDATE()' to check all recent records
+    const sql = "SELECT * FROM grading_records ORDER BY created_at DESC LIMIT 5";
+    
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error("❌ SQL Error pulling history logs:", err.message);
+            return res.status(500).json({ error: err.message });
+        }
+        
+        // This will print out exactly what rows are found in your terminal console
+        console.log("📊 Graded rows sent to frontend:", results); 
+        res.json(results);
+    });
+});
 
 // 2. SAVE GRADING RECORD: Allow valid grading dates without forcing today's date
 app.post('/api/grading', (req, res) => {
@@ -291,6 +307,14 @@ app.post('/api/grading', (req, res) => {
         net_weight, 
         grade 
     } = req.body;
+
+    // 1. CRITICAL FIX: Validate supplier_id BEFORE calling .trim() to prevent Node crash
+    if (!supplier_id || typeof supplier_id !== 'string' || !supplier_id.trim()) {
+        return res.status(400).json({ 
+            success: false, 
+            message: "Validation Failure: Valid Supplier ID is required." 
+        });
+    }
 
     if (!grading_date) {
         return res.status(400).json({ 
@@ -307,6 +331,7 @@ app.post('/api/grading', (req, res) => {
         });
     }
 
+    const cleanedSupplierId = supplier_id.trim().toUpperCase();
     const finalMoisture = parseFloat(moisture_deduction) || 0;
     const finalWeight = parseFloat(weight) || 0;
     const finalNet = parseFloat(net_weight) || (finalWeight - finalMoisture);
@@ -316,7 +341,7 @@ app.post('/api/grading', (req, res) => {
                 VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
     const values = [
-        supplier_id.trim().toUpperCase(),
+        cleanedSupplierId,
         grading_date, 
         field_no, 
         finalWeight, 
@@ -330,24 +355,32 @@ app.post('/api/grading', (req, res) => {
             console.error("❌ SQL Grading Insert Crash:", err.message);
             return res.status(500).json({ success: false, message: err.message });
         }
-        console.log(`✅ GRADING RECORD SAVED: Supplier ${supplier_id} received Grade [${grade}]`);
-            // After saving grading, mark matching collection records as 'Checked'
-            const updateSql = `
-                UPDATE tea_collections
-                SET status = 'Checked'
-                WHERE LOWER(Supplier_ID) = LOWER(?)
-                  AND DATE(collection_date) = DATE(?)
-            `;
+        
+        console.log(`✅ GRADING RECORD SAVED: Supplier ${cleanedSupplierId} received Grade [${grade}]`);
+        
+        // After saving grading, mark matching collection records as 'Checked'
+        const updateSql = `
+            UPDATE tea_collections
+            SET status = 'Checked'
+            WHERE LOWER(Supplier_ID) = LOWER(?)
+              AND DATE(collection_date) = DATE(?)
+        `;
 
-            db.query(updateSql, [supplier_id.trim(), grading_date], (uErr, uRes) => {
-                if (uErr) {
-                    console.error("⚠️ Failed to update collection status:", uErr.message);
-                    // don't fail the grading insert if status update fails
-                } else {
-                    console.log(`🔁 Updated tea_collections status to 'Checked' for supplier ${supplier_id} on ${grading_date}`);
-                }
-                res.status(200).json({ success: true, message: "Grading record successfully saved!" });
+        // FIX: Using cleanedSupplierId ensures casing matches perfectly
+        db.query(updateSql, [cleanedSupplierId, grading_date], (uErr, uRes) => {
+            if (uErr) {
+                console.error("⚠️ Failed to update collection status:", uErr.message);
+                // Don't fail the grading API response if just the background status update fails
+            } else {
+                console.log(`🔁 Updated tea_collections status to 'Checked' for supplier ${cleanedSupplierId} on ${grading_date}`);
+            }
+            
+            // This response is now safe inside the final callback branch
+            return res.status(200).json({ 
+                success: true, 
+                message: "Grading record successfully saved!" 
             });
+        });
     });
 });
 
@@ -505,17 +538,22 @@ app.get('/api/dashboard/quality-distribution', (req, res) => {
         res.json(results);
     });
 });
-// --- DASHBOARD DAILY COLLECTION TREND ROUTE (ADDED SUPPLIER_ID) ---
+
+// --- DASHBOARD DAILY COLLECTION TREND ROUTE (UPDATED FOR GRADING TIME) ---
 app.get('/api/dashboard/daily-trends', (req, res) => {
     const query = `
         SELECT 
-            DATE_FORMAT(collection_time, '%h:%i %p') AS hour_mark, 
-            Kilos_Collected AS current_weight,
-            Supplier_ID,
-            collection_time
-        FROM tea_collections 
-        WHERE Collection_Date = DATE_FORMAT(CURDATE(), '%Y-%m-%d')
-        ORDER BY collection_time ASC;
+            DATE_FORMAT(g.created_at, '%h:%i %p') AS hour_mark, 
+            g.net_weight AS current_weight,
+            c.Supplier_ID,
+            g.created_at AS grading_time,
+            g.grade
+        FROM tea_collections c
+        INNER JOIN grading_records g 
+            ON c.Supplier_ID = g.supplier_id 
+            AND c.Collection_Date = g.grading_date
+        WHERE c.Collection_Date = DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+        ORDER BY g.created_at ASC;
     `;
 
     db.query(query, (err, results) => {
@@ -526,8 +564,6 @@ app.get('/api/dashboard/daily-trends', (req, res) => {
         res.json(results);
     });
 });
-
-
 // --- DEBUG ROUTE LIST ---
 console.log('DEBUG: router exists?', !!app._router);
 console.log('DEBUG: router stack length', app._router ? app._router.stack.length : 'none');
@@ -541,9 +577,6 @@ if (app._router && app._router.stack) {
     console.log('🧭 Registered routes:', routeList.join(' | '));
 }
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server: http://localhost:${PORT}/page/login.html`);
-});
 
 
 // Return a single collection record with supplier and grading details
@@ -585,3 +618,10 @@ app.get('/api/records/:id', (req, res) => {
         });
     });
 });
+app.listen(PORT, () => {
+    console.log(`🚀 Server: http://localhost:${PORT}/page/login.html`);
+});
+
+
+
+

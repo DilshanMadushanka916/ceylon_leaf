@@ -5,15 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grading Enter Dashboard</title>
-<link rel="stylesheet" href="/qulity.css">
-
-    
+    <link class="ui-style" rel="stylesheet" href="/qulity.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 </head>
 
 <body>
 
-    <!-- Sidebar Section -->
     <div class="sidebar">
         <div class="logo">
             <img src="/assets/Logo.png" alt="Logo">
@@ -23,9 +20,8 @@
             </h1>
         </div>
         
-        <!-- Navigation Link Setup -->
         <ul class="nav-links">
-            <li >
+            <li>
                 <a href="/page/quality_checker/Dashbord.html">
                     <i class="ph ph-house"></i>
                     <span>Dashboard</span>
@@ -43,26 +39,13 @@
                     <span>Reports</span>
                 </a>
             </li>
-            <li>
-                <a href="suppliers.html">
-                    <i class="ph ph-test-tube"></i>
-                    <span>Quality</span>
-                </a>
-            </li>
-            <li>
-                <a href="staff.html"> 
-                    <i class="ph ph-users"></i>
-                    <span>Staff</span>
-                </a>
-            </li>
+            
         </ul>
     </div>
 
-    <!-- Main Content Container -->
     <main class="main">
         
         <header>
-            <!-- TOP NAVBAR -->
             <div class="top-navbar">
                 <div class="nav-title">Grading Enter Dashboard</div>
                 <div class="nav-profile" id="profileDropdownBtn">
@@ -70,10 +53,9 @@
                     <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="profile-img">
                     <i class="ph ph-caret-down drop-arrow"></i>
                     
-                    <!-- Dropdown Menu -->
                     <div class="dropdown-menu" id="profileDropdownMenu">
                         <div class="dropdown-header">
-                          <p id="userProfileRole" class="user-role">Loading...</p>
+                            <p id="userProfileRole" class="user-role">Loading...</p>
                             <small id="userProfileEmail">Loading...</small>
                         </div>
                         <hr>
@@ -85,7 +67,6 @@
             </div>
         </header> 
 
-        <!-- Form Section -->
         <section class="form-section">
             <div class="section-header">
                 <i class="fa-solid fa-clipboard-check"></i>
@@ -93,7 +74,6 @@
             </div>
 
             <div class="form-layout">
-                <!-- Form -->
                 <form id="gradingForm">
                     <div class="grid">
                         <div class="input-group">
@@ -103,18 +83,18 @@
 
                         <div class="input-group">
                             <label>Field No</label>
-                            <input type="text" id="fieldNo"  placeholder="Auto Generated" readonly>
+                            <input type="text" id="fieldNo" placeholder="Auto Generated" readonly>
                         </div>
 
-                      <!-- CHANGE THIS LINE IN YOUR HTML -->
-                           <div class="input-group">
+                        <div class="input-group">
                             <label>Supplier ID or Name *</label>
                             <div class="supplier-search-container">
                                 <input type="text" id="supplierSearch" placeholder="Enter Supplier ID or Name..." autocomplete="off">
                                 <div class="supplier-dropdown" id="supplierDropdown"></div>
                             </div>
                             <input type="hidden" id="supplierId">
-                           </div>
+                        </div>
+
                         <div class="input-group">
                             <label>Weight (kg)</label>
                             <input type="number" step="0.01" id="weight" placeholder="Enter Weight">
@@ -126,30 +106,29 @@
                         </div>
 
                         <div class="input-group">
-    <label>Grade *</label>
-    <div class="radio-group">
-        <label class="radio-label">
-            <input type="radio" name="teaGrade" value="A" required>
-            <span>Grade A</span>
-        </label>
-        <label class="radio-label">
-            <input type="radio" name="teaGrade" value="B">
-            <span>Grade B</span>
-        </label>
-        <label class="radio-label">
-            <input type="radio" name="teaGrade" value="C">
-            <span>Grade C</span>
-        </label>
-    </div>
-</div>
-<!-- Locate this element in your HTML and replace it to keep structure clean -->
-                       <div class="input-group">
-                       <label>Net Weight (kg)</label>
-                         <input type="number" step="0.01" id="netWeight" placeholder="Auto Calculate" readonly>    
-                          </div>
+                            <label>Grade *</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="teaGrade" value="A" required>
+                                    <span>Grade A</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="teaGrade" value="B">
+                                    <span>Grade B</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="teaGrade" value="C">
+                                    <span>Grade C</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Net Weight (kg)</label>
+                            <input type="number" step="0.01" id="netWeight" placeholder="Auto Calculate" readonly>    
+                        </div>
                     </div>
 
-                    <!-- Buttons -->
                     <div class="buttons">
                         <button type="submit" class="save">
                             <i class="fa-solid fa-floppy-disk"></i> Save
@@ -160,7 +139,6 @@
                     </div>
                 </form>
 
-                <!-- Grade Reference -->
                 <div class="grade-box">
                     <h3>Grade Reference</h3>
                     <div class="grade-item">
@@ -190,7 +168,6 @@
             </div>
         </section>
 
-        <!-- Table -->
         <section class="records">
             <div class="table-header">
                 <h3>Recent Grading Records</h3>
@@ -210,18 +187,19 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-                
+                <tbody>
+                    </tbody>
             </table>
         </section>
     </main>
 
-    <!-- JavaScript Code -->
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const profileDropdownBtn = document.getElementById('profileDropdownBtn');
         const profileDropdownMenu = document.getElementById('profileDropdownMenu');
         const dropArrow = profileDropdownBtn.querySelector('.drop-arrow');
 
+        // Toggle visibility click bindings configurations rules
         profileDropdownBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             profileDropdownMenu.classList.toggle('show');
@@ -233,6 +211,7 @@
             }
         });
 
+        // Close dropdown profile drawers immediately when clicking anywhere else outside bounds
         document.addEventListener('click', () => {
             if (profileDropdownMenu.classList.contains('show')) {
                 profileDropdownMenu.classList.remove('show');
@@ -240,6 +219,7 @@
             }
         });
 
+        // Hydrate profile identities tokens metrics configurations values using localStorage data structures
         const savedEmail = localStorage.getItem('userEmail');
         if (savedEmail) {
             document.getElementById('userProfileEmail').textContent = savedEmail;
@@ -249,248 +229,247 @@
             document.getElementById('userProfileRole').textContent = 'Quality Checker';
         }
 
+        // Clean user tokens and cookies cache frameworks paths on system logouts requests
         const logoutBtn = document.getElementById('logoutBtn');
         if(logoutBtn) {
             logoutBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 localStorage.removeItem('userEmail');
                 alert('Logging out...');
-              window.location.href = '/page/login.html';
+                window.location.href = '/page/login.html';
             });
         }
     });
     </script>
+
     <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // UI Elements Hook Selection
-    const supplierSearchInput = document.getElementById('supplierSearch');
-    const supplierIdInput = document.getElementById('supplierId');
-    const supplierDropdown = document.getElementById('supplierDropdown');
-    const dateInput = document.getElementById('date');
-    const fieldNoInput = document.getElementById('fieldNo');
-    const weightInput = document.getElementById('weight');
-    const moistureInput = document.getElementById('moistureDeduction');
-    const netWeightInput = document.getElementById('netWeight');
-    const gradeSelect = document.getElementById('grade');
-    const gradingForm = document.getElementById('gradingForm');
-    const tableElement = document.querySelector('.records table');
+    document.addEventListener('DOMContentLoaded', () => {
+        // Form Element DOM Hooks Bindings
+        const supplierSearchInput = document.getElementById('supplierSearch');
+        const supplierIdInput = document.getElementById('supplierId');
+        const supplierDropdown = document.getElementById('supplierDropdown');
+        const dateInput = document.getElementById('date');
+        const fieldNoInput = document.getElementById('fieldNo');
+        const weightInput = document.getElementById('weight');
+        const moistureInput = document.getElementById('moistureDeduction');
+        const netWeightInput = document.getElementById('netWeight');
+        const gradingForm = document.getElementById('gradingForm');
+        const tableElement = document.querySelector('.records table');
 
-    // Get today's local date string formatted exactly like the HTML input date (YYYY-MM-DD)
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const todayString = `${year}-${month}-${day}`;
-
-    // Automatically set default date value to today, but allow manual changes
-    if (!dateInput.value) {
+        // Extract and map standard format ISO calendar stamps (YYYY-MM-DD)
+        const todayString = new Date().toISOString().split('T')[0];
         dateInput.value = todayString;
-    }
 
-    // SUPPLIER AUTOCOMPLETE FUNCTIONALITY
-    supplierSearchInput.addEventListener('input', async (e) => {
-        const query = e.target.value.trim();
-        
-        if (query.length < 1) {
-            supplierDropdown.classList.remove('show');
-            return;
-        }
-
-        try {
-            const response = await fetch(`http://localhost:3000/api/suppliers-search?q=${encodeURIComponent(query)}`);
-            
-            if (response.ok) {
-                const suppliers = await response.json();
-                displaySupplierOptions(suppliers);
+        // 1. SUPPLIER AUTOCOMPLETE FILTER DRAWER LOOKUP PIPELINE
+        supplierSearchInput.addEventListener('input', async (e) => {
+            const query = e.target.value.trim();
+            if (query.length < 1) {
+                supplierDropdown.classList.remove('remove');
+                return;
             }
-        } catch (error) {
-            console.error('Error fetching suppliers:', error);
-        }
-    });
 
-    // Display supplier options in dropdown
-    function displaySupplierOptions(supplierList) {
-        supplierDropdown.innerHTML = '';
-        
-        if (supplierList.length === 0) {
-            supplierDropdown.innerHTML = '<div class="supplier-option" style="color: #999; cursor: default;">No suppliers found</div>';
-            supplierDropdown.classList.add('show');
-            return;
-        }
-
-        supplierList.forEach(supplier => {
-            const option = document.createElement('div');
-            option.className = 'supplier-option';
-            option.innerHTML = `
-                <div class="supplier-option-id">${supplier.sup_id}</div>
-                <div class="supplier-option-name">${supplier.supplier_name}</div>
-                <div class="supplier-option-field">Field: ${supplier.supplier_field}</div>
-            `;
-
-            option.addEventListener('click', () => {
-                selectSupplier(supplier);
-            });
-
-            supplierDropdown.appendChild(option);
+            try {
+                // Fetch matched records using textual queries parameters mapping
+                const response = await fetch(`http://localhost:3000/api/suppliers-search?q=${encodeURIComponent(query)}`);
+                if (response.ok) {
+                    const suppliers = await response.json();
+                    displaySupplierOptions(suppliers);
+                }
+            } catch (error) {
+                console.error('Error fetching suppliers:', error);
+            }
         });
 
-        supplierDropdown.classList.add('show');
-    }
-
-    // Select supplier and auto-fill field number
-    function selectSupplier(supplier) {
-        supplierSearchInput.value = `${supplier.sup_id} - ${supplier.supplier_name}`;
-        supplierIdInput.value = supplier.sup_id;
-        fieldNoInput.value = supplier.supplier_field;
-        supplierDropdown.classList.remove('show');
-        
-        // Fetch collection data for this supplier
-        fetchSupplierCollectionData(supplier.sup_id);
-    }
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.supplier-search-container')) {
-            supplierDropdown.classList.remove('show');
-        }
-    });
-
-    // SMART LOOKUP LOGIC: Fetch collection data when supplier is selected
-    function fetchSupplierCollectionData(supplierId) {
-        fetch(`http://localhost:3000/api/collection-lookup/${encodeURIComponent(supplierId)}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Not found across systems');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Populate the inputs automatically
-                fieldNoInput.value = data.field_no ? data.field_no : "N/A";
-                weightInput.value = data.weight !== undefined ? parseFloat(data.weight).toFixed(2) : "0.00";
-                
-                // Immediately call calculation engine to process the load weight values
-                calculateNetWeight();
-            })
-            .catch(err => {
-                console.warn("Lookup Error Handler:", err.message);
-                // Don't show alert, just let user manually enter if needed
-                fieldNoInput.value = '';
-                weightInput.value = '';
-                netWeightInput.value = '';
-            });
-    }
-
-    // 2. MATH ENGINE: Automated net calculation logic parameters
-    function calculateNetWeight() {
-        const totalWeight = parseFloat(weightInput.value) || 0;
-        const totalDeductions = parseFloat(moistureInput.value) || 0;
-        
-        // Deduction constraint logic: prevent net results falling below zero
-        const cleanNetResult = Math.max(0, totalWeight - totalDeductions);
-        netWeightInput.value = cleanNetResult.toFixed(2);
-    }
-
-    // Monitor value entries across elements dynamically
-    moistureInput.addEventListener('input', calculateNetWeight);
-    weightInput.addEventListener('input', calculateNetWeight);
-
-    // 3. SUBMIT PACKET ROUTE PROCESSING
-    gradingForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const inputDateValue = dateInput.value;
-
-        if (!inputDateValue) {
-            alert("❌ Validation Failure: Please choose a valid grading date!");
-            return;
-        }
-
-        if (!supplierIdInput.value) {
-            alert("❌ Please select a supplier from the dropdown");
-            supplierSearchInput.focus();
-            return;
-        }
-
-        const dataPayload = {
-            supplier_id: supplierIdInput.value.trim(),
-            grading_date: inputDateValue,
-            field_no: fieldNoInput.value,
-            weight: parseFloat(weightInput.value) || 0,
-            moisture_deduction: parseFloat(moistureInput.value) || 0,
-            net_weight: parseFloat(netWeightInput.value) || 0,
-            grade: gradeSelect.value
-        };
-
-        // Standard validation: Missing supplier profile or quality selections
-        if (!dataPayload.supplier_id || gradeSelect.value === "Select Grade" || !dataPayload.grade) {
-            alert("🔴 Please assign a Quality Grade status and add Supplier ID criteria details!");
-            return;
-        }
-
-        // Send payload to backend since it passed the date checks
-        fetch('http://localhost:3000/api/grading', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dataPayload)
-        })
-        .then(res => res.json())
-        .then(resData => {
-            if (resData.success) {
-                alert('✅Success: Factory quality grade metrics saved to server data maps.');
-                gradingForm.reset();
-                dateInput.value = todayString; // Force calendar back to today's timestamp
-                supplierSearchInput.value = '';
-                supplierIdInput.value = '';
-                fetchRecentGrades(); // Live reload log views
-            } else {
-                alert('Error Processing Operation: ' + resData.message);
+        // Render matching autocomplete choices items inside the layout view panel drawer
+        function displaySupplierOptions(supplierList) {
+            supplierDropdown.innerHTML = '';
+            if (supplierList.length === 0) {
+                supplierDropdown.innerHTML = '<div class="supplier-option" style="color: #999; cursor: default;">No suppliers found</div>';
+                supplierDropdown.classList.add('show');
+                return;
             }
-        })
-        .catch(err => console.error("Critical submission payload crash encountered:", err));
-    });
 
-    // 4. RENDERING SYSTEM: Build and draw the recent logs live to dashboard table view
-    function fetchRecentGrades() {
-        fetch('http://localhost:3000/api/grading-records')
-            .then(res => res.json())
-            .then(recordsList => {
-                let tbody = tableElement.querySelector('tbody');
-                if (!tbody) {
-                    tbody = document.createElement('tbody');
-                    tableElement.appendChild(tbody);
-                }
-                tbody.innerHTML = ''; // Wipe older visual entries
-
-                recordsList.forEach(item => {
-                    const tr = document.createElement('tr');
+            supplierList.forEach(supplier => {
+                const option = document.createElement('div');
+                option.className = 'supplier-option';
+                option.innerHTML = `
+                    <div class="supplier-option-id">${supplier.sup_id}</div>
+                    <div class="supplier-option-name">${supplier.supplier_name}</div>
+                    <div class="supplier-option-field">Field: ${supplier.supplier_field}</div>
+                `;
+                
+                // Select supplier and populate the read-only form data sets automatically
+                option.addEventListener('click', () => {
+                    supplierSearchInput.value = `${supplier.sup_id} - ${supplier.supplier_name}`;
+                    supplierIdInput.value = supplier.sup_id;
+                    fieldNoInput.value = supplier.supplier_field;
+                    supplierDropdown.classList.remove('show');
                     
-                    let colorCircle = "orange";
-                    if (item.grade === 'A') colorCircle = "green";
-                    if (item.grade === 'B') colorCircle = "blue";
-
-                    tr.innerHTML = `
-                        <td><strong>${item.supplier_id}</strong></td>
-                        <td>${new Date(item.grading_date).toLocaleDateString()}</td>
-                        <td>Field ${item.field_no}</td>
-                        <td><span class="circle ${colorCircle}" style="display:inline-block; width:24px; height:24px; text-align:center; border-radius:50%; color:#fff; line-height:24px; font-weight:bold;">${item.grade}</span></td>
-                        <td><strong>${parseFloat(item.net_weight).toFixed(2)} kg</strong></td>
-                        <td><button style="border:none; padding:5px 10px; cursor:pointer;" onclick="alert('Grading entry identifier index: ${item.id}')"><i class="fa-solid fa-eye"></i> View</button></td>
-                    `;
-                    tbody.appendChild(tr);
+                    // Call data collection mapping routine tracking modules weights
+                    fetchSupplierCollectionData(supplier.sup_id);
                 });
-            })
-            .catch(err => console.error("Table processing log drawing failure error state:", err));
+                supplierDropdown.appendChild(option);
+            });
+            supplierDropdown.classList.add('show');
+        }
+
+        // Hide dynamic options drawer wrapper lists when blurring focus states boundaries
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.supplier-search-container')) {
+                supplierDropdown.classList.remove('show');
+            }
+        });
+
+        // Extract recorded load volumes maps metrics configurations paths
+        function fetchSupplierCollectionData(supplierId) {
+            fetch(`http://localhost:3000/api/collection-lookup/${encodeURIComponent(supplierId)}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Not found across systems');
+                    return response.json();
+                })
+                .then(data => {
+                    fieldNoInput.value = data.field_no ? data.field_no : "N/A";
+                    weightInput.value = data.weight !== undefined ? parseFloat(data.weight).toFixed(2) : "0.00";
+                    calculateNetWeight(); // Process totals cleanly instantly on injection
+                })
+                .catch(err => {
+                    console.warn("Lookup Warning:", err.message);
+                    fieldNoInput.value = '';
+                    weightInput.value = '';
+                    netWeightInput.value = '';
+                });
+        }
+
+        // 2. FORM MATHEMATICS CALCULATION ENGINE
+        function calculateNetWeight() {
+            const totalWeight = parseFloat(weightInput.value) || 0;
+            const totalDeductions = parseFloat(moistureInput.value) || 0;
+            // Floor output constraints logic limits metrics scale floor thresholds at absolute zero zero
+            const cleanNetResult = Math.max(0, totalWeight - totalDeductions);
+            netWeightInput.value = cleanNetResult.toFixed(2);
+        }
+
+        // Add execution calculation tracking listeners events parameters triggers
+        moistureInput.addEventListener('input', calculateNetWeight);
+        weightInput.addEventListener('input', calculateNetWeight);
+
+        // 3. SECURE PACKET NETWORK TRAFFIC ROUTING PIPELINES (FORM SUBMISSION)
+gradingForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    // Validate that the autocomplete tracking fields have parsed data maps safely
+    if (!supplierIdInput.value) {
+        alert("❌ Please select a supplier from the autocomplete list first!");
+        supplierSearchInput.focus();
+        return;
     }
 
-    // Call dynamic history data build engine on screen mount initialization
-    fetchRecentGrades();
-});
-</script>
-   
-       
+    // Read the currently active Checked Radio element choice parameter status value safely
+    const checkedRadioElement = document.querySelector('input[name="teaGrade"]:checked');
+    const targetGradeValue = checkedRadioElement ? checkedRadioElement.value : null;
 
-    <script src="/page/grade.html"></script>
+    // Model structured parameters data packet payload configuration mapping profile
+    const dataPayload = {
+        supplier_id: supplierIdInput.value.trim(),
+        grading_date: dateInput.value,
+        field_no: fieldNoInput.value,
+        weight: parseFloat(weightInput.value) || 0,
+        moisture_deduction: parseFloat(moistureInput.value) || 0,
+        net_weight: parseFloat(netWeightInput.value) || 0,
+        grade: targetGradeValue
+    };
+
+    // Basic safety integrity form check boundaries evaluations parameters rules
+    if (!dataPayload.supplier_id || !dataPayload.grade) {
+        alert("🔴 Please select a Quality Grade and map a correct Supplier!");
+        return;
+    }
+
+    // Ship network configuration stringified structures to local endpoints pipelines routes maps
+    fetch('http://localhost:3000/api/grading', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataPayload)
+    })
+    .then(res => res.json())
+    .then(async (resData) => {
+        if (resData.success) {
+            
+            // --- NEW: STATUS UPDATE PIPELINE TO SET "checked" ---
+            try {
+                const statusUpdateResponse = await fetch(`http://localhost:3000/api/collection-status/update`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        supplier_id: dataPayload.supplier_id,
+                        status: 'checked' 
+                    })
+                });
+                const statusData = await statusUpdateResponse.json();
+                if (!statusData.success) {
+                    console.warn("Status change warning:", statusData.message);
+                }
+            } catch (statusErr) {
+                console.error("Failed to alter remote collection state records:", statusErr);
+            }
+            // ----------------------------------------------------
+
+            alert('✅ Success: Factory quality grade metrics saved.');
+            gradingForm.reset();
+            dateInput.value = todayString; // Reassign standard calendar lock back cleanly
+            supplierSearchInput.value = '';
+            supplierIdInput.value = '';
+            fetchRecentGrades(); // Reload data logs components grids instantly without visual flickers
+        } else {
+            alert('Error Processing Operation: ' + resData.message);
+        }
+    })
+    .catch(err => console.error("Submission Payload Crash Error:", err));
+});
+
+        // 4. LIVE LOG COMPILATION RENDERING TABLE CONTROLLER MODULES
+        function fetchRecentGrades() {
+            fetch('http://localhost:3000/api/grading-records')
+                .then(res => res.json())
+                .then(recordsList => {
+                    let tbody = tableElement.querySelector('tbody');
+                    if (!tbody) {
+                        tbody = document.createElement('tbody');
+                        tableElement.appendChild(tbody);
+                    }
+                    tbody.innerHTML = ''; // Wipe cached old rows visually inside DOM layouts view references
+
+                    // Traverse fetched data packet array list collections objects records maps
+                    recordsList.forEach(item => {
+                        const tr = document.createElement('tr');
+                        
+                        // Map specific style indicator classes properties contexts parameters flags
+                        let colorCircle = "orange";
+                        if (item.grade === 'A') colorCircle = "green";
+                        if (item.grade === 'B') colorCircle = "blue";
+
+                        // Normalizes raw data timestamps strings arrays safe configurations properties tags
+                        const recordDate = item.grading_date || item.collection_date || new Date();
+
+                        tr.innerHTML = `
+                            <td><strong>${item.supplier_id}</strong></td>
+                            <td>${new Date(recordDate).toLocaleDateString()}</td>
+                            <td>Field ${item.field_no || 'N/A'}</td>
+                            <td><span class="circle ${colorCircle}" style="display:inline-block; width:24px; height:24px; text-align:center; border-radius:50%; color:#fff; line-height:24px; font-weight:bold;">${item.grade}</span></td>
+                            <td><strong>${parseFloat(item.net_weight).toFixed(2)} kg</strong></td>
+                            <td><button style="border:none; padding:5px 10px; cursor:pointer;" onclick="alert('Grading ID: ${item.id}')"><i class="fa-solid fa-eye"></i> View</button></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(err => console.error("Table compilation data view error:", err));
+        }
+
+        // Initialize table dataset sync arrays on screen load mount operations loops runtime
+        fetchRecentGrades();
+    });
+    </script>
+    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </body>
 </html>

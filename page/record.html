@@ -43,10 +43,17 @@
         <header class="page-title">
             <h1>Supply Records</h1>
             <div class="table-actions">
-                <!-- ID "searchBar" is used by the script to filter rows -->
-                <input type="text" placeholder="Search Supplier ID..." id="searchBar">
-                <button class="filter-btn"><i class="ph ph-funnel"></i> Filter</button>
-            </div>
+               <div class="table-actions" style="display: flex; gap: 12px; flex-wrap: wrap;">
+    <input type="text" placeholder="Filter by Supplier ID..." id="searchSupplier">
+    
+    <input type="text" placeholder="Filter by Field No..." id="searchField">
+    
+    <input type="date" id="searchDate" title="Filter by Date">
+    
+    <button class="filter-btn" id="clearFiltersBtn">
+        <i class="ph ph-trash"></i> Clear
+    </button>
+</div>
         </header>
 
         <section class="table-container">
@@ -72,84 +79,147 @@
     <div id="footer"></div>
      <script>
     document.addEventListener('DOMContentLoaded', () => {
+    // 1. Initial load from your backend
     fetchRecords();
 
-    // Search function logic
-    const searchBar = document.getElementById('searchBar');
-    if (searchBar) {
-        searchBar.addEventListener('keyup', (e) => {
-            const term = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('#records-data tr');
-            
-            rows.forEach(row => {
-                const supplierId = row.cells[1].textContent.toLowerCase();
-                if (supplierId.includes(term)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
+    // 2. Get references to our new multi-input filter elements
+    const searchSupplier = document.getElementById('searchSupplier');
+    const searchField = document.getElementById('searchField');
+    const searchDate = document.getElementById('searchDate');
+    const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+
+    // 3. Combined Filter Logic Engine
+    function filterTable() {
+        const supplierTerm = searchSupplier ? searchSupplier.value.toLowerCase().trim() : '';
+        const fieldTerm = searchField ? searchField.value.toLowerCase().trim() : '';
+        const dateTerm = searchDate ? searchDate.value : ''; // Format: YYYY-MM-DD
+        
+        const rows = document.querySelectorAll('#records-data tr');
+        
+        rows.forEach(row => {
+            // Skip the row if it's the "No records found" or "Error loading data" message row
+            if (row.cells.length < 5) return;
+
+            // Read text data cells safely matching your <tr> layout template
+            const supplierId = row.cells[1] ? row.cells[1].textContent.toLowerCase() : '';
+            const fieldNo = row.cells[2] ? row.cells[2].textContent.toLowerCase() : '';
+            const rowDateRaw = row.cells[0] ? row.cells[0].textContent : ''; 
+
+            // Convert row display date (e.g., 5/30/2026) to standard HTML input date standard (YYYY-MM-DD)
+            let formattedRowDate = '';
+            if (rowDateRaw) {
+                const parsedDate = new Date(rowDateRaw);
+                if (!isNaN(parsedDate.getTime())) {
+                    const year = parsedDate.getFullYear();
+                    const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(parsedDate.getDate()).padStart(2, '0');
+                    formattedRowDate = `${year}-${month}-${day}`;
                 }
-            });
+            }
+
+            // Evaluation boolean checks
+            const matchesSupplier = supplierId.includes(supplierTerm);
+            const matchesField = fieldNo.includes(fieldTerm);
+            const matchesDate = !dateTerm || formattedRowDate === dateTerm;
+
+            // Show row only if it fulfills all conditions simultaneously
+            if (matchesSupplier && matchesField && matchesDate) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    // Attach runtime listeners to execute live updates as the collector types
+    if (searchSupplier) searchSupplier.addEventListener('keyup', filterTable);
+    if (searchField) searchField.addEventListener('keyup', filterTable);
+    if (searchDate) searchDate.addEventListener('change', filterTable);
+
+    // Clear Button Reset configuration
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', () => {
+            if (searchSupplier) searchSupplier.value = '';
+            if (searchField) searchField.value = '';
+            if (searchDate) searchDate.value = '';
+            filterTable(); // Re-displays all records immediately
         });
     }
 });
 
+// --- FETCH RECORDS FROM THE SERVER (UNALTERED DATA PIPELINE) ---
 async function fetchRecords() {
-    
     const tableBody = document.getElementById('records-data');
     
     try {
         const response = await fetch('http://localhost:3000/api/records');
         const data = await response.json();
 
+        // Debug Log: Check your browser developer console (F12) to see what the server sent!
+        console.log("Raw Server Data Array:", data);
+
         if (!data || data.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No records found.</td></tr>';
             return;
         }
 
-        // Table eka clear karala data tika add karanawa
+        // Clear placeholder items cleanly
         tableBody.innerHTML = "";
         
-
         data.forEach(record => {
-    const date = new Date(record.Collection_Date).toLocaleDateString();
-    const supplier = record.Supplier_ID || 'N/A';
-    const field = record.Field_No || 'N/A';
-    const kilos = record.Kilos_Collected || '0.00';
-    
-    // 1. Status eka database eken ganna (e.g., record.Status)
-    // Naththam default ekak danna 'Pending' wage
-    const currentStatus = record.status || 'pending'; 
+            // MATCHING YOUR EXACT MYSQL CAPS:
+            // 1. Check if Collection_Date exists, then parse it
+            const date = record.Collection_Date ? new Date(record.Collection_Date).toLocaleDateString() : 'N/A';
+            
+            // 2. Read capitalized keys directly
+            const supplier = record.Supplier_ID || 'N/A';
+            const field = record.Field_No || 'N/A';
+            const kilos = record.Kilos_Collected || '0.00';
+            
+            // 3. Read Status with a capital 'S'
+            const currentStatus = record.Status || 'pending'; 
 
-    // 2. Status eka anuwa CSS class eka thoranna
-    let statusClass = 'status-pending';
-    if (currentStatus.toLowerCase() === 'completed') statusClass = 'status-completed';
-    if (currentStatus.toLowerCase() === 'rejected') statusClass = 'status-rejected';
+            // Setup dynamic background badge classes for CSS styling
+            let statusClass = 'status-pending';
+            if (currentStatus.toLowerCase() === 'checked') {
+                statusClass = 'status-checked';
+            }
+            // Safe fallback for record primary identity key
+            const recordId = record.id || '';
 
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-        <td>${date}</td>
-        <td><strong>${supplier}</strong></td>
-        <td>${field}</td>
-        <td>${kilos} kg</td>
-        <td><span class="status-tag ${statusClass}">${currentStatus}</span></td> <td>
-            <button class="action-btn" onclick="viewDetails('${record.id}')">
-                <i class="ph ph-eye"></i>
-            </button>
-        </td>
-    `;
-    tableBody.appendChild(tr);
-});
+            const tr = document.createElement('tr');
+            
+            // Injecting custom data-date attribute to fix your calendar picker filtering engine
+            if (record.Collection_Date) {
+                const isoDate = record.Collection_Date.split('T')[0];
+                tr.setAttribute('data-date', isoDate);
+            }
+
+            tr.innerHTML = `
+                <td>${date}</td>
+                <td><strong>${supplier}</strong></td>
+                <td>${field}</td>
+                <td>${kilos} kg</td>
+                <td><span class="status-tag ${statusClass}">${currentStatus}</span></td>
+                <td>
+                    <button class="action-btn" onclick="viewDetails('${recordId}')">
+                        <i class="ph ph-eye"></i>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
     } catch (error) {
         console.error("Error fetching records:", error);
         tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error loading data. Check server connection.</td></tr>';
     }
 }
-
-    function viewDetails(id) {
-     alert("Viewing details for record ID: " + id);
-     }
-     
-     </script>     <script>
+function viewDetails(id) {
+    alert("Viewing details for record ID: " + id);
+}
+</script>
+       
+      <script>
 document.addEventListener('DOMContentLoaded', () => {
     const profileDropdownBtn = document.getElementById('profileDropdownBtn');
     const profileDropdownMenu = document.getElementById('profileDropdownMenu');
