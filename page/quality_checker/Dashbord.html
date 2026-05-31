@@ -167,58 +167,70 @@
         .catch(err => console.error("Error loading weekly trend engine:", err));
 
 
-    // --- FETCH MONTHLY QUALITY BREAKDOWN FROM BACKEND ---
-    fetch('/api/dashboard/quality-distribution')
-        .then(res => res.json())
-        .then(data => {
-            const labels = data.length ? data.map(item => item.month_name) : ['No Data'];
-            const gradeA = data.length ? data.map(item => parseFloat(item.grade_a) || 0) : [0];
-            const gradeB = data.length ? data.map(item => parseFloat(item.grade_b) || 0) : [0];
-            const gradeC = data.length ? data.map(item => parseFloat(item.grade_c) || 0) : [0];
+  fetch('/api/dashboard/quality-distribution')
+    .then(res => res.json())
+    .then(data => {
+        const labels = data.length ? data.map(item => item.month_name) : ['No Data'];
+        const gradeA = data.length ? data.map(item => parseFloat(item.grade_a) || 0) : [0];
+        const gradeB = data.length ? data.map(item => parseFloat(item.grade_b) || 0) : [0];
+        const gradeC = data.length ? data.map(item => parseFloat(item.grade_c) || 0) : [0];
 
-            new Chart(ctxMonthly, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Grade A (Premium)',
-                            data: gradeA,
-                            backgroundColor: '#52b788',
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Grade B (Good)',
-                            data: gradeB,
-                            backgroundColor: '#74c69d',
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Grade C (Average)',
-                            data: gradeC,
-                            backgroundColor: '#b7e4c7',
-                            borderRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { boxWidth: 12, padding: 15, color: '#495057' }
-                        }
+        new Chart(ctxMonthly, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Grade C (Average)',
+                        data: gradeC,
+                        backgroundColor: '#b7e4c7',
+                        borderRadius: 0 // Now at the bottom, so keep it flat
                     },
-                    scales: {
-                        x: { stacked: true, grid: { display: false }, ticks: { color: '#6c757d' } },
-                        y: { stacked: true, grid: { color: '#f1f3f5' }, ticks: { callback: value => value + ' kg', color: '#6c757d' } }
+                    {
+                        label: 'Grade B (Good)',
+                        data: gradeB,
+                        backgroundColor: '#74c69d',
+                        borderRadius: 0 // In the middle, keep it flat
+                    },
+                    {
+                        label: 'Grade A (Premium)',
+                        data: gradeA,
+                        backgroundColor: '#52b788',
+                        borderRadius: { topLeft: 6, topRight: 6 } // 🔥 MOVED HERE: Only curve the very top of the stack!
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, padding: 15, color: '#495057' }
+                    }
+                },
+                scales: {
+                    x: { 
+                        stacked: true, 
+                        grid: { display: false }, 
+                        ticks: { color: '#6c757d' } 
+                    },
+                    y: { 
+                        stacked: true, 
+                        beginAtZero: true, 
+                        grace: '15%',      
+                        grid: { color: '#f1f3f5' }, 
+                        ticks: { 
+                            callback: value => value + ' kg', 
+                            color: '#6c757d' 
+                        } 
                     }
                 }
-            });
-        })
-        .catch(err => console.error("Error loading quality breakdown context:", err));
-});
+            }
+        });
+    })
+    .catch(err => console.error("Error loading quality breakdown context:", err));
+   });
     </script>
        
     

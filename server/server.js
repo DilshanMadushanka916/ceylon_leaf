@@ -514,26 +514,24 @@ app.get('/api/dashboard/weekly-trends', (req, res) => {
     });
 });
 
-// --- DASHBOARD MONTHLY QUALITY DISTRIBUTION ROUTE ---
+// --- DASHBOARD MONTHLY QUALITY DISTRIBUTION (FIXED GROUP BY MONTH) ---
 app.get('/api/dashboard/quality-distribution', (req, res) => {
     const query = `
         SELECT 
-            YEAR(grading_date) AS yr,
-            MONTH(grading_date) AS month_num,
             DATE_FORMAT(grading_date, '%b') AS month_name,
-            SUM(CASE WHEN UPPER(grade) = 'A' THEN net_weight ELSE 0 END) AS grade_a,
-            SUM(CASE WHEN UPPER(grade) = 'B' THEN net_weight ELSE 0 END) AS grade_b,
-            SUM(CASE WHEN UPPER(grade) = 'C' THEN net_weight ELSE 0 END) AS grade_c
+            SUM(CASE WHEN grade = 'A' THEN net_weight ELSE 0 END) AS grade_a,
+            SUM(CASE WHEN grade = 'B' THEN net_weight ELSE 0 END) AS grade_b,
+            SUM(CASE WHEN grade = 'C' THEN net_weight ELSE 0 END) AS grade_c
         FROM grading_records
         WHERE grading_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
-        GROUP BY yr, month_num, month_name
-        ORDER BY yr ASC, month_num ASC;
+        GROUP BY DATE_FORMAT(grading_date, '%Y-%m'), DATE_FORMAT(grading_date, '%b')
+        ORDER BY DATE_FORMAT(grading_date, '%Y-%m') ASC;
     `;
 
     db.query(query, (err, results) => {
         if (err) {
             console.error('❌ Quality distribution query failed:', err.message);
-            return res.status(500).json({ error: 'Failed to fetch quality distribution' });
+            return res.status(500).json({ error: 'Failed to fetch quality metrics' });
         }
         res.json(results);
     });
