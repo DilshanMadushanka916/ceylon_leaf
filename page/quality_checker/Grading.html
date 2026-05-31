@@ -455,7 +455,7 @@ gradingForm.addEventListener('submit', (e) => {
                             <td><strong>${item.supplier_id}</strong></td>
                             <td>${new Date(recordDate).toLocaleDateString()}</td>
                             <td>Field ${item.field_no || 'N/A'}</td>
-                            <td><span class="circle ${colorCircle}" style="display:inline-block; width:24px; height:24px; text-align:center; border-radius:50%; color:#fff; line-height:24px; font-weight:bold;">${item.grade}</span></td>
+                            <td><span class="circle ${colorCircle}">${item.grade}</span></td>
                             <td><strong>${parseFloat(item.net_weight).toFixed(2)} kg</strong></td>
                             <td><button style="border:none; padding:5px 10px; cursor:pointer;" onclick="alert('Grading ID: ${item.id}')"><i class="fa-solid fa-eye"></i> View</button></td>
                         `;
