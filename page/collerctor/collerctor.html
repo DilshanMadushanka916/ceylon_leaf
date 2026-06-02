@@ -186,24 +186,26 @@ document.querySelector('form').addEventListener('submit', async (e) => {
 
         const result = await response.json();
         if (result.success) {
-            alert('✅ Data saved to database!');
-            e.target.reset();
-            
-            // Reset supplier autocomplete fields
-            const supplierSearchInput = document.getElementById('supplier_search');
-            const supplierIdInput = document.getElementById('supplier_id_input');
-            const fieldNoInput = document.getElementById('field_no_input');
-            const supplierDropdown = document.getElementById('supplierDropdown');
-            
-            if (supplierSearchInput) supplierSearchInput.value = '';
-            if (supplierIdInput) supplierIdInput.value = '';
-            if (fieldNoInput) fieldNoInput.value = '';
-            if (supplierDropdown) supplierDropdown.classList.remove('show');
-            
-            // Optional: If you use the advance field toggle, reset its visibility here
-            const advanceField = document.getElementById('advanceAmountField');
-            if (advanceField) advanceField.classList.add('hidden-field');
-        }
+    alert('✅ Data saved to database!');
+    e.target.reset();
+    
+    // 🔥 FIX: Re-fill the date input immediately after resetting the form
+    setCurrentDate(); 
+    
+    // Reset supplier autocomplete fields
+    const supplierSearchInput = document.getElementById('supplier_search');
+    const supplierIdInput = document.getElementById('supplier_id_input');
+    const fieldNoInput = document.getElementById('field_no_input');
+    const supplierDropdown = document.getElementById('supplierDropdown');
+    
+    if (supplierSearchInput) supplierSearchInput.value = '';
+    if (supplierIdInput) supplierIdInput.value = '';
+    if (fieldNoInput) fieldNoInput.value = '';
+    if (supplierDropdown) supplierDropdown.classList.remove('show');
+    
+    const advanceField = document.getElementById('advanceAmountField');
+    if (advanceField) advanceField.classList.add('hidden-field');
+}
     } catch (error) {
         console.error('Fetch Error:', error);
         alert('❌ Could not connect to server. Make sure your Node.js terminal is running.');
@@ -211,20 +213,26 @@ document.querySelector('form').addEventListener('submit', async (e) => {
 });
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+// Make this function accessible globally
+function setCurrentDate() {
     const dateInput = document.getElementById('collection_date');
-    if (dateInput && !dateInput.value) {
+    if (dateInput) {
         const now = new Date();
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
         dateInput.value = `${year}-${month}-${day}`;
     }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Set the initial date when page finishes loading
+    setCurrentDate();
 
     const advanceCheckbox = document.getElementById('requestAdvance');
     const advanceAmountField = document.getElementById('advanceAmountField');
 
-    // 1. TOGGLE VISIBILITY
+    // TOGGLE VISIBILITY
     if (advanceCheckbox && advanceAmountField) {
         advanceCheckbox.addEventListener('change', () => {
             if (advanceCheckbox.checked) {
