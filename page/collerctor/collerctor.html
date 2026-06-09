@@ -213,6 +213,14 @@ document.querySelector('form').addEventListener('submit', async (e) => {
 });
 </script>
 <script>
+    
+    fetch('/api/login', { // <-- REMOVE "http://localhost:3000"
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, password: password })
+})
+    </script>
+<script>
 // Make this function accessible globally
 function setCurrentDate() {
     const dateInput = document.getElementById('collection_date');

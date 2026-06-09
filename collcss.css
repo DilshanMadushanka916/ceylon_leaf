@@ -299,32 +299,30 @@ input:checked + .slider:before { transform: translateX(22px); }
     line-height: 1.1;
     display: flex;
     flex-direction: column; /* Text eka pela dekkata ganna */
+    
 }
 
-.factory-title .leaf-text {
+.leaf-text {
     color: var(--accent-green); /* Leaf green highlight eka */
 }
 
 .factory-title small {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 400;
-    letter-spacing: 4px;
-    color: rgba(255, 255, 255, 0.6); /* Thawa tikak fade karanna */
+    letter-spacing: 3px;
+    color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
     margin-top: 2px;
 }
 
-/* Header eke logo eka saha title eka madata divider ekak danna (optional) */
 .logo {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #1b5e20;
     border-right: 1px solid rgba(255, 255, 255, 0.2);
     padding-right: 20px;
     margin-right: 20px;
-}
-
-
-
-/* Adjusting your existing .logo to fix alignment */
-.logo {
     display: flex;
     align-items: center;
     gap: 15px;

@@ -6,14 +6,14 @@
     <title>Ceylon Leaf Tea - Accountant Dashboard</title>
     <link rel="stylesheet" href="/Acc.css">
     
-    <!-- 🟢 Phosphor Icons (ලොග් අවුට් සහ අනිත් අයිකන් වැඩ කරන්න මේක උඩින්ම ඕනේ) -->
+    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-    <!-- 🟢 NEW BRANDED SIDEBAR -->
+    <!-- BRANDED SIDEBAR -->
     <div class="sidebar">
         <div class="logo">
             <img src="/assets/Logo.png" alt="Logo">
@@ -23,7 +23,6 @@
             </h1>
         </div>
 
-        <!-- Navigation Links -->
         <ul class="nav-links">
             <li class="active">
                 <a href="/page/Accountant/Accountant.html">
@@ -54,7 +53,7 @@
 
     <!-- MAIN APP CONTENT AREA -->
     <div class="main-content">
-        <!-- 🟢 NEW TOP NAVBAR WITH DROPDOWN -->
+        <!-- TOP NAVBAR WITH DROPDOWN -->
         <header class="top-navbar">
             <div class="nav-title">Accountant Dashboard</div>
             <div class="nav-profile" id="profileDropdownBtn">
@@ -62,7 +61,6 @@
                 <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="profile-img">
                 <i class="ph ph-caret-down drop-arrow"></i>
                 
-                <!-- Dropdown Menu -->
                 <div class="dropdown-menu" id="profileDropdownMenu">
                     <div class="dropdown-header">
                         <p class="user-role">Accountant Account</p>
@@ -99,83 +97,245 @@
                 </div>
             </div>
 
-            <!-- Chart Section -->
-            <div class="chart-card">
-                <div class="chart-header"><h3>Total Kilo of Tea (Last 6 Months)</h3></div>
-                <canvas id="teaChart"></canvas>
+            <!-- Financial Analytics Panels -->
+            <div class="analytics-grid">
+                <div class="chart-card flex-card">
+                    <div class="chart-header">
+                        <h3>Payment Distribution Method</h3>
+                    </div>
+                    <div class="chart-container-wrapper">
+                        <canvas id="paymentsDistributionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- UPDATED: Replaced processing metrics panel with Last 6 Months chart -->
+                <div class="chart-card flex-card">
+                    <div class="chart-header">
+                        <h3>Total Payments (Last 6 Months)</h3>
+                    </div>
+                    <div class="chart-container-wrapper">
+                        <canvas id="monthlyPaymentsChart"></canvas>
+                    </div>
+                </div>
             </div>
 
-            <!-- Supplier Table -->
-            <div class="table-card">
-                <div class="table-header"><h3>Supplier Payments</h3></div>
-                <table>
-                    <thead>
-                        <tr><th>Supplier ID</th><th>Name</th><th>Total Amount (LKR)</th><th>Status</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>SL001</td><td>Anura Perera</td><td>150,000</td><td class="pending">Pending</td></tr>
-                        <tr><td>SL002</td><td>Disna Silva</td><td>85,000</td><td class="paid">Paid</td></tr>
-                    </tbody>
-                </table>
+            <!-- Advance Requests Notification Panel Container -->
+            <div class="notification-panel-card">
+                <div class="panel-header">
+                    <div class="header-title-area">
+                        <i class="ph ph-bell-ringing alert-icon"></i>
+                        <h3>Supplier Advance Requests</h3>
+                    </div>
+                    <span class="badge" id="requestCountBadge">0 Pending</span>
+                </div>
+                <div class="requests-list-container" id="advanceRequestsContainer">
+                    <div class="empty-state">No pending advance requests found.</div>
+                </div>
             </div>
 
         </div>
     </div>
 
-    <!-- JS Link -->
-    <script src="/js/Acc.js"></script>
-    
- 
+    <!-- Script Engines Configuration Logic -->
     <script>
-       document.addEventListener('DOMContentLoaded', () => {
-    const profileDropdownBtn = document.getElementById('profileDropdownBtn');
-    const profileDropdownMenu = document.getElementById('profileDropdownMenu');
-    const dropArrow = profileDropdownBtn.querySelector('.drop-arrow');
+        document.addEventListener('DOMContentLoaded', () => {
+            // Navbar Dropdown Mechanics
+            const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+            const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+            const dropArrow = profileDropdownBtn.querySelector('.drop-arrow');
 
-    // 1. Dropdown එක Click කරාම open/close කරන්න
-    profileDropdownBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // document click එක trigger වීම වැළැක්වීමට
-        profileDropdownMenu.classList.toggle('show');
-        
-        // ඊතලය කරකවන්න (Animation)
-        if(profileDropdownMenu.classList.contains('show')) {
-            dropArrow.style.transform = 'rotate(180deg)';
-        } else {
-            dropArrow.style.transform = 'rotate(0deg)';
-        }
-    });
+            profileDropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdownMenu.classList.toggle('show');
+                dropArrow.style.transform = profileDropdownMenu.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+            });
 
-    // 2. Dropdown එකෙන් පිට ඕනෑම තැනක click කරොත් menu එක close කරන්න
-    document.addEventListener('click', () => {
-        if (profileDropdownMenu.classList.contains('show')) {
-            profileDropdownMenu.classList.remove('show');
-            dropArrow.style.transform = 'rotate(0deg)';
-        }
-    });
+            document.addEventListener('click', () => {
+                if (profileDropdownMenu.classList.contains('show')) {
+                    profileDropdownMenu.classList.remove('show');
+                    dropArrow.style.transform = 'rotate(0deg)';
+                }
+            });
 
-    // 3. LocalStorage එකෙන් Login වෙච්ච user ගේ email එක අරන් navbar එකට දාන්න
-    const savedEmail = localStorage.getItem('userEmail');
-    if (savedEmail) {
-        document.getElementById('userProfileEmail').textContent = savedEmail;
-        
-        // Email එකෙන් නම විතරක් වෙන් කරලා ගන්න (උදා: Dilshan@gmail.com -> Dilshan)
-        const namePart = savedEmail.split('@')[0];
-        const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-        document.getElementById('userProfileName').textContent = capitalizedName;
-    }
+            // LocalStorage Credentials Setup
+            const savedEmail = localStorage.getItem('userEmail');
+            if (savedEmail) {
+                document.getElementById('userProfileEmail').textContent = savedEmail;
+                const namePart = savedEmail.split('@')[0];
+                const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+                document.getElementById('userProfileName').textContent = capitalizedName;
+            }
 
-    // 4. Log Out button එක ක්‍රියා කරවීම
-    const logoutBtn = document.getElementById('logoutBtn');
-    if(logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.removeItem('userEmail'); // session clear කරන්න
-            alert('Logging out...');
-            window.location.href = '/page/login.html'; // Redirect to the correct login page
+            // Authentication Logout Engine
+            const logoutBtn = document.getElementById('logoutBtn');
+            if(logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('userEmail');
+                    alert('Logging out...');
+                    window.location.href = '/page/login.html';
+                });
+            }
+
+            // Initialize Custom Dashboard Charts & Data
+            renderPaymentsChart();
+            renderMonthlyPaymentsChart();
+            loadAdvanceRequests();
         });
-    }
-});
 
+        function renderPaymentsChart() {
+            const canvasElement = document.getElementById('paymentsDistributionChart');
+            if (!canvasElement) return;
+
+            const ctx = canvasElement.getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Bank Transfers', 'Cash Settlements', 'Approved Advances'],
+                    datasets: [{
+                        data: [75, 15, 10],
+                        backgroundColor: ['#2a4d44', '#d89b00', '#1769c5'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { family: 'Segoe UI', size: 12 }, boxWidth: 15 }
+                        }
+                    }
+                }
+            });
+        }
+
+        // NEW: Handles rendering for the newly targeted 6-month historical chart section
+        function renderMonthlyPaymentsChart() {
+            const canvasElement = document.getElementById('monthlyPaymentsChart');
+            if (!canvasElement) return;
+
+            const ctx = canvasElement.getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Total Payments (LKR)',
+                        data: [420000, 510000, 480000, 590000, 610000, 550000],
+                        backgroundColor: '#2a4d44',
+                        borderRadius: 6,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f0f3f1' },
+                            ticks: { font: { family: 'Segoe UI', size: 11 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Segoe UI', size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadAdvanceRequests() {
+            const requestsContainer = document.getElementById('advanceRequestsContainer');
+            const badge = document.getElementById('requestCountBadge');
+            
+            const sampleRequests = [
+                {
+                    requestId: "REQ-8832",
+                    supplierId: "SUP-0041",
+                    name: "Mahinda Rajapaksha",
+                    requestedAmount: 45000,
+                    lastMonthKilos: 420,
+                    thisMonthKilos: 180,
+                    consecutiveMonthsAdvanceCount: 2
+                },
+                {
+                    requestId: "REQ-8835",
+                    supplierId: "SUP-0072",
+                    name: "Kamal Gunaratne",
+                    requestedAmount: 15000,
+                    lastMonthKilos: 310,
+                    thisMonthKilos: 290,
+                    consecutiveMonthsAdvanceCount: 0
+                }
+            ];
+
+            badge.textContent = `${sampleRequests.length} Pending`;
+            requestsContainer.innerHTML = '';
+
+            sampleRequests.forEach(req => {
+                const isDisallowed = req.consecutiveMonthsAdvanceCount >= 2;
+                const card = document.createElement('div');
+                card.className = `request-item-card ${isDisallowed ? 'disallowed' : 'allowed'}`;
+                
+                card.innerHTML = `
+                    <div class="request-main-info" onclick="navigateToDetail('${req.supplierId}')">
+                        <div class="supplier-meta">
+                            <span class="sup-id-tag">${req.supplierId}</span>
+                            <span class="sup-name">${req.name}</span>
+                        </div>
+                        <div class="amount-tag">LKR ${req.requestedAmount.toLocaleString('.2')}</div>
+                    </div>
+                    
+                    <div class="request-expanded-metrics">
+                        <div class="metric-box">
+                            <small>Last Month Weight</small>
+                            <strong>${req.lastMonthKilos} kg</strong>
+                        </div>
+                        <div class="metric-box">
+                            <small>This Month Weight</small>
+                            <strong>${req.thisMonthKilos} kg</strong>
+                        </div>
+                        <div class="metric-box status-msg-box">
+                            <small>System Rule Analysis</small>
+                            <span class="status-badge-text ${isDisallowed ? 'error-text' : 'success-text'}">
+                                ${isDisallowed ? '⚠️ Max consecutive advances reached (Last 2 Months)' : '✅ Eligible for approval evaluation'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons-row">
+                        ${isDisallowed ? `
+                            <button class="btn btn-reject custom-wide" onclick="handleAction('${req.requestId}', 'Reject')">
+                                <i class="ph ph-prohibit"></i> Reject Request
+                            </button>
+                        ` : `
+                            <button class="btn btn-reject" onclick="handleAction('${req.requestId}', 'Reject')">
+                                <i class="ph ph-x-circle"></i> Reject
+                            </button>
+                            <button class="btn btn-accept" onclick="handleAction('${req.requestId}', 'Accept')">
+                                <i class="ph ph-check-circle"></i> Accept Advance
+                            </button>
+                        `}
+                    </div>
+                `;
+                requestsContainer.appendChild(card);
+            });
+        }
+
+        function handleAction(id, action) {
+            alert(`Request ${id} status altered to: ${action}ed`);
+        }
+
+        function navigateToDetail(supplierId) {
+            window.location.href = `/page/Accountant/supplier-collection-detail.html?supId=${supplierId}`;
+        }
     </script>
 </body>
 </html>

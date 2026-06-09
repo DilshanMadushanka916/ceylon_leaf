@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Payout Dashboard - Ceylon Leaf Tea</title>
+    <link rel="stylesheet" href="/pays.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+    <!-- FULL-WIDTH CONTENT AREA (USES ALL SPACE RESPONSIVELY) -->
+    <div class="main-content-fluid">
+        
+        <!-- TOP STICKY GLASS NAVBAR -->
+        <header class="top-navbar">
+            <div class="brand-identity">
+                <h1 class="factory-title">
+                    CEYLON <span class="leaf-text">LEAF</span> <small>TEA FACTORY</small>
+                </h1>
+                <span class="nav-separator">|</span>
+                <div class="nav-title">Accountant Dashboard</div>
+            </div>
+            <div class="nav-profile" id="profileDropdownBtn">
+                  <span class="profile-name" id="userProfileName">Dilshan</span>
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="profile-img">
+                <i class="ph ph-caret-down drop-arrow"></i>
+                
+                <div class="dropdown-menu" id="profileDropdownMenu">
+                    <div class="dropdown-header">
+                        <p class="user-role">Accountant Account</p>
+                        <small id="userProfileEmail">Dilshan@gmail.com</small>
+                    </div>
+                    <hr>
+                    <a href="/page/profile.html"><i class="ph ph-user"></i> My Profile</a>
+                    <a href="/page/settings.html"><i class="ph ph-gear"></i> Settings</a>
+                    <a href="/page/login.html" class="logout-btn"><i class="ph ph-sign-out"></i> Log Out</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- BACK TO NAVIGATION -->
+        <div style="margin: 20px 0 0 20px;">
+      
+       <a href="/page/Accountant/Payment.html" class="back-dashboard-btn">
+        <i class="ph ph-arrow-left"></i> Back to Payments Dashboard
+    </a>
+</div>
+
+        <!-- HERO SECTION WITH MORE SUPPLIER DETAILS -->
+        <div class="supplier-profile-hero-expanded">
+            <div class="hero-left-accent"></div>
+            <div class="hero-body-grid">
+                
+                <!-- 1. Supplier Main Profile Identity -->
+                <div class="hero-profile-identity">
+                    <div class="avatar-wrapper">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" alt="Supplier Photo" class="supplier-avatar-img">
+                        <div class="verified-badge-tick"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="identity-text">
+                        <div class="code-and-status">
+                            <span class="hero-value-badge">SL001</span>
+                            <span class="hero-status-pill"><span class="status-dot"></span> Active Session</span>
+                        </div>
+                        <h2 class="hero-value-primary">Anura Perera</h2>
+                    </div>
+                </div>
+
+                <!-- 2. More Details Portion (NEW ADDITION) -->
+                <div class="hero-extra-details">
+                    <div class="info-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <div>
+                            <span class="info-lbl">Phone Number</span>
+                            <span class="info-val">+94 77 123 4567</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <span class="info-lbl">Route / Address</span>
+                            <span class="info-val">Deniyaya Road, Ratnapura</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <div>
+                            <span class="info-lbl">Last Payment Date</span>
+                            <span class="info-val">May 10, 2026</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-star"></i>
+                        <div>
+                            <span class="info-lbl">Supplier Grade</span>
+                            <span class="info-val grade-premium">Grade A Premium</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- METRICS CARDS GRID (AUTO RE-SIZE ACROSS ALL SCREEN WIDTHS) -->
+        <div class="metrics-grid">
+            <div class="metric-card card-leaves">
+                <div class="card-icon"><i class="fas fa-leaf"></i></div>
+                <div class="card-data">
+                    <h3>Total Tea Leaves</h3>
+                    <p class="stat-value">1,250 kg</p>
+                    <span class="stat-lbl">Delivered Monthly Crop</span>
+                </div>
+            </div>
+
+            <div class="metric-card card-moisture">
+                <div class="card-icon"><i class="fas fa-tint"></i></div>
+                <div class="card-data">
+                    <h3>Moisture Deduction</h3>
+                    <p class="stat-value text-warning">25 kg</p>
+                    <span class="stat-lbl">Water weight reduction (2%)</span>
+                </div>
+            </div>
+
+            <div class="metric-card card-netweight">
+                <div class="card-icon"><i class="fas fa-balance-scale"></i></div>
+                <div class="card-data">
+                    <h3>Net Weight</h3>
+                    <p class="stat-value" style="color: #27ae60;">1,225 kg</p>
+                    <span class="stat-lbl">Final weight for payout</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AUTOMATIC PAYMENT STATEMENT WITH RADIO METHOD CHANGER -->
+        <div class="statement-card">
+            <h3 class="statement-header-title">
+                <i class="fas fa-file-invoice-dollar"></i> Automatic Payment Statement
+            </h3>
+
+            <!-- PAYMENT METHOD SELECTION -->
+            <div class="payment-method-section">
+                <span class="section-label"><i class="fas fa-credit-card"></i> Select Payment Method:</span>
+                <div class="payment-options-group">
+                    <label class="method-option-card">
+                        <input type="radio" name="payment_method" value="bank" checked id="radioBank">
+                        <div class="option-content">
+                            <i class="fas fa-university method-icon"></i>
+                            <div class="option-text">
+                                <h4>Bank Transfer</h4>
+                                <small>Direct to supplier account</small>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="method-option-card">
+                        <input type="radio" name="payment_method" value="cash" id="radioCash">
+                        <div class="option-content">
+                            <i class="fas fa-money-bill-wave method-icon"></i>
+                            <div class="option-text">
+                                <h4>Cash Payout</h4>
+                                <small>Handover counter payment</small>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="statement-grid">
+                <!-- വම්පස: මූල්‍ය ගණනය කිරීම් -->
+                <div class="calculation-side">
+                    <div class="calc-row">
+                        <span class="calc-label">PER KILO PRICE (LKR)</span>
+                        <div class="price-input-wrapper">
+                            <span>Rs.</span>
+                            <input type="number" id="txtPerKiloPrice" value="240.00" step="0.01">
+                        </div>
+                    </div>
+                    <div class="calc-row">
+                        <span class="calc-label">GROSS SALARY</span>
+                        <span class="calc-value">Rs. 294,000.00</span>
+                    </div>
+                    <div class="calc-row">
+                        <span class="calc-label" style="color: #e67e22;">REQUESTED ADVANCE DEDUCTIONS</span>
+                        <span class="calc-value" style="color: #e67e22;">- Rs. 15,000.00</span>
+                    </div>
+                </div>
+
+                <!-- දකුණුපස: බැංකු ගිණුම් / වෙනත් විස්තර -->
+                <div class="bank-side" id="payoutDetailsContainer">
+                    <span class="calc-label" style="margin-bottom: 5px;">Supplier Bank Account</span>
+                    <div class="bank-info-box">
+                        <div class="bank-row">
+                            <span class="bank-lbl">Bank Name:</span>
+                            <span class="bank-val">Commercial Bank</span>
+                        </div>
+                        <div class="bank-row">
+                            <span class="bank-lbl">Account No:</span>
+                            <span class="bank-val" style="font-family: monospace; font-size: 1rem;">8010245591</span>
+                        </div>
+                        <div class="bank-row">
+                            <span class="bank-lbl">Status:</span>
+                            <span class="bank-val" style="color: #27ae60;"><i class="fas fa-check-circle"></i> Verified Account</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- අවසාන ගෙවීම් එකතුව -->
+            <div class="final-payout-banner">
+                <span class="payout-title">TOTAL FINAL PAYOUT</span>
+                <span class="payout-amount">Rs. 279,000.00</span>
+            </div>
+
+            <!-- ක්‍රියාකාරී බොත්තම් -->
+            <div class="actions-container">
+                <button class="btn-secondary">Hold Payout</button>
+                <button class="btn-primary">
+                    <i class="fas fa-check-double"></i> Submit & Approve Payout
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript Dropdown and Layout Control logic -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+        const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+        const dropArrow = profileDropdownBtn.querySelector('.drop-arrow');
+
+        profileDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdownMenu.classList.toggle('show');
+            
+            if(profileDropdownMenu.classList.contains('show')) {
+                dropArrow.style.transform = 'rotate(180deg)';
+            } else {
+                dropArrow.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        document.addEventListener('click', () => {
+            if (profileDropdownMenu.classList.contains('show')) {
+                profileDropdownMenu.classList.remove('show');
+                dropArrow.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        const savedEmail = localStorage.getItem('userEmail');
+        if (savedEmail) {
+            document.getElementById('userProfileEmail').textContent = savedEmail;
+            const namePart = savedEmail.split('@')[0];
+            const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+            document.getElementById('userProfileName').textContent = capitalizedName;
+        }
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        if(logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('userEmail');
+                alert('Logging out...');
+                window.location.href = '/page/login.html';
+            });
+        }
+    });
+    </script>  
+    
+
+</body>
+</html>

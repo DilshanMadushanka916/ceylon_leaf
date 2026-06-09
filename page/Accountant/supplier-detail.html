@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Profile - Ceylon Leaf Tea</title>
+    <link class="styles" rel="stylesheet" href="/suppliers.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="/assets/Logo.png" alt="Logo">
+            <h1 class="factory-title">
+                CEYLON <span class="leaf-text">LEAF</span> 
+                <small>TEA FACTORY</small>
+            </h1>
+        </div>
+
+        <ul class="nav-links">
+            <li>
+                <a href="/page/Accountant/Accountant.html">
+                    <i class="ph ph-house"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="/page/Accountant/supplier.html">
+                    <i class="ph ph-users"></i>
+                    <span>Suppliers</span>
+                </a>
+            </li>
+            <li>
+                <a href="/page/Accountant/reports.html">
+                    <i class="ph ph-chart-line-up"></i>
+                    <span>Reports</span>
+                </a>
+            </li>
+            <li>
+                <a href="/page/Accountant/Payment.html">
+                    <i class="ph ph-wallet"></i>
+                    <span>Payments</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        
+        <!-- TOP NAVBAR -->
+        <header class="top-navbar">
+            <div class="nav-title">Accountant Dashboard</div>
+            <div class="nav-profile" id="profileDropdownBtn">
+                    <span class="profile-name" id="userProfileName">Dilshan</span>
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="profile-img">
+                <i class="ph ph-caret-down drop-arrow"></i>
+                
+                <div class="dropdown-menu" id="profileDropdownMenu">
+                    <div class="dropdown-header">
+                        <p class="user-role">Accountant Account</p>
+                        <small id="userProfileEmail">Dilshan@gmail.com</small>
+                    </div>
+                    <hr>
+                    <a href="/page/profile.html"><i class="ph ph-user"></i> My Profile</a>
+                    <a href="/page/settings.html"><i class="ph ph-gear"></i> Settings</a>
+                    <a href="/page/login.html" class="logout-btn" id="logoutBtn"><i class="ph ph-sign-out"></i> Log Out</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- BACK LINK -->
+        <div style="margin: 20px 0 0 20px;">
+      
+       <a href="/page/Accountant/supplier.html" class="back-dashboard-btn">
+        <i class="ph ph-arrow-left"></i> Back to Suppliers List
+    </a>
+</div>
+
+
+       <!-- PREMIUM EXECUTIVE SUPPLIER SUMMARY HERO -->
+<div class="supplier-profile-hero">
+    <div class="hero-left-accent"></div>
+    <div class="hero-body">
+        
+        <!-- Primary Identity Column -->
+        <div class="hero-column name-col">
+            <span class="hero-label">Supplier Name</span>
+            <h2 id="detSupplierName" class="hero-value-primary">Anura Perera</h2>
+        </div>
+        
+        <!-- Registration Identity Column -->
+        <div class="hero-column id-col">
+            <span class="hero-label">Supplier ID</span>
+            <span id="detSupplierID" class="hero-value-badge">SL001</span>
+        </div>
+        
+        <!-- Logistic Route Column -->
+        <div class="hero-column route-col">
+            <span class="hero-label">Assigned Route</span>
+            <div class="hero-value-with-icon">
+                <i class="ph ph-map-pin"></i>
+                <span id="detFieldNo">F-12</span>
+            </div>
+        </div>
+        
+        <!-- Active Status Column -->
+        <div class="hero-column status-col">
+            <span class="hero-label">Account Status</span>
+            <div class="hero-status-pill">
+                <span class="status-dot"></span>
+                <span>Active Profile</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+        <!-- REGISTRATION & BANKING GRID -->
+        <div class="info-dashboard-card">
+            <div class="info-section">
+                <h3><i class="ph ph-identification-card"></i> Personal Records</h3>
+                <div class="info-grid">
+                    <div class="grid-item"><label>NIC Number</label><span id="detNIC">-</span></div>
+                    <div class="grid-item"><label>Phone Number</label><span id="detPhone">-</span></div>
+                    <div class="grid-item full-width"><label>Permanent Address</label><span id="detAddress">-</span></div>
+                </div>
+            </div>
+            <div class="info-divider"></div>
+            <div class="info-section">
+                <h3><i class="ph ph-bank"></i> Banking Settlement</h3>
+                <div class="info-grid">
+                    <div class="grid-item"><label>Bank Name</label><span id="detBankName">-</span></div>
+                    <div class="grid-item"><label>Branch Location</label><span id="detBankBranch">-</span></div>
+                    <div class="grid-item full-width"><label>Account Number</label><span class="acc-badge" id="detBankNo">-</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DAILY TEA LOGS WITH DATE SEARCH FILTER & PAID AMOUNT -->
+        <div class="table-card" style="margin-bottom: 25px;">
+            <div class="table-card-header search-header">
+                <h3><i class="ph ph-calendar-check"></i> Daily Tea Leaf Collection Log</h3>
+                <div class="log-search-wrapper">
+                    <i class="ph ph-calendar-search"></i>
+                    <input type="text" id="logDateSearch" placeholder="Filter by Date (YYYY-MM-DD)...">
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Collection Date</th>
+                        <th>Gross Weight (kg)</th>
+                        <th>Moisture Deduction (kg)</th>
+                        <th>Net Weight (kg)</th>
+                        <th>Paid Amount (Rs.)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="collectionTableBody">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ADVANCE ISSUANCE HISTORY -->
+        <div class="table-card">
+            <div class="table-card-header">
+                <h3><i class="ph ph-coins"></i> Advance Request History</h3>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Request Date</th>
+                        <th>Requested Amount</th>
+                        <th>Deduction Scheme</th>
+                        <th>Approval Status</th>
+                    </tr>
+                </thead>
+                <tbody id="advanceTableBody">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- SCRIPTS -->
+     <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+        const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+        const dropArrow = profileDropdownBtn.querySelector('.drop-arrow');
+
+        profileDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdownMenu.classList.toggle('show');
+            
+            if(profileDropdownMenu.classList.contains('show')) {
+                dropArrow.style.transform = 'rotate(180deg)';
+            } else {
+                dropArrow.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        document.addEventListener('click', () => {
+            if (profileDropdownMenu.classList.contains('show')) {
+                profileDropdownMenu.classList.remove('show');
+                dropArrow.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        const savedEmail = localStorage.getItem('userEmail');
+        if (savedEmail) {
+            document.getElementById('userProfileEmail').textContent = savedEmail;
+            const namePart = savedEmail.split('@')[0];
+            const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+            document.getElementById('userProfileName').textContent = capitalizedName;
+        }
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        if(logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('userEmail');
+                alert('Logging out...');
+                window.location.href = '/page/login.html';
+            });
+        }
+    });
+    </script>  
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const supplierId = urlParams.get('id') || 'SL001';
+
+            const supplierDataDB = {
+                'SL001': {
+                    name: "Anura Perera", field: "Field F-12", nic: "197824501470V", phone: "+94 77 123 4567",
+                    address: "42, Galle Road, Deniyaya, Sri Lanka", bankNo: "8145009214", bankName: "Bank of Ceylon (BOC)", branch: "Deniyaya Branch",
+                    collections: [
+                        { date: "2026-06-01", gross: "45.00 kg", moisture: "2.50 kg", net: "42.50 kg", paid: "Rs. 8,500.00" },
+                        { date: "2026-05-30", gross: "52.00 kg", moisture: "3.00 kg", net: "49.00 kg", paid: "Rs. 9,800.00" },
+                        { date: "2026-05-28", gross: "60.00 kg", moisture: "3.20 kg", net: "56.80 kg", paid: "Rs. 11,360.00" },
+                        { date: "2026-05-15", gross: "51.00 kg", moisture: "2.00 kg", net: "49.00 kg", paid: "Rs. 9,800.00" }
+                    ],
+                    advances: [
+                        { date: "2026-05-15", amount: "Rs. 5,000.00", scheme: "Single Installment (June Payout)", status: "Approved & Paid", class: "active-status" },
+                        { date: "2026-04-10", amount: "Rs. 10,000.00", scheme: "Two Installments", status: "Settled Entirely", class: "active-status" }
+                    ]
+                },
+                'SL002': {
+                    name: "Disna Silva", field: "Field F-08", nic: "198561203991V", phone: "+94 71 987 6543",
+                    address: "88/2, Passara Road, Ella, Sri Lanka", bankNo: "007020145561", bankName: "People's Bank", branch: "Ella Branch",
+                    collections: [
+                        { date: "2026-06-02", gross: "72.00 kg", moisture: "4.00 kg", net: "68.00 kg", paid: "Rs. 13,600.00" },
+                        { date: "2026-05-29", gross: "55.50 kg", moisture: "2.10 kg", net: "53.40 kg", paid: "Rs. 10,680.00" }
+                    ],
+                    advances: [
+                        { date: "2026-05-01", amount: "Rs. 8,000.00", scheme: "Single Installment", status: "Settled Entirely", class: "active-status" },
+                        { date: "2026-05-25", amount: "Rs. 3,000.00", scheme: "Immediate Payout", status: "Rejected - Over Limit", class: "pending-status" }
+                    ]
+                }
+            };
+
+            const activeProfile = supplierDataDB[supplierId] || supplierDataDB['SL001'];
+            
+            // Populate Details
+            document.getElementById('detSupplierName').textContent = activeProfile.name;
+            document.getElementById('detSupplierID').textContent = supplierId;
+            document.getElementById('detFieldNo').textContent = activeProfile.field;
+            document.getElementById('detNIC').textContent = activeProfile.nic;
+            document.getElementById('detPhone').textContent = activeProfile.phone;
+            document.getElementById('detAddress').textContent = activeProfile.address;
+            document.getElementById('detBankNo').textContent = activeProfile.bankNo;
+            document.getElementById('detBankName').textContent = activeProfile.bankName;
+            document.getElementById('detBankBranch').textContent = activeProfile.branch;
+
+            // Render Collections Function
+            function displayCollections(records) {
+                const collectionBody = document.getElementById('collectionTableBody');
+                if (records.length === 0) {
+                    collectionBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #999;">No matching collection dates found.</td></tr>`;
+                    return;
+                }
+                collectionBody.innerHTML = records.map(c => `
+                    <tr>
+                        <td><strong>${c.date}</strong></td>
+                        <td>${c.gross}</td>
+                        <td>${c.moisture}</td>
+                        <td style="font-weight:600; color:#133222;">${c.net}</td>
+                        <td style="font-weight:600; color:#27ae60;">${c.paid}</td>
+                        <td><span class="status-settled">Recorded</span></td>
+                    </tr>
+                `).join('');
+            }
+
+            // Initial Draw
+            displayCollections(activeProfile.collections);
+
+            // Render Advances
+            const advanceBody = document.getElementById('advanceTableBody');
+            advanceBody.innerHTML = activeProfile.advances.map(a => `
+                <tr>
+                    <td><strong>${a.date}</strong></td>
+                    <td style="font-weight:600;">${a.amount}</td>
+                    <td>${a.scheme}</td>
+                    <td class="${a.class}">${a.status}</td>
+                </tr>
+            `).join('');
+
+            // Date Search Filter Logic
+            const logDateSearchInput = document.getElementById('logDateSearch');
+            logDateSearchInput.addEventListener('input', (e) => {
+                const searchString = e.target.value.trim().toLowerCase();
+                const filteredCollections = activeProfile.collections.filter(item => 
+                    item.date.toLowerCase().includes(searchString)
+                );
+                displayCollections(filteredCollections);
+            });
+       
+    </script>
+</body>
+</html>

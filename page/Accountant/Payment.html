@@ -3,201 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Supplier Settlement Desk</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <title>Tea Factory - Pending Payments</title>
+    <!-- Include FontAwesome for Icons -->
+     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/pay.css">
 </head>
-<body class="bg-slate-100 min-h-screen font-sans text-slate-900 antialiased"
-      x-data="{
-        grossBill: 0,
-        leafCount: 0,
-        leafRate: 15,
-        otherAdditions: 0,
-        otherDeductions: 0,
-        advances: [
-            { id: 'ADV-2026-001', date: '2026-05-10', amount: 5000, selected: false },
-            { id: 'ADV-2026-014', date: '2026-05-18', amount: 12000, selected: false },
-            { id: 'ADV-2026-029', date: '2026-05-25', amount: 3500, selected: false }
-        ],
-        searchQuery: '',
-        
-        get leafLoss() { return this.leafCount * this.leafRate },
-        get totalDeductions() { return this.leafLoss + parseFloat(this.otherDeductions || 0) },
-        get totalAdditions() { return parseFloat(this.otherAdditions || 0) },
-        
-        get rawAdvancesSum() {
-            return this.advances.filter(a => a.selected).reduce((sum, a) => sum + a.amount, 0);
-        },
-        
-        // Advanced Safeguard: Prevent advances from driving the net payable below zero
-        get appliedAdvances() {
-            let limit = (parseFloat(this.grossBill || 0) + this.totalAdditions) - this.totalDeductions;
-            return Math.min(this.rawAdvancesSum, Math.max(0, limit));
-        },
-        
-        get netPayable() {
-            let balance = (parseFloat(this.grossBill || 0) + this.totalAdditions) - this.totalDeductions - this.appliedAdvances;
-            return Math.max(0, balance);
-        },
-        
-        submitVoucher() {
-            if(!this.grossBill || this.grossBill <= 0) {
-                alert('Error: Please enter a valid gross bill amount.');
-                return;
-            }
-            alert('Voucher posted successfully! Printing ledger receipt...');
-            window.print();
-        }
-      }"
-      @keydown.ctrl.s.window.prevent="submitVoucher()"
-      @keydown.alt.a.window.prevent="advances.forEach(a => a.selected = false)">
+<body>
 
-    <div class="p-4 max-w-7xl mx-auto space-y-6">
-        
-        <header class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-                <h1 class="text-xl font-bold text-slate-900">Supplier Ledger Clearing Desk</h1>
-                <p class="text-xs text-slate-500">Keyboard Shortcuts: <kbd class="px-1.5 py-0.5 bg-slate-200 rounded font-mono">Ctrl + S</kbd> Post & Print | <kbd class="px-1.5 py-0.5 bg-slate-200 rounded font-mono">Alt + A</kbd> Reset Advances</p>
-            </div>
-            <div class="flex items-center gap-2 self-stretch sm:self-auto">
-                <button @click="grossBill=0; leafCount=0; otherAdditions=0; otherDeductions=0; advances.forEach(a => a.selected=false);" class="w-full sm:w-auto px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition">Clear Matrix</button>
+     <!-- BRANDED SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="/assets/Logo.png" alt="Logo">
+            <h1 class="factory-title">
+                CEYLON <span class="leaf-text">LEAF</span> 
+                <small>TEA FACTORY</small>
+            </h1>
+        </div>
+
+        <ul class="nav-links">
+            <li >
+                <a href="/page/Accountant/Accountant.html">
+                    <i class="ph ph-house"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/page/Accountant/supplier.html">
+                    <i class="ph ph-users"></i>
+                    <span>Suppliers</span>
+                </a>
+            </li>
+            <li>
+                <a href="reports.html">
+                    <i class="ph ph-chart-line-up"></i>
+                    <span>Reports</span>
+                </a>
+            </li>
+            <li class="active">
+                <a  href="/page/Accountant/Payment.html">
+                    <i class="ph ph-wallet"></i>
+                    <span>Payments</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+   <!-- MAIN APP CONTENT AREA -->
+    <div class="main-content">
+        <!-- TOP NAVBAR WITH DROPDOWN -->
+        <header class="top-navbar">
+            <div class="nav-title"> Pending Payments</div>
+            <div class="nav-profile" id="profileDropdownBtn">
+                <span class="profile-name" id="userProfileName">Dilshan</span>
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="profile-img">
+                <i class="ph ph-caret-down drop-arrow"></i>
+                
+                <div class="dropdown-menu" id="profileDropdownMenu">
+                    <div class="dropdown-header">
+                        <p class="user-role">Accountant Account</p>
+                        <small id="userProfileEmail">Dilshan@gmail.com</small>
+                    </div>
+                    <hr>
+                    <a href="/page/profile.html"><i class="ph ph-user"></i> My Profile</a>
+                    <a href="/page/settings.html"><i class="ph ph-gear"></i> Settings</a>
+                    <a href="/page/login.html" class="logout-btn" id="logoutBtn"><i class="ph ph-sign-out"></i> Log Out</a>
+                </div>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            
-            <div class="lg:col-span-2 space-y-6">
-                
-                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Active Supplier Account</label>
-                        <select class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
-                            <option value="1">Alpha Leaf & Agriculture Hub (Vendor #V9902)</option>
-                            <option value="2">Apex Wholesale Tea Distributors (Vendor #V1044)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Gross Base Invoice</label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-2.5 text-slate-400 text-sm">$</span>
-                            <input type="number" x-model.number="grossBill" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 pl-7 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none" placeholder="0.00">
-                        </div>
-                    </div>
-                </div>
 
-                <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
-                        <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Quality Deductions & Variable Adjustments</h2>
-                    </div>
-                    <div class="p-6 space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-rose-50/50 p-4 rounded-xl border border-rose-100">
-                            <div>
-                                <label class="block text-xs font-semibold text-rose-900 mb-1">Bad Leaf Weight (Kg)</label>
-                                <input type="number" x-model.number="leafCount" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-sm font-medium focus:ring-2 focus:ring-rose-400 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-rose-900 mb-1">Deduct Rate per Kg</label>
-                                <input type="number" x-model.number="leafRate" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-sm font-medium focus:ring-2 focus:ring-rose-400 outline-none">
-                            </div>
-                            <div class="flex flex-col justify-center items-start md:items-end">
-                                <span class="text-xs font-semibold text-rose-700">Calculated Crop Penalty</span>
-                                <span class="text-lg font-black text-rose-600" x-text="'$ ' + leafLoss.toFixed(2)">$ 0.00</span>
-                            </div>
-                        </div>
+        <!-- SEARCH BOX -->
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search supplier by name or ID...">
+        </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Logistics / Handling Additions (+)</label>
-                                <input type="number" x-model.number="otherAdditions" class="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="0.00">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Other Structural Penalties (-)</label>
-                                <input type="number" x-model.number="otherDeductions" class="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="0.00">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Unredeemed Advanced Cash Reserves</h2>
-                        <input type="text" x-model="searchQuery" placeholder="Filter by Reference ID..." class="bg-white border border-slate-300 rounded-lg px-3 py-1 text-xs outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-48">
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-100 text-[10px] uppercase font-bold text-slate-500 border-b border-slate-200">
-                                    <th class="p-3 text-center w-16">Link</th>
-                                    <th class="p-3">Reference Voucher</th>
-                                    <th class="p-3">Date Issued</th>
-                                    <th class="p-3 text-right">Available Principal</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-200 text-sm">
-                                <template x-for="adv in advances.filter(a => a.id.toLowerCase().includes(searchQuery.toLowerCase()))" :key="adv.id">
-                                    <tr class="hover:bg-slate-50/80 transition cursor-pointer" @click="adv.selected = !adv.selected">
-                                        <td class="p-3 text-center" @click.stop>
-                                            <input type="checkbox" x-model="adv.selected" class="w-4 h-4 rounded text-blue-600 accent-blue-600">
-                                        </td>
-                                        <td class="p-3 font-mono text-xs font-bold text-slate-700" x-text="adv.id"></td>
-                                        <td class="p-3 text-slate-500 text-xs" x-text="adv.date"></td>
-                                        <td class="p-3 text-right font-semibold text-amber-700 font-mono" x-text="'$ ' + adv.amount.toLocaleString()"></td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="space-y-4 lg:sticky lg:top-4">
-                <div class="bg-slate-900 text-white rounded-2xl shadow-xl overflow-hidden border border-slate-950">
-                    <div class="p-4 bg-slate-800 border-b border-slate-700/60 text-center">
-                        <span class="text-[10px] font-mono tracking-widest text-slate-400 uppercase">Settlement Voucher Run</span>
-                    </div>
-
-                    <div class="p-6 space-y-4 font-mono text-xs">
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">Base Invoice gross:</span>
-                            <span class="font-bold text-sm" x-text="'$ ' + (grossBill || 0).toLocaleString(undefined, {minimumFractionDigits: 2})"></span>
-                        </div>
-                        <div class="flex justify-between text-blue-400">
-                            <span>(+) Freight Additions:</span>
-                            <span class="font-bold text-sm" x-text="'$ ' + totalAdditions.toLocaleString(undefined, {minimumFractionDigits: 2})"></span>
-                        </div>
-                        <div class="flex justify-between text-rose-400">
-                            <span>(-) Material Penalties:</span>
-                            <span class="font-bold text-sm" x-text="'$ ' + totalDeductions.toLocaleString(undefined, {minimumFractionDigits: 2})"></span>
-                        </div>
-                        <div class="flex justify-between text-amber-400">
-                            <span>(-) Linked Advance Pool:</span>
-                            <span class="font-bold text-sm" x-text="'$ ' + appliedAdvances.toLocaleString(undefined, {minimumFractionDigits: 2})"></span>
-                        </div>
-
-                        <div x-show="rawAdvancesSum > appliedAdvances" class="bg-amber-950/50 border border-amber-800 p-2.5 rounded text-[11px] text-amber-300 leading-normal">
-                            ⚠️ Advance pool restricted to match outstanding bill balance. Remaining balance stays on supplier account ledger.
-                        </div>
-
-                        <div class="border-t border-dashed border-slate-700 pt-4 my-2"></div>
-
-                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 text-center">
-                            <span class="text-[10px] text-slate-500 uppercase tracking-widest block font-bold mb-1">Final Outflow Net Balance</span>
-                            <span class="text-2xl font-black text-emerald-400 tracking-tight" x-text="'$ ' + netPayable.toLocaleString(undefined, {minimumFractionDigits: 2})"></span>
-                        </div>
-                    </div>
-
-                    <div class="p-4 bg-slate-950 border-t border-slate-800/60 space-y-2">
-                        <button @click="submitVoucher()" class="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-slate-950 font-bold text-sm py-3 rounded-xl shadow-lg transition cursor-pointer">
-                            Post Voucher Ledger & Print
-                        </button>
-                    </div>
-                </div>
-            </div>
-
+        <!-- TABLE CARD -->
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Supplier ID</th>
+                        <th>Supplier Name</th>
+                        <th>Route</th>
+                        <th>This Month Leaf</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Supplier 01 -->
+                    <tr>
+                        <td class="highlight-code">SUP-0042</td>
+                        <td><b>M.R. Gunawardena</b></td>
+                        <td>Hiniduma Route 02</td>
+                        <td>850 kg</td>
+                        <td><span class="pending-status">● Pending</span></td>
+                        <td>
+                            <!-- URL Parameters pass data automatically -->
+                            <a href="/page/Accountant/pay.html" class="view-btn-link">
+                                <button class="view-btn">Process Pay</button>
+                            </a>
+                        </td>
+                    </tr>
+                    <!-- Supplier 02 -->
+                    <tr>
+                        <td class="highlight-code">SUP-0089</td>
+                        <td><b>A.C. Perera</b></td>
+                        <td>Deniyaya Route 05</td>
+                        <td>1200 kg</td>
+                        <td><span class="pending-status">● Pending</span></td>
+                        <td>
+                            <a href="/page/Accountant/pay.html" class="view-btn-link">
+                                <button class="view-btn">Process Pay</button>
+                            </a>
+                        </td>
+                    </tr>
+                    <!-- Supplier 03 -->
+                    <tr>
+                        <td class="highlight-code">SUP-0114</td>
+                        <td><b>S. Kusumlatha</b></td>
+                        <td>Morawaka Route 01</td>
+                        <td>640 kg</td>
+                        <td><span class="pending-status">● Pending</span></td>
+                        <td>
+                            <a href="/page/Accountant/pay.html" class="view-btn-link">
+                                <button class="view-btn">Process Pay</button>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+            const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+            const dropArrow = profileDropdownBtn.querySelector('.drop-arrow');
 
+            profileDropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdownMenu.classList.toggle('show');
+                if(profileDropdownMenu.classList.contains('show')) {
+                    dropArrow.style.transform = 'rotate(180deg)';
+                } else {
+                    dropArrow.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            document.addEventListener('click', () => {
+                if (profileDropdownMenu.classList.contains('show')) {
+                    profileDropdownMenu.classList.remove('show');
+                    dropArrow.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            const savedEmail = localStorage.getItem('userEmail');
+            if (savedEmail) {
+                document.getElementById('userProfileEmail').textContent = savedEmail;
+                const namePart = savedEmail.split('@')[0];
+                const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+                document.getElementById('userProfileName').textContent = capitalizedName;
+            }
+
+            const logoutBtn = document.getElementById('logoutBtn');
+            if(logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('userEmail');
+                    alert('Logging out...');
+                    window.location.href = '/page/login.html';
+                });
+            }
+        });
+    </script>
 </body>
 </html>
