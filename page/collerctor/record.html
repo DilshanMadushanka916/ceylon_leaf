@@ -76,7 +76,7 @@
         </section>
     </main>
 
-    <div id="footer"></div>
+   
      <script>
     document.addEventListener('DOMContentLoaded', () => {
     // 1. Initial load from your backend
@@ -165,6 +165,16 @@ async function fetchRecords() {
 
         // Clear placeholder items cleanly
         tableBody.innerHTML = "";
+        
+        // Sort records in reverse order (newest first by date, then by ID)
+        data.sort((a, b) => {
+            const dateA = new Date(a.Collection_Date || 0);
+            const dateB = new Date(b.Collection_Date || 0);
+            const dateDiff = dateB - dateA; // Descending order (newest first)
+            if (dateDiff !== 0) return dateDiff;
+            // If dates are same, sort by ID descending (last added first)
+            return (b.id || 0) - (a.id || 0);
+        });
         
         data.forEach(record => {
             // MATCHING YOUR EXACT MYSQL CAPS:

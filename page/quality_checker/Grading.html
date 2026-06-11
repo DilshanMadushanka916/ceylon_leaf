@@ -256,8 +256,15 @@
         const gradingForm = document.getElementById('gradingForm');
         const tableElement = document.querySelector('.records table');
 
-        // Extract and map standard format ISO calendar stamps (YYYY-MM-DD)
-        const todayString = new Date().toISOString().split('T')[0];
+        function getLocalDateString(date = new Date()) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Use the browser's local calendar date so early-morning entries do not save as yesterday.
+        const todayString = getLocalDateString();
         dateInput.value = todayString;
 
         // 1. SUPPLIER AUTOCOMPLETE FILTER DRAWER LOOKUP PIPELINE
@@ -320,9 +327,16 @@
             }
         });
 
+        dateInput.addEventListener('change', () => {
+            if (supplierIdInput.value) {
+                fetchSupplierCollectionData(supplierIdInput.value);
+            }
+        });
+
         // Extract recorded load volumes maps metrics configurations paths
         function fetchSupplierCollectionData(supplierId) {
-            fetch(`http://localhost:3000/api/collection-lookup/${encodeURIComponent(supplierId)}`)
+            const selectedDate = dateInput.value || todayString;
+            fetch(`http://localhost:3000/api/collection-lookup/${encodeURIComponent(supplierId)}?date=${encodeURIComponent(selectedDate)}`)
                 .then(response => {
                     if (!response.ok) throw new Error('Not found across systems');
                     return response.json();
@@ -354,13 +368,23 @@
         weightInput.addEventListener('input', calculateNetWeight);
 
         // 3. SECURE PACKET NETWORK TRAFFIC ROUTING PIPELINES (FORM SUBMISSION)
+let isSubmitting = false; // Prevent double submission
+
 gradingForm.addEventListener('submit', (e) => {
     e.preventDefault();
+
+    // Prevent double submission
+    if (isSubmitting) {
+        console.warn("Form submission already in progress...");
+        return;
+    }
+    isSubmitting = true;
 
     // Validate that the autocomplete tracking fields have parsed data maps safely
     if (!supplierIdInput.value) {
         alert("❌ Please select a supplier from the autocomplete list first!");
         supplierSearchInput.focus();
+        isSubmitting = false;
         return;
     }
 
@@ -382,6 +406,7 @@ gradingForm.addEventListener('submit', (e) => {
     // Basic safety integrity form check boundaries evaluations parameters rules
     if (!dataPayload.supplier_id || !dataPayload.grade) {
         alert("🔴 Please select a Quality Grade and map a correct Supplier!");
+        isSubmitting = false;
         return;
     }
 
@@ -402,7 +427,9 @@ gradingForm.addEventListener('submit', (e) => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         supplier_id: dataPayload.supplier_id,
-                        status: 'checked' 
+                        collection_date: dataPayload.grading_date,
+                        field_no: dataPayload.field_no,
+                        status: 'Checked'
                     })
                 });
                 const statusData = await statusUpdateResponse.json();
@@ -419,12 +446,17 @@ gradingForm.addEventListener('submit', (e) => {
             dateInput.value = todayString; // Reassign standard calendar lock back cleanly
             supplierSearchInput.value = '';
             supplierIdInput.value = '';
+            isSubmitting = false;
             fetchRecentGrades(); // Reload data logs components grids instantly without visual flickers
         } else {
             alert('Error Processing Operation: ' + resData.message);
+            isSubmitting = false;
         }
     })
-    .catch(err => console.error("Submission Payload Crash Error:", err));
+    .catch(err => {
+        console.error("Submission Payload Crash Error:", err);
+        isSubmitting = false;
+    });
 });
 
         // 4. LIVE LOG COMPILATION RENDERING TABLE CONTROLLER MODULES

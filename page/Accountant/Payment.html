@@ -72,68 +72,42 @@
         </header>
 
 
-        <!-- SEARCH BOX -->
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Search supplier by name or ID...">
+        <!-- EMPTY STATE MESSAGE -->
+        <div id="emptyStateMessage" style="display:none; text-align:center; padding:60px 20px;">
+            <i class="ph ph-warning" style="font-size:60px; color:#ccc; margin-bottom:20px;"></i>
+            <h2 style="color:#666; margin-bottom:10px;">No Pending Supplier Payments</h2>
+            <p style="color:#999; font-size:16px;">All supplier payments are up to date.</p>
         </div>
 
-        <!-- TABLE CARD -->
-        <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Supplier ID</th>
-                        <th>Supplier Name</th>
-                        <th>Route</th>
-                        <th>This Month Leaf</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Supplier 01 -->
-                    <tr>
-                        <td class="highlight-code">SUP-0042</td>
-                        <td><b>M.R. Gunawardena</b></td>
-                        <td>Hiniduma Route 02</td>
-                        <td>850 kg</td>
-                        <td><span class="pending-status">● Pending</span></td>
-                        <td>
-                            <!-- URL Parameters pass data automatically -->
-                            <a href="/page/Accountant/pay.html" class="view-btn-link">
-                                <button class="view-btn">Process Pay</button>
-                            </a>
-                        </td>
-                    </tr>
-                    <!-- Supplier 02 -->
-                    <tr>
-                        <td class="highlight-code">SUP-0089</td>
-                        <td><b>A.C. Perera</b></td>
-                        <td>Deniyaya Route 05</td>
-                        <td>1200 kg</td>
-                        <td><span class="pending-status">● Pending</span></td>
-                        <td>
-                            <a href="/page/Accountant/pay.html" class="view-btn-link">
-                                <button class="view-btn">Process Pay</button>
-                            </a>
-                        </td>
-                    </tr>
-                    <!-- Supplier 03 -->
-                    <tr>
-                        <td class="highlight-code">SUP-0114</td>
-                        <td><b>S. Kusumlatha</b></td>
-                        <td>Morawaka Route 01</td>
-                        <td>640 kg</td>
-                        <td><span class="pending-status">● Pending</span></td>
-                        <td>
-                            <a href="/page/Accountant/pay.html" class="view-btn-link">
-                                <button class="view-btn">Process Pay</button>
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- PAYMENTS CONTENT (Search + Table) -->
+        <div id="paymentsContent">
+            <!-- SEARCH BOX -->
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search supplier by name or ID...">
+            </div>
+
+            <!-- TABLE CARD -->
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Supplier ID</th>
+                            <th>Supplier Name</th>
+                            <th>Route</th>
+                            <th>Total Leaves</th>
+                            <th>Moisture Deduction</th>
+                            <th>Net Weight</th>
+                            <th>Amount Earned</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentTableBody">
+                        <!-- loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 <script>
@@ -176,6 +150,65 @@
                     window.location.href = '/page/login.html';
                 });
             }
+
+            const paymentTableBody = document.getElementById('paymentTableBody');
+            const searchInput = document.querySelector('.search-box input');
+            const emptyStateMessage = document.getElementById('emptyStateMessage');
+            const paymentsContent = document.getElementById('paymentsContent');
+
+            async function loadPaymentSummaries() {
+                try {
+                    const res = await fetch('/api/pending-supplier-payments');
+                    if (!res.ok) throw new Error('Failed to fetch pending supplier payments');
+                    const summaries = await res.json();
+                    if (!summaries || summaries.length === 0) {
+                        paymentsContent.style.display = 'none';
+                        emptyStateMessage.style.display = 'block';
+                        return;
+                    }
+                    paymentsContent.style.display = 'block';
+                    emptyStateMessage.style.display = 'none';
+                    paymentTableBody.innerHTML = summaries.map(item => {
+                        const statusClass = 'pending-status';
+                        return `
+                            <tr data-supplier-id="${item.supplier_id}" data-summary-month="${item.summary_month || ''}">
+                                <td class="highlight-code">${item.supplier_id}</td>
+                                <td><b>${item.supplier_name || '-'}</b></td>
+                                <td>${item.supplier_field || '-'}</td>
+                                <td>${Number(item.total_tea_leaves || 0).toFixed(2)} kg</td>
+                                <td>${Number(item.total_moisture_deduction || 0).toFixed(2)} kg</td>
+                                <td>${Number(item.total_net_weight || 0).toFixed(2)} kg</td>
+                                <td>Rs. ${Number(item.total_amount_earned || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td><span class="${statusClass}">● ${item.payout_status || 'Pending'}</span></td>
+                                <td>
+                                    <a href="pay.html?supplier_id=${encodeURIComponent(item.supplier_id)}&summary_month=${encodeURIComponent(item.summary_month || '')}" class="view-btn-link">
+                                        <button class="view-btn">Process Pay</button>
+                                    </a>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } catch (err) {
+                    paymentsContent.style.display = 'none';
+                    emptyStateMessage.innerHTML = '<i class="ph ph-warning" style="font-size:60px; color:#e74c3c; margin-bottom:20px;"></i><h2 style="color:#e74c3c; margin-bottom:10px;">Unable to Load Payment Data</h2><p style="color:#999; font-size:16px;">Please try refreshing the page.</p>';
+                    emptyStateMessage.style.display = 'block';
+                    console.error(err);
+                }
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const q = e.target.value.trim().toLowerCase();
+                    Array.from(paymentTableBody.querySelectorAll('tr')).forEach(row => {
+                        const supplierId = row.children[0]?.textContent.toLowerCase() || '';
+                        const supplierName = row.children[1]?.textContent.toLowerCase() || '';
+                        const match = supplierId.includes(q) || supplierName.includes(q);
+                        row.style.display = match ? '' : 'none';
+                    });
+                });
+            }
+
+            loadPaymentSummaries();
         });
     </script>
 </body>

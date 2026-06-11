@@ -141,27 +141,32 @@
         <!-- DAILY TEA LOGS WITH DATE SEARCH FILTER & PAID AMOUNT -->
         <div class="table-card" style="margin-bottom: 25px;">
             <div class="table-card-header search-header">
-                <h3><i class="ph ph-calendar-check"></i> Daily Tea Leaf Collection Log</h3>
+                <div>
+                    <h3><i class="ph ph-calendar-check"></i> Daily Tea Leaf Collection Log</h3>
+                    <small style="color: #999; font-size: 0.9rem; margin-top: 4px; display: block;"><span id="collectionRecordCount">0</span> records</small>
+                </div>
                 <div class="log-search-wrapper">
                     <i class="ph ph-calendar-search"></i>
                     <input type="text" id="logDateSearch" placeholder="Filter by Date (YYYY-MM-DD)...">
                 </div>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Collection Date</th>
-                        <th>Gross Weight (kg)</th>
-                        <th>Moisture Deduction (kg)</th>
-                        <th>Net Weight (kg)</th>
-                        <th>Paid Amount (Rs.)</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="collectionTableBody">
-                    <!-- Dynamic Rows -->
-                </tbody>
-            </table>
+            <div class="table-scroll-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Collection Date</th>
+                            <th>Gross Weight (kg)</th>
+                            <th>Moisture Deduction (kg)</th>
+                            <th>Net Weight (kg)</th>
+                            <th>Paid Amount (Rs.)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="collectionTableBody">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- ADVANCE ISSUANCE HISTORY -->
@@ -169,19 +174,21 @@
             <div class="table-card-header">
                 <h3><i class="ph ph-coins"></i> Advance Request History</h3>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Request Date</th>
-                        <th>Requested Amount</th>
-                        <th>Deduction Scheme</th>
-                        <th>Approval Status</th>
-                    </tr>
-                </thead>
-                <tbody id="advanceTableBody">
-                    <!-- Dynamic Rows -->
-                </tbody>
-            </table>
+            <div class="table-scroll-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Request Date</th>
+                            <th>Requested Amount</th>
+                            <th>Deduction Scheme</th>
+                            <th>Approval Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="advanceTableBody">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </div>
@@ -234,92 +241,139 @@
     <script>
 
             const urlParams = new URLSearchParams(window.location.search);
-            const supplierId = urlParams.get('id') || 'SL001';
+            const supplierId = urlParams.get('id') || 'SP001';
 
-            const supplierDataDB = {
-                'SL001': {
-                    name: "Anura Perera", field: "Field F-12", nic: "197824501470V", phone: "+94 77 123 4567",
-                    address: "42, Galle Road, Deniyaya, Sri Lanka", bankNo: "8145009214", bankName: "Bank of Ceylon (BOC)", branch: "Deniyaya Branch",
-                    collections: [
-                        { date: "2026-06-01", gross: "45.00 kg", moisture: "2.50 kg", net: "42.50 kg", paid: "Rs. 8,500.00" },
-                        { date: "2026-05-30", gross: "52.00 kg", moisture: "3.00 kg", net: "49.00 kg", paid: "Rs. 9,800.00" },
-                        { date: "2026-05-28", gross: "60.00 kg", moisture: "3.20 kg", net: "56.80 kg", paid: "Rs. 11,360.00" },
-                        { date: "2026-05-15", gross: "51.00 kg", moisture: "2.00 kg", net: "49.00 kg", paid: "Rs. 9,800.00" }
-                    ],
-                    advances: [
-                        { date: "2026-05-15", amount: "Rs. 5,000.00", scheme: "Single Installment (June Payout)", status: "Approved & Paid", class: "active-status" },
-                        { date: "2026-04-10", amount: "Rs. 10,000.00", scheme: "Two Installments", status: "Settled Entirely", class: "active-status" }
-                    ]
-                },
-                'SL002': {
-                    name: "Disna Silva", field: "Field F-08", nic: "198561203991V", phone: "+94 71 987 6543",
-                    address: "88/2, Passara Road, Ella, Sri Lanka", bankNo: "007020145561", bankName: "People's Bank", branch: "Ella Branch",
-                    collections: [
-                        { date: "2026-06-02", gross: "72.00 kg", moisture: "4.00 kg", net: "68.00 kg", paid: "Rs. 13,600.00" },
-                        { date: "2026-05-29", gross: "55.50 kg", moisture: "2.10 kg", net: "53.40 kg", paid: "Rs. 10,680.00" }
-                    ],
-                    advances: [
-                        { date: "2026-05-01", amount: "Rs. 8,000.00", scheme: "Single Installment", status: "Settled Entirely", class: "active-status" },
-                        { date: "2026-05-25", amount: "Rs. 3,000.00", scheme: "Immediate Payout", status: "Rejected - Over Limit", class: "pending-status" }
-                    ]
+            // Fetch supplier details, collections and advances from server
+            async function loadSupplier() {
+                try {
+                    const [supRes, colRes, advRes] = await Promise.all([
+                        fetch(`/api/supplier/${supplierId}`),
+                        fetch(`/api/supplier/${supplierId}/payment-collections`),
+                        fetch(`/api/supplier/${supplierId}/advances`)
+                    ]);
+
+                    if (!supRes.ok) throw new Error('Failed to load supplier');
+                    const supplier = await supRes.json();
+
+                    // Populate supplier fields
+                    document.getElementById('detSupplierName').textContent = supplier.name || '-';
+                    document.getElementById('detSupplierID').textContent = supplier.sup_id || supplierId;
+                    document.getElementById('detFieldNo').textContent = supplier.supplier_field || '-';
+                    document.getElementById('detNIC').textContent = supplier.nic_number || '-';
+                    document.getElementById('detPhone').textContent = supplier.phone_number || '-';
+                    const address = [supplier.address_line1, supplier.address_line2].filter(Boolean).join(', ');
+                    document.getElementById('detAddress').textContent = address || '-';
+                    document.getElementById('detBankNo').textContent = supplier.bank_account_number || '-';
+                    document.getElementById('detBankName').textContent = supplier.bank_name || '-';
+                    document.getElementById('detBankBranch').textContent = supplier.branch_location || '-';
+
+                    // Collections
+                    let collections = [];
+                    if (colRes.ok) {
+                        collections = await colRes.json();
+                        console.log('Collections loaded:', collections.length, 'records');
+                    } else {
+                        console.error('Payment collection API failed:', await colRes.text());
+                    }
+
+                    if (!collections || collections.length === 0) {
+                        const fallbackRes = await fetch(`/api/collections/${supplierId}`);
+                        if (fallbackRes.ok) {
+                            collections = await fallbackRes.json();
+                            console.log('Fallback collections loaded:', collections.length, 'records');
+                        }
+                    }
+
+                    const paymentRows = (collections || []).map(c => {
+                        const moistureValue = c.moisture_deduction ?? c.moisture ?? c.Moisture_Deduction ?? c.moistureDeduction ?? 0;
+                        const netValue = c.net_weight ?? c.net ?? c.Net_Weight ?? c.netWeight;
+                        const paidAmount = c.payment_amount ?? c.total_amount;
+                        return {
+                            date: formatDateOnly(c.Collection_Date || c.payment_created_at || c.created_at),
+                            gross: Number(c.Kilos_Collected || c.kilos_collected || c.weight || 0).toFixed(2),
+                            moisture: Number(moistureValue).toFixed(2),
+                            net: netValue != null ? Number(netValue).toFixed(2) : (Number(c.Kilos_Collected || c.kilos_collected || c.weight || 0) - Number(moistureValue)).toFixed(2),
+                            paid: paidAmount != null ? Number(paidAmount) : 0,
+                            status: c.payment_status || 'Recorded'
+                        };
+                    });
+
+                    displayCollections(paymentRows);
+
+                    // Advances
+                    const advanceBody = document.getElementById('advanceTableBody');
+                    if (advRes.ok) {
+                        const advances = await advRes.json();
+                        if (!advances || advances.length === 0) {
+                            advanceBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#999;">No advance history found.</td></tr>`;
+                        } else {
+                            advanceBody.innerHTML = advances.map(a => `
+                                <tr>
+                                    <td><strong>${a.request_date ? (new Date(a.request_date)).toISOString().split('T')[0] : '-'}</strong></td>
+                                    <td style="font-weight:600;">Rs. ${Number(a.requested_amount || 0).toLocaleString()}</td>
+                                    <td>${a.deduction_scheme || '-'}</td>
+                                    <td>${a.approval_status || '-'}</td>
+                                </tr>
+                            `).join('');
+                        }
+                    } else {
+                        advanceBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#999;">Failed to load advances.</td></tr>`;
+                    }
+
+                } catch (err) {
+                    console.error('Load error', err);
                 }
-            };
+            }
 
-            const activeProfile = supplierDataDB[supplierId] || supplierDataDB['SL001'];
-            
-            // Populate Details
-            document.getElementById('detSupplierName').textContent = activeProfile.name;
-            document.getElementById('detSupplierID').textContent = supplierId;
-            document.getElementById('detFieldNo').textContent = activeProfile.field;
-            document.getElementById('detNIC').textContent = activeProfile.nic;
-            document.getElementById('detPhone').textContent = activeProfile.phone;
-            document.getElementById('detAddress').textContent = activeProfile.address;
-            document.getElementById('detBankNo').textContent = activeProfile.bankNo;
-            document.getElementById('detBankName').textContent = activeProfile.bankName;
-            document.getElementById('detBankBranch').textContent = activeProfile.branch;
+            // Render Collections Function (keeps previous table structure)
+            function formatDateOnly(value) {
+                if (!value) return '-';
+                if (typeof value === 'string') return value.split('T')[0];
+                return new Date(value).toISOString().split('T')[0];
+            }
 
-            // Render Collections Function
             function displayCollections(records) {
                 const collectionBody = document.getElementById('collectionTableBody');
-                if (records.length === 0) {
-                    collectionBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #999;">No matching collection dates found.</td></tr>`;
+                const recordCountEl = document.getElementById('collectionRecordCount');
+                if (!records || records.length === 0) {
+                    collectionBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #999;">No collection records found.</td></tr>`;
+                    if (recordCountEl) recordCountEl.textContent = '0';
                     return;
                 }
+                if (recordCountEl) recordCountEl.textContent = records.length;
                 collectionBody.innerHTML = records.map(c => `
                     <tr>
                         <td><strong>${c.date}</strong></td>
-                        <td>${c.gross}</td>
-                        <td>${c.moisture}</td>
-                        <td style="font-weight:600; color:#133222;">${c.net}</td>
-                        <td style="font-weight:600; color:#27ae60;">${c.paid}</td>
-                        <td><span class="status-settled">Recorded</span></td>
+                        <td>${c.gross} kg</td>
+                        <td>${c.moisture} kg</td>
+                        <td style="font-weight:600; color:#133222;">${c.net} kg</td>
+                        <td style="font-weight:600; color:#27ae60;">Rs. ${Number(c.paid).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td><span class="status-settled">${c.status || 'Recorded'}</span></td>
                     </tr>
                 `).join('');
             }
-
-            // Initial Draw
-            displayCollections(activeProfile.collections);
-
-            // Render Advances
-            const advanceBody = document.getElementById('advanceTableBody');
-            advanceBody.innerHTML = activeProfile.advances.map(a => `
-                <tr>
-                    <td><strong>${a.date}</strong></td>
-                    <td style="font-weight:600;">${a.amount}</td>
-                    <td>${a.scheme}</td>
-                    <td class="${a.class}">${a.status}</td>
-                </tr>
-            `).join('');
 
             // Date Search Filter Logic
             const logDateSearchInput = document.getElementById('logDateSearch');
             logDateSearchInput.addEventListener('input', (e) => {
                 const searchString = e.target.value.trim().toLowerCase();
-                const filteredCollections = activeProfile.collections.filter(item => 
-                    item.date.toLowerCase().includes(searchString)
-                );
-                displayCollections(filteredCollections);
+                // we re-load and filter from the currently rendered rows
+                const rows = Array.from(document.querySelectorAll('#collectionTableBody tr'));
+                if (searchString === '') {
+                    loadSupplier();
+                    return;
+                }
+                // simple client-side filter based on visible date cells
+                rows.forEach(r => {
+                    const dateCell = r.querySelector('td');
+                    if (!dateCell) return;
+                    const match = dateCell.textContent.toLowerCase().includes(searchString);
+                    r.style.display = match ? '' : 'none';
+                });
             });
+
+            // Initial load
+            loadSupplier();
        
     </script>
 </body>

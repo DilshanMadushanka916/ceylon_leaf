@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Tea Collection Management</title>
+
+
+<link rel="stylesheet" href="/Saccountant.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+
+
+<!-- BRANDED SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="/assets/Logo.png" alt="Logo">
+            <h1 class="factory-title">
+                CEYLON <span class="leaf-text">LEAF</span> 
+                <small>TEA FACTORY</small>
+            </h1>
+        </div>
+
+        <ul class="nav-links">
+            <li >
+               <a href="/page/superintan/Superintendent.html" id="menu-dashboard">
+            <i class="fa fa-house"></i>
+            Dashboard
+             </a>
+            </li>
+            <li class="active">
+                <a href="/page/superintan/factoryOverview.html" id="menu-factory">
+            <i class="fa fa-industry"></i>
+            Factory Overview
+        </a>
+            </li>
+            <li>
+               <a href="/page/superintan/Superinte_Report.html" id="menu-reports">
+            <i class="fa fa-file-lines"></i>
+            Reports
+        </a>
+            </li>
+            <li>
+                <a href="/page/superintan/Spay.html">
+                    <i class="ph ph-wallet"></i>
+                    <span>Payments</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+
+
+
+<!-- MAIN -->
+<div class="main">
+  <header class="top-navbar">
+            <div class="nav-title">Tea Collection Management</div>
+            <div class="nav-profile" id="profileDropdownBtn">
+                <span class="profile-name" id="userProfileName">Dilshan</span>
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="profile-img">
+                <i class="ph ph-caret-down drop-arrow"></i>
+                
+                <div class="dropdown-menu" id="profileDropdownMenu">
+                    <div class="dropdown-header">
+                        <p class="user-role">Accountant Account</p>
+                        <small id="userProfileEmail">Dilshan@gmail.com</small>
+                    </div>
+                    <hr>
+                    <a href="/page/profile.html"><i class="ph ph-user"></i> My Profile</a>
+                    <a href="/page/settings.html"><i class="ph ph-gear"></i> Settings</a>
+                    <a href="/page/login.html" class="logout-btn" id="logoutBtn"><i class="ph ph-sign-out"></i> Log Out</a>
+                </div>
+            </div>
+        </header>
+    
+
+ 
+    <div class="actions">
+
+        <button id="addBtn">
+            <i class="fas fa-plus"></i>
+            Add Collector
+        </button>
+
+        <button id="editBtn">
+            <i class="fas fa-edit"></i>
+            Edit Collector
+        </button>
+
+        <button id="viewBtn">
+            <i class="fas fa-eye"></i>
+            View Collector Details
+        </button>
+
+        <button id="deleteBtn">
+            <i class="fas fa-trash"></i>
+            Remove Collector
+        </button>
+
+    </div>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>NIC Number</th>
+                    <th>Age</th>
+                    <th>Phone Number</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+
+            <tbody id="accountantTable">
+
+                <tr>
+                    <td><input type="radio" name="accountant"></td>
+                    <td>Kasun</td>
+                    <td>kasun@gmail.com</td>
+                    <td>200012345678</td>
+                    <td>30</td>
+                    <td>0771234567</td>
+                    <td>Colombo</td>
+                </tr>
+
+                <tr>
+                    <td><input type="radio" name="accountant"></td>
+                    <td>Amal</td>
+                    <td>amal@gmail.com</td>
+                    <td>199812345678</td>
+                    <td>35</td>
+                    <td>0712345678</td>
+                    <td>Kandy</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- Modal -->
+
+<div class="modal" id="modal">
+
+    <div class="modal-content">
+
+        <span class="close">&times;</span>
+
+        <h2 id="modalTitle"></h2>
+
+        <div id="modalBody"></div>
+
+    </div>
+
+</div>
+
+</div> <!-- Close of main -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+            const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+            const dropArrow = profileDropdownBtn.querySelector('.drop-arrow');
+
+            profileDropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdownMenu.classList.toggle('show');
+                if(profileDropdownMenu.classList.contains('show')) {
+                    dropArrow.style.transform = 'rotate(180deg)';
+                } else {
+                    dropArrow.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            document.addEventListener('click', () => {
+                if (profileDropdownMenu.classList.contains('show')) {
+                    profileDropdownMenu.classList.remove('show');
+                    dropArrow.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            const savedEmail = localStorage.getItem('userEmail');
+            if (savedEmail) {
+                document.getElementById('userProfileEmail').textContent = savedEmail;
+                const namePart = savedEmail.split('@')[0];
+                const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+                document.getElementById('userProfileName').textContent = capitalizedName;
+            }
+
+            const logoutBtn = document.getElementById('logoutBtn');
+            if(logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('userEmail');
+                    alert('Logging out...');
+                    window.location.href = '/page/login.html';
+                });
+            }
+        });
+    </script>
+
+<script src="/js/superjs/teaCollection.js"></script>
+
+</body>
+</html>

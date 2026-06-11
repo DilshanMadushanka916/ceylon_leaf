@@ -61,10 +61,10 @@
                     </div>
                     <div class="identity-text">
                         <div class="code-and-status">
-                            <span class="hero-value-badge">SL001</span>
-                            <span class="hero-status-pill"><span class="status-dot"></span> Active Session</span>
+                            <span class="hero-value-badge" id="paySupplierId">SL001</span>
+                            <span class="hero-status-pill"><span class="status-dot"></span> <span id="paySupplierStatus">Active Session</span></span>
                         </div>
-                        <h2 class="hero-value-primary">Anura Perera</h2>
+                        <h2 class="hero-value-primary" id="paySupplierName">Anura Perera</h2>
                     </div>
                 </div>
 
@@ -74,21 +74,34 @@
                         <i class="fas fa-phone-alt"></i>
                         <div>
                             <span class="info-lbl">Phone Number</span>
-                            <span class="info-val">+94 77 123 4567</span>
+                            <span class="info-val" id="paySupplierPhone">+94 77 123 4567</span>
                         </div>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-map-marker-alt"></i>
                         <div>
                             <span class="info-lbl">Route / Address</span>
-                            <span class="info-val">Deniyaya Road, Ratnapura</span>
+                            <span class="info-val" id="paySupplierRoute">Deniyaya Road, Ratnapura</span>
                         </div>
                     </div>
                     <div class="info-item">
-                        <i class="fas fa-calendar-alt"></i>
+                        <i class="fas fa-calendar-days"></i>
                         <div>
-                            <span class="info-lbl">Last Payment Date</span>
-                            <span class="info-val">May 10, 2026</span>
+                            <span class="info-lbl">Payment Date</span>
+                            <select id="paymentDateMonth" disabled style="padding:6px 8px;border-radius:4px;border:1px solid #ddd;font-size:0.9rem;background-color:#f5f5f5;cursor:not-allowed;">
+                                <option value="01">January</option>
+                                <option value="02">February</option>
+                                <option value="03">March</option>
+                                <option value="04">April</option>
+                                <option value="05">May</option>
+                                <option value="06" selected>June</option>
+                                <option value="07">July</option>
+                                <option value="08">August</option>
+                                <option value="09">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
                         </div>
                     </div>
                     <div class="info-item">
@@ -103,13 +116,14 @@
             </div>
         </div>
 
+        <div id="payErrorMessage" class="error-message" style="display:none;color:#e74c3c;text-align:center;margin:16px 0;font-weight:700;"></div>
         <!-- METRICS CARDS GRID (AUTO RE-SIZE ACROSS ALL SCREEN WIDTHS) -->
         <div class="metrics-grid">
             <div class="metric-card card-leaves">
                 <div class="card-icon"><i class="fas fa-leaf"></i></div>
                 <div class="card-data">
                     <h3>Total Tea Leaves</h3>
-                    <p class="stat-value">1,250 kg</p>
+                    <p class="stat-value" id="payTotalLeaves">1,250 kg</p>
                     <span class="stat-lbl">Delivered Monthly Crop</span>
                 </div>
             </div>
@@ -118,7 +132,7 @@
                 <div class="card-icon"><i class="fas fa-tint"></i></div>
                 <div class="card-data">
                     <h3>Moisture Deduction</h3>
-                    <p class="stat-value text-warning">25 kg</p>
+                    <p class="stat-value text-warning" id="payMoisture">25 kg</p>
                     <span class="stat-lbl">Water weight reduction (2%)</span>
                 </div>
             </div>
@@ -127,7 +141,7 @@
                 <div class="card-icon"><i class="fas fa-balance-scale"></i></div>
                 <div class="card-data">
                     <h3>Net Weight</h3>
-                    <p class="stat-value" style="color: #27ae60;">1,225 kg</p>
+                    <p class="stat-value" style="color: #27ae60;" id="payNetWeight">1,225 kg</p>
                     <span class="stat-lbl">Final weight for payout</span>
                 </div>
             </div>
@@ -179,11 +193,11 @@
                     </div>
                     <div class="calc-row">
                         <span class="calc-label">GROSS SALARY</span>
-                        <span class="calc-value">Rs. 294,000.00</span>
+                        <span class="calc-value" id="payGrossSalary">Rs. 294,000.00</span>
                     </div>
                     <div class="calc-row">
                         <span class="calc-label" style="color: #e67e22;">REQUESTED ADVANCE DEDUCTIONS</span>
-                        <span class="calc-value" style="color: #e67e22;">- Rs. 15,000.00</span>
+                        <span class="calc-value" style="color: #e67e22;" id="payAdvanceDeduction">- Rs. 15,000.00</span>
                     </div>
                 </div>
 
@@ -210,7 +224,7 @@
             <!-- අවසාන ගෙවීම් එකතුව -->
             <div class="final-payout-banner">
                 <span class="payout-title">TOTAL FINAL PAYOUT</span>
-                <span class="payout-amount">Rs. 279,000.00</span>
+                <span class="payout-amount" id="payFinalPayout">Rs. 279,000.00</span>
             </div>
 
             <!-- ක්‍රියාකාරී බොත්තම් -->
@@ -266,6 +280,190 @@
                 window.location.href = '/page/login.html';
             });
         }
+        const query = new URLSearchParams(window.location.search);
+        const summaryId = query.get('summary_id');
+        const supplierId = query.get('supplier_id');
+        const summaryMonth = query.get('summary_month');
+        const payErrorMessage = document.getElementById('payErrorMessage');
+
+        function showPayError(message) {
+            if (payErrorMessage) {
+                payErrorMessage.textContent = message;
+                payErrorMessage.style.display = 'block';
+            }
+        }
+
+        function hidePayError() {
+            if (payErrorMessage) {
+                payErrorMessage.style.display = 'none';
+            }
+        }
+
+        async function loadPayDetails() {
+            hidePayError();
+            console.log('Pay page load', { summaryId, supplierId, summaryMonth });
+            if (summaryId) {
+                try {
+                    const res = await fetch(`/api/monthly-payment-summaries/${summaryId}`);
+                    if (!res.ok) throw new Error('Failed to load summary details');
+                    const data = await res.json();
+                    console.log('Summary data loaded', data);
+                    document.getElementById('paySupplierId').textContent = data.supplier_id || supplierId || 'Unknown';
+                    document.getElementById('paySupplierName').textContent = data.supplier_name || 'Unknown Supplier';
+                    document.getElementById('paySupplierStatus').textContent = data.payout_status === 'Paid' ? 'Already Paid' : 'Pending Payment';
+                    document.getElementById('payTotalLeaves').textContent = Number(data.total_tea_leaves || 0).toFixed(2) + ' kg';
+                    document.getElementById('payMoisture').textContent = Number(data.total_moisture_deduction || 0).toFixed(2) + ' kg';
+                    document.getElementById('payNetWeight').textContent = Number(data.total_net_weight || 0).toFixed(2) + ' kg';
+                    const grossAmount = Number(data.total_amount_earned || 0);
+                    const advanceAmount = Number(data.requested_advance_deductions || 0);
+                    const netWeight = Number(data.total_net_weight || 0);
+                    const perKiloPrice = netWeight > 0 ? (grossAmount / netWeight).toFixed(2) : 0;
+                    
+                    document.getElementById('payGrossSalary').textContent = 'Rs. ' + grossAmount.toLocaleString();
+                    document.getElementById('payAdvanceDeduction').textContent = '- Rs. ' + advanceAmount.toLocaleString();
+                    document.getElementById('payFinalPayout').textContent = 'Rs. ' + (grossAmount - advanceAmount).toLocaleString();
+                    if (data.summary_month) {
+                        const monthNum = data.summary_month.split('-')[1];
+                        document.getElementById('paymentDateMonth').value = monthNum;
+                    }
+                    document.getElementById('txtPerKiloPrice').value = perKiloPrice;
+                    if (data.supplier_field) document.getElementById('paySupplierRoute').textContent = data.supplier_field;
+                    if (data.phone_number) document.getElementById('paySupplierPhone').textContent = data.phone_number;
+                    const selectedMethod = data.payment_method === 'Cash Payout' ? 'cash' : data.payment_method === 'Bank Transfer' ? 'bank' : 'bank';
+                    document.getElementById('radio'+(selectedMethod === 'cash' ? 'Cash' : 'Bank')).checked = true;
+                    if (data.bank_name) document.querySelector('.bank-row:nth-child(1) .bank-val').textContent = data.bank_name;
+                    if (data.bank_account_number) document.querySelector('.bank-row:nth-child(2) .bank-val').textContent = data.bank_account_number;
+                    if (data.branch_location) document.querySelector('.bank-row:nth-child(3) .bank-val').textContent = data.branch_location;
+                } catch (err) {
+                    console.error(err);
+                    showPayError('Unable to load the selected payment summary. Please refresh the page or try again later.');
+                }
+            } else if (supplierId && summaryMonth) {
+                try {
+                    const res = await fetch(`/api/pending-supplier-payments/${encodeURIComponent(supplierId)}/${encodeURIComponent(summaryMonth)}`);
+                    if (!res.ok) throw new Error('Failed to load pending payment details');
+                    const data = await res.json();
+                    console.log('Pending supplier payment data', data);
+                    document.getElementById('paySupplierId').textContent = data.supplier_id || supplierId || 'Unknown';
+                    document.getElementById('paySupplierName').textContent = data.supplier_name || 'Unknown Supplier';
+                    document.getElementById('paySupplierStatus').textContent = 'Pending Payment';
+                    document.getElementById('payTotalLeaves').textContent = Number(data.total_tea_leaves || 0).toFixed(2) + ' kg';
+                    document.getElementById('payMoisture').textContent = Number(data.total_moisture_deduction || 0).toFixed(2) + ' kg';
+                    document.getElementById('payNetWeight').textContent = Number(data.total_net_weight || 0).toFixed(2) + ' kg';
+                    const grossAmount = Number(data.total_amount_earned || 0);
+                    const advanceAmount = Number(data.requested_advance_deductions || 0);
+                    
+                    document.getElementById('payGrossSalary').textContent = 'Rs. ' + grossAmount.toLocaleString();
+                    document.getElementById('payAdvanceDeduction').textContent = '- Rs. ' + advanceAmount.toLocaleString();
+                    document.getElementById('payFinalPayout').textContent = 'Rs. ' + (grossAmount - advanceAmount).toLocaleString();
+                    document.getElementById('txtPerKiloPrice').value = Number(data.price_per_kg || 0).toFixed(2);
+                    if (summaryMonth) {
+                        document.getElementById('paymentDateMonth').value = summaryMonth.split('-')[1];
+                    }
+                    if (data.supplier_field) document.getElementById('paySupplierRoute').textContent = data.supplier_field;
+                    if (data.phone_number) document.getElementById('paySupplierPhone').textContent = data.phone_number;
+                    if (data.bank_name) document.querySelector('.bank-row:nth-child(1) .bank-val').textContent = data.bank_name;
+                    if (data.bank_account_number) document.querySelector('.bank-row:nth-child(2) .bank-val').textContent = data.bank_account_number;
+                    if (data.branch_location) document.querySelector('.bank-row:nth-child(3) .bank-val').textContent = data.branch_location;
+                } catch (err) {
+                    console.error(err);
+                    showPayError('Unable to load pending supplier payment details.');
+                }
+            } else if (supplierId) {
+                try {
+                    const res = await fetch(`/api/monthly-payment-summaries?supplier_id=${encodeURIComponent(supplierId)}`);
+                    if (!res.ok) throw new Error('Failed to load summary for supplier');
+                    const summaries = await res.json();
+                    if (summaries.length > 0) {
+                        const data = summaries[0];
+                        console.log('Supplier fallback summary data', data);
+                        document.getElementById('paySupplierId').textContent = data.supplier_id || supplierId || 'Unknown';
+                        document.getElementById('paySupplierName').textContent = data.supplier_name || 'Unknown Supplier';
+                        document.getElementById('paySupplierStatus').textContent = data.payout_status === 'Paid' ? 'Already Paid' : 'Pending Payment';
+                        document.getElementById('payTotalLeaves').textContent = Number(data.total_tea_leaves || 0).toFixed(2) + ' kg';
+                        document.getElementById('payMoisture').textContent = Number(data.total_moisture_deduction || 0).toFixed(2) + ' kg';
+                        document.getElementById('payNetWeight').textContent = Number(data.total_net_weight || 0).toFixed(2) + ' kg';
+                        const grossAmount = Number(data.total_amount_earned || 0);
+                        const advanceAmount = Number(data.requested_advance_deductions || 0);
+                        const netWeight = Number(data.total_net_weight || 0);
+                        const perKiloPrice = netWeight > 0 ? (grossAmount / netWeight).toFixed(2) : 0;
+                        
+                        document.getElementById('payGrossSalary').textContent = 'Rs. ' + grossAmount.toLocaleString();
+                        document.getElementById('payAdvanceDeduction').textContent = '- Rs. ' + advanceAmount.toLocaleString();
+                        document.getElementById('payFinalPayout').textContent = 'Rs. ' + (grossAmount - advanceAmount).toLocaleString();
+                        if (data.summary_month) {
+                            const monthNum = data.summary_month.split('-')[1];
+                            document.getElementById('paymentDateMonth').value = monthNum;
+                        }
+                        document.getElementById('txtPerKiloPrice').value = perKiloPrice;
+                        if (data.supplier_field) document.getElementById('paySupplierRoute').textContent = data.supplier_field;
+                        if (data.phone_number) document.getElementById('paySupplierPhone').textContent = data.phone_number;
+                        const selectedMethod = data.payment_method === 'Cash Payout' ? 'cash' : data.payment_method === 'Bank Transfer' ? 'bank' : 'bank';
+                        document.getElementById('radio'+(selectedMethod === 'cash' ? 'Cash' : 'Bank')).checked = true;
+                        if (data.bank_name) document.querySelector('.bank-row:nth-child(1) .bank-val').textContent = data.bank_name;
+                        if (data.bank_account_number) document.querySelector('.bank-row:nth-child(2) .bank-val').textContent = data.bank_account_number;
+                        if (data.branch_location) document.querySelector('.bank-row:nth-child(3) .bank-val').textContent = data.branch_location;
+                    } else {
+                        const supplierRes = await fetch(`/api/supplier/${supplierId}`);
+                        if (supplierRes.ok) {
+                            const supplier = await supplierRes.json();
+                            document.getElementById('paySupplierId').textContent = supplier.sup_id;
+                            document.getElementById('paySupplierName').textContent = supplier.name;
+                            document.getElementById('paySupplierRoute').textContent = supplier.supplier_field || 'N/A';
+                            document.querySelector('.bank-row:nth-child(1) .bank-val').textContent = supplier.bank_name || 'N/A';
+                            document.querySelector('.bank-row:nth-child(2) .bank-val').textContent = supplier.bank_account_number || 'N/A';
+                            document.querySelector('.bank-row:nth-child(3) .bank-val').textContent = supplier.branch_location || 'N/A';
+                        } else {
+                            showPayError('No summary found for this supplier and unable to load supplier details.');
+                        }
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showPayError('Unable to load supplier data for this payment record.');
+                }
+            } else {
+                showPayError('No summary_id or supplier_id found in the URL. Open this page from the Payments dashboard.');
+            }
+        }
+
+        async function submitPayment() {
+            if (!summaryId && !(supplierId && summaryMonth)) {
+                alert('Payment summary ID missing.');
+                return;
+            }
+
+            const selectedMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'bank';
+            const payUrl = summaryId
+                ? `/api/monthly-payment-summaries/${summaryId}/pay`
+                : `/api/pending-supplier-payments/${encodeURIComponent(supplierId)}/${encodeURIComponent(summaryMonth)}/pay`;
+            const response = await fetch(payUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ payment_method: selectedMethod })
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                console.error('Pay API error:', error);
+                alert('Failed to approve payout. See console for details.');
+                return;
+            }
+
+            const result = await response.json();
+            console.log('Payment approved successfully:', result);
+            alert('✅  Payout approved successfully!');
+            window.location.href = '/page/Accountant/Payment.html?t=' + Date.now();
+        }
+
+        const approveButton = document.querySelector('.actions-container .btn-primary');
+        if (approveButton) {
+            approveButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                submitPayment();
+            });
+        }
+
+        loadPayDetails();
     });
     </script>  
     

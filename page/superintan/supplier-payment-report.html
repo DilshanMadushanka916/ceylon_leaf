@@ -1,0 +1,133 @@
+\<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Supplier Payment Report</title>
+
+<link rel="stylesheet" href="/Sreport-pages.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+
+
+<!-- PAYMENT REPORT -->
+
+    <div class="container">
+
+    <div class="top">
+
+        <h1>Suppliers’ Payment Summary</h1>
+
+        <button onclick="window.print()">
+            <i class="fa fa-print"></i>
+            Print Report
+        </button>
+ 
+        
+    <a href="/page/superintan/Superinte_Report.html" class="back-btn">
+    <i class="fa fa-arrow-left"></i>
+    Back to Reports
+</a>
+
+    </div>
+
+    <table>
+
+        <tr>
+
+            <th>Supplier ID</th>
+            <th>Supplier Name</th>
+            <th>Total Kilos</th>
+            <th>Advance Payment</th>
+            <th>Advance Value</th>
+            <th>Total Payment</th>
+            <th>Payment Status</th>
+
+        </tr>
+
+        <tr>
+
+            <td>SUP001</td>
+            <td>Green Valley</td>
+            <td>4,500 kg</td>
+
+            <td>
+                <span class="yes">
+                    Yes
+                </span>
+            </td>
+
+            <td>LKR 250,000</td>
+
+            <td>LKR 2,500,000</td>
+
+            <td>
+                <span class="paid">
+                    Paid
+                </span>
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>SUP002</td>
+            <td>Tea Land Estate</td>
+            <td>5,100 kg</td>
+
+            <td>
+                <span class="no">
+                    No
+                </span>
+            </td>
+
+            <td>—</td>
+
+            <td>LKR 3,200,000</td>
+
+            <td>
+                <span class="pending">
+                    Not Paid
+                </span>
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>SUP003</td>
+            <td>Hill Side Tea</td>
+            <td>3,200 kg</td>
+
+            <td>
+                <span class="yes">
+                    Yes
+                </span>
+            </td>
+
+            <td>LKR 150,000</td>
+
+            <td>LKR 1,850,000</td>
+
+            <td>
+                <span class="paid">
+                    Paid
+                </span>
+            </td>
+
+        </tr>
+
+    </table>
+
+</div>
+
+</body>
+</html>

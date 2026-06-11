@@ -49,7 +49,7 @@
     <div class="main-content">
         <!-- TOP NAVBAR WITH DROPDOWN -->
         <header class="top-navbar">
-            <div class="nav-title">Accountant Dashboard</div>
+            <div class="nav-title">Supplier Dashboard</div>
             <div class="nav-profile" id="profileDropdownBtn">
                 <span class="profile-name" id="userProfileName">Dilshan</span>
                 <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="profile-img">
@@ -74,33 +74,31 @@
         </div>
 
         <div class="table-card">
-            <table id="supplierTable">
-                <thead>
-                    <tr>
-                        <th>Supplier ID</th>
-                        <th>Supplier Name</th>
-                        <th>Field No</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>SL001</td>
-                        <td>Anura Perera</td>
-                        <td>F-12</td>
-                        <td class="active-status">Active</td>
-                        <td><a href="supplier-detail.html?id=SL001" class="view-btn-link"><button class="view-btn">View Profile</button></a></td>
-                    </tr>
-                    <tr>
-                        <td>SL002</td>
-                        <td>Disna Silva</td>
-                        <td>F-08</td>
-                        <td class="active-status">Active</td>
-                        <td><a href="supplier-detail.html?id=SL002" class="view-btn-link"><button class="view-btn">View Profile</button></a></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div>
+                    <h3 style="margin: 0; color: #244635;">Supplier List</h3>
+                    <small style="color: #999; font-size: 0.9rem;"><strong id="totalSuppliers">0</strong> suppliers loaded</small>
+                </div>
+            </div>
+            <div class="table-scroll-wrapper">
+                <table id="supplierTable">
+                    <thead>
+                        <tr>
+                            <th>Supplier ID</th>
+                            <th>Supplier Name</th>
+                            <th>Field No</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="supplierTableBody">
+                        <!-- populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div style="text-align: center; padding: 10px; color: #999; font-size: 0.85rem;">
+                ⬇ Scroll to see all <span id="totalSuppliers2">0</span> suppliers
+            </div>
         </div>
     </div>
 
@@ -145,6 +143,76 @@
                     window.location.href = '/page/login.html';
                 });
             }
+
+            // Fetch suppliers and render table
+            let allSuppliers = [];
+            
+            async function loadSuppliers() {
+                try {
+                    const res = await fetch('/api/suppliers-search?q=');
+                    if (!res.ok) throw new Error('Failed to fetch suppliers');
+                    allSuppliers = await res.json() || [];
+                    console.log('✅ Loaded suppliers from API:', allSuppliers.length, 'total');
+                    console.log('First 3 suppliers:', allSuppliers.slice(0, 3));
+                    
+                    renderSuppliers(allSuppliers);
+                    document.getElementById('totalSuppliers').textContent = allSuppliers.length;
+                    document.getElementById('totalSuppliers2').textContent = allSuppliers.length;
+                } catch (err) {
+                    console.error('❌ Error loading suppliers:', err);
+                    document.getElementById('supplierTableBody').innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">Error loading suppliers. Check console.</td></tr>`;
+                }
+            }
+
+            function renderSuppliers(suppliers) {
+                const tbody = document.getElementById('supplierTableBody');
+                if (!suppliers || suppliers.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">No suppliers found.</td></tr>';
+                    return;
+                }
+                
+                console.log('📊 Rendering', suppliers.length, 'suppliers');
+                
+                tbody.innerHTML = suppliers.map(s => {
+                    const statusText = s.account_status ? s.account_status : 'Active';
+                    const statusClass = statusText.toLowerCase().includes('active') ? 'active-status' : 'inactive-status';
+                    return `
+                        <tr data-supplier-id="${s.sup_id}">
+                            <td><strong>${s.sup_id}</strong></td>
+                            <td>${s.supplier_name || '-'}</td>
+                            <td>${s.supplier_field || '-'}</td>
+                            <td class="${statusClass}">${statusText}</td>
+                            <td><a href="supplier-detail.html?id=${s.sup_id}" class="view-btn-link"><button class="view-btn">View Profile</button></a></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            loadSuppliers();
+
+            // Search functionality - filters from loaded data
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                const q = e.target.value.trim().toLowerCase();
+                
+                if (!q) {
+                    renderSuppliers(allSuppliers);
+                    document.getElementById('totalSuppliers').textContent = allSuppliers.length;
+                    document.getElementById('totalSuppliers2').textContent = allSuppliers.length;
+                    return;
+                }
+
+                const filtered = allSuppliers.filter(s => {
+                    const id = (s.sup_id || '').toLowerCase();
+                    const name = (s.supplier_name || '').toLowerCase();
+                    return id.includes(q) || name.includes(q);
+                });
+
+                console.log('🔍 Search for "' + q + '" found:', filtered.length, 'results');
+                renderSuppliers(filtered);
+                document.getElementById('totalSuppliers').textContent = filtered.length;
+                document.getElementById('totalSuppliers2').textContent = filtered.length;
+            });
         });
     </script>
 </body>

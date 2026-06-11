@@ -123,114 +123,93 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-    const ctxWeekly = document.getElementById('weeklyTrendChart').getContext('2d');
-    const ctxMonthly = document.getElementById('monthlyQualityChart').getContext('2d');
+    // Persistent chart instances and periodic updater
+    let weeklyChart, monthlyChart, dailyChart;
+    let dailyMeta = { supplierIds: [], grades: [] };
 
-    // --- FETCH WEEKLY TREND DATA FROM BACKEND ---
-    fetch('/api/dashboard/weekly-trends')
-        .then(res => res.json())
-        .then(data => {
-            const labels = data.length ? data.map(item => item.week_name) : ['No Data'];
-            const chartData = data.length ? data.map(item => parseFloat(item.total_weight) || 0) : [0];
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctxWeekly = document.getElementById('weeklyTrendChart').getContext('2d');
+        const ctxMonthly = document.getElementById('monthlyQualityChart').getContext('2d');
+        const ctxDaily = document.getElementById('dailyTrendChart').getContext('2d');
 
-            new Chart(ctxWeekly, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Net Weight (kg)',
-                        data: chartData,
-                        borderColor: '#2d6a4f',
-                        backgroundColor: 'rgba(45, 106, 79, 0.08)',
-                        borderWidth: 3,
-                        tension: 0.35,
-                        fill: true,
-                        pointBackgroundColor: '#2d6a4f',
-                        pointHoverRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: {
-                            grid: { color: '#f1f3f5' },
-                            ticks: { callback: value => value + ' kg', color: '#6c757d' }
-                        },
-                        x: { grid: { display: false }, ticks: { color: '#6c757d' } }
-                    }
-                }
-            });
-        })
-        .catch(err => console.error("Error loading weekly trend engine:", err));
-
-
-  fetch('/api/dashboard/quality-distribution')
-    .then(res => res.json())
-    .then(data => {
-        const labels = data.length ? data.map(item => item.month_name) : ['No Data'];
-        const gradeA = data.length ? data.map(item => parseFloat(item.grade_a) || 0) : [0];
-        const gradeB = data.length ? data.map(item => parseFloat(item.grade_b) || 0) : [0];
-        const gradeC = data.length ? data.map(item => parseFloat(item.grade_c) || 0) : [0];
-
-        new Chart(ctxMonthly, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Grade C (Average)',
-                        data: gradeC,
-                        backgroundColor: '#b7e4c7',
-                        borderRadius: 0 // Now at the bottom, so keep it flat
-                    },
-                    {
-                        label: 'Grade B (Good)',
-                        data: gradeB,
-                        backgroundColor: '#74c69d',
-                        borderRadius: 0 // In the middle, keep it flat
-                    },
-                    {
-                        label: 'Grade A (Premium)',
-                        data: gradeA,
-                        backgroundColor: '#52b788',
-                        borderRadius: { topLeft: 6, topRight: 6 } // 🔥 MOVED HERE: Only curve the very top of the stack!
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { boxWidth: 12, padding: 15, color: '#495057' }
-                    }
-                },
-                scales: {
-                    x: { 
-                        stacked: true, 
-                        grid: { display: false }, 
-                        ticks: { color: '#6c757d' } 
-                    },
-                    y: { 
-                        stacked: true, 
-                        beginAtZero: true, 
-                        grace: '15%',      
-                        grid: { color: '#f1f3f5' }, 
-                        ticks: { 
-                            callback: value => value + ' kg', 
-                            color: '#6c757d' 
-                        } 
-                    }
-                }
-            }
+        // Initialize empty charts
+        weeklyChart = new Chart(ctxWeekly, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Net Weight (kg)', data: [], borderColor: '#2d6a4f', backgroundColor: 'rgba(45,106,79,0.08)', borderWidth: 3, tension: 0.35, fill: true }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#f1f3f5' }, ticks: { callback: v => v + ' kg', color: '#6c757d' } }, x: { grid: { display: false }, ticks: { color: '#6c757d' } } } }
         });
-    })
-    .catch(err => console.error("Error loading quality breakdown context:", err));
-   });
+
+        monthlyChart = new Chart(ctxMonthly, {
+            type: 'bar',
+            data: { labels: [], datasets: [{ label: 'Grade C', data: [], backgroundColor: '#b7e4c7' }, { label: 'Grade B', data: [], backgroundColor: '#74c69d' }, { label: 'Grade A', data: [], backgroundColor: '#52b788' }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } }, scales: { x: { stacked: true, grid: { display: false }, ticks: { color: '#6c757d' } }, y: { stacked: true, beginAtZero: true, grace: '15%', grid: { color: '#f1f3f5' }, ticks: { callback: v => v + ' kg', color: '#6c757d' } } } }
+        });
+
+        dailyChart = new Chart(ctxDaily, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Graded Net Weight', data: [], borderColor: '#52b788', backgroundColor: 'rgba(82,183,136,0.1)', borderWidth: 3, tension: 0.2, fill: true, pointBackgroundColor: '#2d6a4f', pointRadius: 5 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#212529', titleColor: '#fff', bodyColor: '#fff', borderRadius: 6, padding: 8, callbacks: { title: ctx => 'Graded At: ' + (ctx[0]?.label || ''), label: ctx => { const i = ctx.dataIndex; return [`Net Weight: ${ctx.parsed.y} kg`, `Grade: ${dailyMeta.grades[i] || 'N/A'}`, `Supp: ${dailyMeta.supplierIds[i] || 'N/A'}`]; } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f3f5' }, ticks: { callback: v => v + ' kg' } }, x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 45 } } } }
+        });
+
+        // Load initial data
+        updateCharts();
+
+        // Auto-refresh every 30 seconds
+        setInterval(updateCharts, 30000);
+    });
+
+    async function updateCharts() {
+        updateWeekly();
+        updateMonthly();
+        updateDaily();
+    }
+
+    async function updateWeekly() {
+        try {
+            const res = await fetch('/api/dashboard/weekly-trends');
+            const data = await res.json();
+            const labels = data.length ? data.map(i => i.week_name) : ['No Data'];
+            const values = data.length ? data.map(i => parseFloat(i.total_weight) || 0) : [0];
+            weeklyChart.data.labels = labels;
+            weeklyChart.data.datasets[0].data = values;
+            weeklyChart.update();
+        } catch (e) { console.error('Error updating weekly:', e); }
+    }
+
+    async function updateMonthly() {
+        try {
+            const res = await fetch('/api/dashboard/quality-distribution');
+            const data = await res.json();
+            const labels = data.length ? data.map(i => i.month_name) : ['No Data'];
+            const a = data.length ? data.map(i => parseFloat(i.grade_a) || 0) : [0];
+            const b = data.length ? data.map(i => parseFloat(i.grade_b) || 0) : [0];
+            const c = data.length ? data.map(i => parseFloat(i.grade_c) || 0) : [0];
+            monthlyChart.data.labels = labels;
+            monthlyChart.data.datasets[0].data = c;
+            monthlyChart.data.datasets[1].data = b;
+            monthlyChart.data.datasets[2].data = a;
+            monthlyChart.update();
+        } catch (e) { console.error('Error updating monthly:', e); }
+    }
+
+    async function updateDaily() {
+        try {
+            const res = await fetch('/api/dashboard/daily-trends');
+            const data = await res.json();
+            console.log('📊 Daily trends:', data);
+            if (!data || data.length === 0) {
+                dailyChart.data.labels = ['No data yet'];
+                dailyChart.data.datasets[0].data = [0];
+                dailyMeta = { supplierIds: [], grades: [] };
+            } else {
+                dailyChart.data.labels = data.map(d => d.hour_mark);
+                dailyChart.data.datasets[0].data = data.map(d => parseFloat(d.current_weight) || 0);
+                dailyMeta.supplierIds = data.map(d => d.supplier_id || 'N/A');
+                dailyMeta.grades = data.map(d => d.grade || 'N/A');
+            }
+            dailyChart.update();
+        } catch (e) { console.error('Error updating daily:', e); }
+    }
     </script>
        
     
@@ -279,126 +258,7 @@
         }
     });
     </script>
-<script>
-// --- FETCH DAILY TREND DATA WITH SYNCHRONIZED TIMELINE ANIMATIONS ---
-document.addEventListener("DOMContentLoaded", function () {
-    const canvasElement = document.getElementById('dailyTrendChart');
-    
-    if (!canvasElement) {
-        console.error("❌ Error: Could not find a canvas element with id='dailyTrendChart' in your HTML!");
-        return;
-    }
 
-    const ctxDaily = canvasElement.getContext('2d');
-
-    fetch('/api/dashboard/daily-trends')
-        .then(res => res.json())
-        .then(data => {
-            console.log("📊 Raw Ceylon Leaf Database Response (Grading Times):", data);
-
-            let labels = [];
-            let chartData = [];
-            let supplierIds = []; 
-            let grades = []; 
-
-            if (data && data.length > 0) {
-                // Now cleanly mapping to the 'g.created_at' hour marks from your backend query
-                labels = data.map(item => item.hour_mark);
-                chartData = data.map(item => parseFloat(item.current_weight) || 0);
-                supplierIds = data.map(item => item.Supplier_ID || 'Unknown');
-                grades = data.map(item => item.grade || 'N/A'); 
-            } else {
-                console.log("⚠️ Query matched 0 rows for today. Using fallback values.");
-                labels = ['09:23 AM', '10:15 AM', '11:02 AM', '01:45 PM', '04:10 PM'];
-                chartData = [83.5, 65.0, 112.4, 45.0, 95.2]; 
-                supplierIds = ['SP001', 'SP002', 'SP005', 'SP001', 'SP003']; 
-                grades = ['B', 'A', 'A', 'C', 'B'];
-            }
-
-            setTimeout(() => {
-                new Chart(ctxDaily, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Graded Net Weight', 
-                            data: chartData,
-                            borderColor: '#52b788', 
-                            backgroundColor: 'rgba(82, 183, 136, 0.1)',
-                            borderWidth: 3,
-                            tension: 0.2, 
-                            fill: true,
-                            pointBackgroundColor: '#2d6a4f',
-                            pointBorderColor: '#fff',
-                            pointRadius: 5,
-                            pointHoverRadius: 7
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        animation: {
-                            duration: 1200,          
-                            easing: 'easeOutQuart',   
-                            delay: function(context) {
-                                return context.dataIndex * 50; 
-                            }
-                        },
-                        plugins: { 
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: '#212529', 
-                                titleColor: '#ffffff',
-                                bodyColor: '#ffffff',
-                                borderRadius: 6, 
-                                padding: { top: 8, bottom: 8, left: 12, right: 12 },
-                                displayColors: false, 
-                                itemSpacing: 4, 
-                                titleFont: { size: 13, weight: 'bold', family: "'Segoe UI', 'Helvetica Neue', Arial" },
-                                bodyFont: { size: 12, weight: 'bold', family: "'Segoe UI', 'Helvetica Neue', Arial" },
-                                callbacks: {
-                                    title: function(context) {
-                                        return 'Graded At: ' + context[0].label;
-                                    },
-                                    label: function(context) {
-                                        const index = context.dataIndex;
-                                        const netWeight = context.parsed.y;
-                                        const supplierId = supplierIds[index] || 'N/A';
-                                        const teaGrade = grades[index] || 'N/A';
-                                        
-                                        return [
-                                            `Net Weight: ${netWeight} kg`,
-                                            `Grade: ${teaGrade}`,
-                                            `Supp ID: ${supplierId}`
-                                        ];
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: { color: '#f1f3f5' },
-                                ticks: { callback: value => value + ' kg', color: '#6c757d' }
-                            },
-                            x: { 
-                                grid: { display: false }, 
-                                ticks: { 
-                                    color: '#6c757d',
-                                    maxRotation: 45,
-                                    minRotation: 45 
-                                } 
-                            }
-                        }
-                    }
-                });
-            }, 400); 
-        })
-        .catch(err => {
-            console.error("Error loading daily collection trend graphics:", err);
-        });
-});
-</script>
 
 <script>
     // --- TRIGGERS PAGE LOAD INTERACTION ---

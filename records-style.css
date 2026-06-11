@@ -1,3 +1,17 @@
+ * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+ background-color: #e0f3e6;
+ color: #2d3748;
+ min-height: 100vh;
+}
+
+
 .container {
     padding: 20px 40px;
     flex: 1; /* Pushes footer down */
@@ -146,9 +160,11 @@ th, td {
 .table-container {
     background: white;
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     overflow-x: auto;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 table {
@@ -158,9 +174,9 @@ table {
 }
 
 th {
-    background: #f8f9fa;
+    background:  #ddece9;
     color: #2a4d44;
-    text-align: left;
+    text-align: center;
     padding: 12px;
     border-bottom: 2px solid #eee;
 }
@@ -168,6 +184,7 @@ th {
 td {
     padding: 12px;
     border-bottom: 1px solid #eee;
+    text-align: center;
 }
 
 .status-tag {
@@ -312,7 +329,7 @@ td {
 .user-role {
     font-weight: 600;
     margin: 0;
-    color: #dadada;
+    color: #177e42;
     font-size: 0.9rem;
 }
 

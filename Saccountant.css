@@ -3,8 +3,7 @@
     --light-green: #e8f5e9;
     --accent-green: #37a77c;
     --text-white: #ffffff;
-    --main-bg: #f4f7f5;
-    --card-shadow: 0 10px 30px rgba(42, 77, 68, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+    --dropdown-bg: #2a5a4e;
 }
 
 * {
@@ -17,11 +16,13 @@
 body {
     display: flex;
     background: linear-gradient(to right, #d4f5d0, #a8e6a3);
-    min-height: 100vh;
+   
 }
 
+/* ==========================================================================
+   SIDEBAR
+   ========================================================================== */
 
-/* SIDEBAR */
 
 .sidebar{
     width:280px;
@@ -141,15 +142,16 @@ body {
     height: auto;
 }
 
-
-
-
-
-/* CONTENT CONTAINER AREA */
-.main-content {
-    margin-left: 280px;
-    width: calc(100% - 280px);
-    padding: 40px;
+/* ==========================================================================
+   MAIN DASHBOARD WRAPPER (Structural Shift Fix)
+   ========================================================================== */
+.main {
+    flex: 1;
+    margin-left: 280px; /* Aligns perfectly alongside the fixed sidebar */
+    padding: 30px;      /* Creates even padding around your app content panels */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* TOP GLASS NAVBAR */
@@ -167,6 +169,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 999;
+ 
 }
 
 .nav-title {
@@ -228,80 +231,140 @@ body {
 .dropdown-menu a.logout-btn { color: #e74c3c; }
 .dropdown-menu a.logout-btn:hover { background-color: #fdf2f2; }
 
-
-
-
-/* FILTER & SEARCH STRIP */
-.search-box {
-    background: white;
-    width: 380px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 18px;
-    border-radius: 12px;
-    margin-top: 40px;
-    margin-left: 8px;
-    margin-bottom: 25px;
-    border: 1px solid rgba(229, 236, 231, 0.9);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-}
-
-.search-box i { color: var(--primary-green); }
-.search-box input {
-    border: none;
-    outline: none;
+/* APP PANEL CONTAINERS */
+.container {
     width: 100%;
-    font-size: 14px;
 }
 
-/* CONTAINER BLOCKS GENERAL SETUP */
-.table-card,
-.supplier-profile-hero,
-.info-dashboard-card,
-.metric-card {
-    background: #ffffff;
-    border-radius: 16px;
-    margin-left: 8px;
-    box-shadow: var(--card-shadow);
-    border: 1px solid rgba(229, 236, 231, 0.6);
+.header {
+    margin-bottom: 25px;
 }
 
-/* REFINED DATA TABLES */
-.table-card { 
-    padding: 20px; 
-    overflow-hidden: hidden; 
+.header h1 {
+    color: #14532d;
+    font-size: 1.8rem;
 }
-table { width: 100%; border-collapse: collapse; }
-table th {
-    background: #f8faf8;
-    color: #244635;
-    text-align: left;
-    padding: 16px;
-    font-weight: 600;
-    font-size: 14px;
-}
-table td { padding: 16px; border-bottom: 1px solid #e5ece7; color: #44534a; font-size: 15px;}
-.highlight-code { font-weight: 700; color: var(--primary-green); }
-.pending-status { color: #e48b00; font-weight: 600; background: #fff8e1; padding: 4px 10px; border-radius: 6px; font-size: 13px; }
 
-/* REUSABLE FACTORY SYSTEM BUTTONS */
-.view-btn-link { text-decoration: none; }
-.view-btn {
-    background: var(--accent-green);
-    color: white;
+.actions {
+    margin-top: 30px;
+    margin-bottom: 25px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.actions button {
     border: none;
-    padding: 10px 18px;
+    background: #16a34a;
+    color: white;
+    padding: 12px 20px;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: 600;
-    font-size: 14px;
-    transition: all 0.2s ease;
-}
-.view-btn:hover {
-    background: var(--primary-green);
-    box-shadow: 0 4px 12px rgba(42, 77, 68, 0.2);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s ease;
 }
 
+.actions button:hover {
+    background: #14532d;
+}
+
+/* Cleaned layout: lets table gracefully extend across dashboard workspace */
+.table-container {
+    background: white;
+    padding: 24px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    overflow-x: auto; /* Fallback horizontal scrollbar if screen gets narrow */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #14532d;
+    color: white;
+}
+
+th, td {
+    padding: 16px 18px; /* Roomy, responsive text spacing */
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
 
 
+
+/* ==========================================================================
+   MODAL & UTILITIES
+   ========================================================================== */
+.modal {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    width: 500px;
+    max-width: 90%;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 12px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.page-header h1 {
+    margin: 0;
+    color: #14532d;
+    font-size: 2rem;
+}
+
+.back-btn {
+    background: #14532d;
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+
+.back-btn:hover {
+    background: #0f3f21;
+}

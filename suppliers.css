@@ -104,10 +104,6 @@ body {
 }
 
 
-
-
-
-
 .factory-title {
     color: var(--text-white); /* Header background eka dark nisa */
     font-family: 'Segoe UI', Arial, sans-serif;
@@ -374,6 +370,25 @@ body{
     box-shadow:0 4px 12px rgba(0,0,0,0.05);
 }
 
+.table-scroll-wrapper {
+    max-height: 600px;
+    overflow-y: auto;
+    border-radius: 10px;
+    border: 1px solid #e5ece7;
+    margin: 0 auto;
+}
+
+.table-scroll-wrapper table {
+    margin: 0;
+}
+
+.table-scroll-wrapper thead th {
+    position: sticky;
+    top: 0;
+    background: #f1f5f2;
+    z-index: 10;
+}
+
 table{
     width:100%;
     border-collapse:collapse;
@@ -382,14 +397,17 @@ table{
 table th{
     background:#f1f5f2;
     color:#244635;
-    text-align:left;
-    padding:16px;
+    text-align:center;
+    padding:12px;
+    font-size:14px;
 }
 
 table td{
-    padding:16px;
+    padding:12px;
     border-bottom:1px solid #e5ece7;
     color:#44534a;
+    font-size:14px;
+    text-align:center;
 }
 
 /* STATUS */

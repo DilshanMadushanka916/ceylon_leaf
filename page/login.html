@@ -2,69 +2,206 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ceylon Leaf Tea Factory</title>
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css"> 
+    
 </head>
 <body>
-<section>
-  <div class ="login-box">
-  <form id="loginForm" action="/page/login.html" method="post">
-    <h2>Login</h2>
-    <div class ="input-box">
-     <span class ="icon"><ion-icon name="mail"></ion-icon></span>
-     <input type="email" name="email" required>
-     <label >Email</label>
+
+    <!-- DYNAMIC BACKGROUND LAYER -->
+    <div class="login-bg-backdrop"></div>
+
+    <!-- MAIN LANDING SCREEN -->
+    <div class="main-page-wrapper" id="mainPage">
+        
+        <!-- NAVBAR -->
+        <nav>
+            <div class="logo">
+                <img src="/assets/Logo1.png" alt="Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3201/3201291.png'">
+                <h1>CEYLON <span>LEAF</span></h1>
+            </div>
+            
+            <div class="nav-actions">
+        
+                <button class="login-trigger-btn" id="openLoginBtn">
+                    <i class="fa-solid fa-right-to-bracket"></i> Login
+                </button>
+            </div>
+        </nav>
+
+        <!-- HERO CONTAINER -->
+        <div class="hero-container">
+            
+            <!-- LEFT SIDE: PARAGRAPH & BADGES ONLY -->
+            <div class="hero-content">
+                <h2>Pure Taste of <span>Premium Ceylon Tea</span></h2>
+                <p>
+                    Welcome to Ceylon Leaf Tea Factory. Nestled in the heart of lush, mists valleys, we specialize in processing the finest, hand-picked tea leaves. Merging traditional estate legacy methods with smart modern systems.
+                </p>
+                
+                <div class="factory-badges">
+                    <div class="badge">
+                        <i class="fa-solid fa-leaf"></i>
+                        <span>100% Organic<br>Hand-Picked</span>
+                    </div>
+                    <div class="badge">
+                        <i class="fa-solid fa-award"></i>
+                        <span>Premium Export<br>Quality Approved</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- FIXED: RIGHT SIDE PHOTO SHOWCASE GALLERY (Local Images Grid) -->
+            <div class="right-photo-showcase">
+                <div class="showcase-frame">
+                    <!-- LOCAL PATH EKATA MARU KARANNA: e.g., assets/img1.jpg -->
+                    <img src="/assets/estates.jpg" alt="Estates" onerror="this.src='https://placehold.co/400x300?text=Estates'">
+                    <div class="img-tag">Estates</div>
+                </div>
+                <div class="showcase-frame">
+                    <!-- LOCAL PATH EKATA MARU KARANNA: e.g., assets/img2.jpg -->
+                    <img src="/assets/tea.jpg" alt="Quality" onerror="this.src='https://placehold.co/400x300?text=Quality'">
+                    <div class="img-tag">Quality Check</div>
+                </div>
+                <div class="showcase-frame wide-card">
+                    <!-- LOCAL PATH EKATA MARU KARANNA: e.g., assets/img3.jpg -->
+                    <img src="/assets/factory.png" alt="Processing" onerror="this.src='https://placehold.co/600x300?text=Processing'">
+                    <div class="img-tag">Factory Processing</div>
+                </div>
+            </div>
+
+        </div>
+
     </div>
-    <div class ="input-box">
-     <span class ="icon"><ion-icon name="lock-closed"></ion-icon></span>
-     <input type="password" name="password" required>
-     <label >Password</label>
+
+    <!-- FOREGROUND: THE LOGIN BOX CONSOLE -->
+    <div class="portal-overlay" id="portalOverlay">
+        
+        <div class="portal-container">
+            <!-- LEFT BOX: FORM -->
+            <div class="login-section">
+                <div class="close-portal-btn" id="closeLoginBtn">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Home
+                </div>
+
+                <form id="loginForm" action="/page/login.html" method="post" autocomplete="off">
+                    <h2>Login</h2>
+                    <p>Ceylon Leaf Factory Internal Network</p>
+
+                    <div class="input-box">
+                        <span class="icon"><ion-icon name="mail"></ion-icon></span>
+                        <input type="email" name="email" required autocomplete="new-password">
+                        <label>Email</label>
+                    </div>
+
+                    <div class="input-box">
+                        <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+                        <input type="password" name="password" required autocomplete="new-password">
+                        <label>Password</label>
+                    </div>
+
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+
+            <!-- RIGHT BOX: SLIDER -->
+            <div class="slider-section">
+                <img class="slide active" src="/assets/supp.png" alt="Estate">
+                <img class="slide" src="/assets/A.png" alt="Processing">
+                <img class="slide" src="/assets/tea.jpg" alt="Quality">
+                
+                <div class="slider-overlay-text">
+                    <h3 id="sliderTitle">Premium Estate Operations</h3>
+                    <p id="sliderDesc">Evaluating real-time field collections accurately.</p>
+                </div>
+            </div>
+        </div>
+
     </div>
-    <button type="submit">Login</button>
-  </form>
-  </section>
+    
+
+    <!-- IONICONS ENGINE -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <script>
+        window.addEventListener('load', () => {
+            document.getElementById("loginForm").reset();
+        });
+
+        const openLoginBtn = document.getElementById('openLoginBtn');
+        const closeLoginBtn = document.getElementById('closeLoginBtn');
+
+        openLoginBtn.addEventListener('click', () => {
+            document.body.classList.add('login-active');
+        });
+
+        closeLoginBtn.addEventListener('click', () => {
+            document.body.classList.remove('login-active');
+            document.getElementById("loginForm").reset();
+        });
+
+        // SLIDER LOOPER SYSTEM
+        const slides = document.querySelectorAll('.slide');
+        const titles = ["Premium Estate Operations", "Modern Factory Refining", "Strict Quality Checks"];
+        const descriptions = ["Evaluating real-time field collections accurately.", "Automated accountant calculations and secure billing.", "Ensuring the iconic premium Ceylon aroma remains perfect."];
+        let sliderIndex = 0;
+
+        setInterval(() => {
+            slides[sliderIndex].classList.remove('active');
+            sliderIndex = (sliderIndex + 1) % slides.length;
+            slides[sliderIndex].classList.add('active');
+            
+            document.getElementById('sliderTitle').innerText = titles[sliderIndex];
+            document.getElementById('sliderDesc').innerText = descriptions[sliderIndex];
+        }, 4500);
+
+        // LOGIN SECURE ACTION
+        document.getElementById("loginForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const email = document.querySelector('[name="email"]').value;
+            const password = document.querySelector('[name="password"]').value;
+
+            fetch('http://localhost:3000/api/login', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Invalid Credentials");
+                return res.json();
+            })
+            .then(data => {
+                alert("Login Success ✅");
+                localStorage.setItem('userEmail', email);
+
+                const role = (data.role || '').toString().trim().toLowerCase();
+                document.getElementById("loginForm").reset();
+
+                if (role === "collector") {
+                    window.location.href = "/page/collerctor/collerctor.html";
+                } else if (role === "accountant") {
+                    window.location.href = "/page/Accountant/Accountant.html";
+                } else if (role.includes("quality") || role.includes("qulity")) {
+                    window.location.href = "/page/quality_checker/Dashbord.html";
+                } else if (role === "superintendent" || role === "superintan" || role === "admin") {
+                    window.location.href = "/page/superintan/Superintendent.html";
+                } else {
+                    window.location.href = "/page/login.html";
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Invalid email or password ❌");
+                document.querySelector('[name="password"]').value = "";
+            });
+        });
+    </script>
+
 </body>
-<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-<script src="/ceylon_leaf/script.js"></script>
-<script>
-document.getElementById("loginForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-
-    const email = document.querySelector('[name="email"]').value;
-    const password = document.querySelector('[name="password"]').value;
-
-    fetch('http://localhost:3000/api/login', { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-    })
-    .then(res => {
-        if (!res.ok) throw new Error("Invalid Credentials");
-        return res.json();
-    })
-    .then(data => {
-        alert("Login Success ✅");
-
-        localStorage.setItem('userEmail', email); // store email for profile display
-
-        const role = (data.role || '').toString().trim().toLowerCase();
-
-        if (role === "collector") {
-            window.location.href = "/page/collerctor/collerctor.html";
-        } else if (role === "accountant") {
-            window.location.href = "/page/Accountant/Accountant.html";
-        } else if (role.includes("quality") || role.includes("qulity")) {
-            window.location.href = "/page/quality_checker/Dashbord.html";
-        } else {
-            window.location.href = "/page/login.html";
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        alert("Invalid email or password ❌");
-    });
-});
-</script>
 </html>

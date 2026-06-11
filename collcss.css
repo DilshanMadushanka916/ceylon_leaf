@@ -1,741 +1,439 @@
-:root {
-    --primary-green: #2a4d44;
-    --light-green: #e8f5e9;
-    --accent-green: #37a77c;
-    --text-white: #ffffff;
-    --dropdown-bg: #2a5a4e;
-}
-
-
-
-
-
-body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(to right, #d4f5d0, #a8e6a3);
-        margin: 0;
-        padding: 0;
-    }
-
-    .container {
-        width: 400px;
-        margin: 60px auto;
-        background: #ffffff;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-        text-align: center;
-        color: #2a4d44;;
-        margin-bottom: 20px;
-    }
-
-    label {
-        font-weight: bold;
-        color: #333;
-    }
-
-    input {
-        width: 100%;
-        padding: 10px;
-        margin: 8px 0 15px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        outline: none;
-        transition: 0.3s;
-    }
-
-    input:focus {
-        border-color: #2a4d44;;
-        box-shadow: 0 0 5px rgba(76,175,80,0.3);
-    }
-
-    button {
-        width: 100%;
-        padding: 12px;
-        background: #2a4d44;;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    button:hover {
-        background: #1c8d22;
-    }
-
-    .logo {
-        text-align: center;
-        font-size: 22px;
-        font-weight: bold;
-        color: #1b5e20;
-        margin-bottom: 10px;
-    }
-    /* Card Container */
-.advance-card {
-    background: #fdfdfd;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 16px;
-    margin: 20px 0;
-    transition: all 0.3s ease;
-}
-
-.advance-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    font-weight: 600;
-}
-
-/* The Switch */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 46px;
-    height: 24px;
-}
-
-.switch input { opacity: 0; width: 0; height: 0; }
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 18px; width: 18px;
-    left: 3px; bottom: 3px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-}
-
-input:checked + .slider { background-color: #2e7d32; } /* Tea Green */
-input:checked + .slider:before { transform: translateX(22px); }
-
-/* Hidden Field Animation */
-.hidden-field {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-}
-
-.advance-card.active .hidden-field {
-    max-height: 100px;
-    margin-top: 15px;
-    border-top: 1px solid #eee;
-    padding-top: 10px;
-}
-.number-input {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 10%;
-    height: auto;
-    padding-left: 10%;
-}
-
-
-
-
-
-/* Layout Split */
-.main-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 20px;
-    padding: 20px;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-/* Right Side Gradient Card */
-.dashboard-sidebar {
-    width: 350px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-top: 60px; /* Aligns with form top */
-}
-
-.price-gradient-card {
-    background: linear-gradient(135deg, #2a4d44 0%, #377a6a 100%);
-    color: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
-.side-label {
-    font-size: 14px;
-    opacity: 0.9;
-    display: block;
-}
-
-.side-value {
-    font-size: 28px;
-    font-weight: bold;
-    margin-top: 5px;
-}
-
-
-
-
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins', sans-serif;
-}
-
-
-/* SIDEBAR */
-
-.sidebar{
-    width:280px;
-    height:100vh;
-    background:linear-gradient(to bottom,#2a4d44,#386157);
-    padding:25px;
-    position:fixed;
-    color:white;
-}
-
-.logo-area{
-    text-align:center;
-    margin-bottom:50px;
-}
-
-.logo-icon{
-    width:90px;
-    height:90px;
-    background:#0a7a4a;
-    border-radius:50%;
-    margin:auto;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:40px;
-    margin-bottom:15px;
-}
-
-.logo-area h1{
-    font-size:42px;
-    line-height:45px;
-    margin-bottom:10px;
-}
-
-.logo-area p{
-    font-size:13px;
-    letter-spacing:1px;
-}
-
-/* NAVIGATION */
-
-.nav-links{
-    list-style:none;
-    padding-top: 50px;
-}
-
-.nav-links li{
-    margin-bottom:15px;
-}
-
-.nav-links li a{
-    text-decoration:none;
-    color:white;
-    display:flex;
-    align-items:center;
-    gap:15px;
-    padding:16px;
-    border-radius:14px;
-    transition:0.3s;
-    font-size:18px;
-}
-
-.nav-links li a:hover,
-.nav-links .active a{
-    background:#377a6a !important;
-}
-
-.nav-links li i{
-    font-size:20px;
-}
-
-
-
-
-.main-header {
-    background-color:transparent;
-    color: var(--text-white);
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-
-}
-
-.factory-title {
-    color: var(--text-white); /* Header background eka dark nisa */
-    font-family: 'Segoe UI', Arial, sans-serif;
-    font-weight: 800;
-    font-size: 28px;
-    letter-spacing: 1px;
-    margin: 0;
-    line-height: 1.1;
-    display: flex;
-    flex-direction: column; /* Text eka pela dekkata ganna */
-    
-}
-
-.leaf-text {
-    color: var(--accent-green); /* Leaf green highlight eka */
-}
-
-.factory-title small {
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 3px;
-    color: rgba(255, 255, 255, 0.6);
-    text-transform: uppercase;
-    margin-top: 2px;
-}
-
-.logo {
-    text-align: center;
-    font-size: 22px;
-    font-weight: bold;
-    color: #1b5e20;
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
-    padding-right: 20px;
-    margin-right: 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
-    padding-right: 25px;
-    /* Remove the margin-right: 20px you had earlier to keep it tight */
-}
-
-.logo img {
-    width: 60px; /* Reduced from 90px to fit the industrial header better */
-    height: auto;
-}
-
-
-
-
-
-
-
-
-
-/* Top Navbar Styling */
-.top-navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    /* Sidebar එකට ඉඩ තබා ඉතිරි කොටස පුරා යාමට width සහ margin සකස් කිරීම */
-    width: calc(100% - 283px); /* 280px වෙනුවට ඔයාගේ sidebar width එක දෙන්න */
-    margin-left: 283px; /* sidebar එක ගාවින්ම පටන් ගන්න */
-    margin-top: 0;
-    margin-right: 15px;
-    padding: 15px 30px;
-    border-radius: 20px; /* රවුම් corners */
-    
-    /* Glassmorphism Effect */
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
-    
-    position: sticky;
-    top: 15px;
-    z-index: 999;
-    box-sizing: border-box;
-}
-
-/* Dashboard Title */
-.nav-title {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #2c3e50;
-    font-family: sans-serif;
-}
-
-/* Profile Section */
-.nav-profile {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    position: relative;
-    padding: 5px 10px;
-    border-radius: 50px;
-    transition: background 0.3s ease;
-}
-
-.nav-profile:hover {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-.profile-name {
-    font-weight: 600;
-    color: #34495e;
-    font-size: 0.95rem;
-}
-
-.profile-img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #27ae60; /* Tea Factory නිසා කොළ පාට border එකක් */
-}
-
-.drop-arrow {
-    color: #7f8c8d;
-    font-size: 0.9rem;
-    transition: transform 0.3s ease;
-}
-
-/* Dropdown Menu */
-.dropdown-menu {
-    position: absolute;
-    top: 55px;
-    right: 0;
-    width: 220px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    padding: 10px 0;
-    display: none; /* Default hidden */
-    flex-direction: column;
-    border: 1px solid #f0f0f0;
-    animation: fadeIn 0.2s ease-in-out;
-}
-
-.dropdown-menu.show {
-    display: flex;
-}
-
-.dropdown-header {
-    padding: 10px 20px;
-}
-
-.user-role {
-    font-weight: 600;
-    margin: 0;
-    color: #2c3e50;
-    font-size: 0.9rem;
-}
-
-.dropdown-header small {
-    color: #7f8c8d;
-}
-
-.dropdown-menu hr {
-    border: 0;
-    border-top: 1px solid #f5f5f5;
-    margin: 5px 0;
-}
-
-.dropdown-menu a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 20px;
-    color: #555;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: background 0.2s;
-}
-
-.dropdown-menu a:hover {
-    background-color: #f8f9fa;
-    color: #27ae60;
-}
-
-.dropdown-menu a i {
-    font-size: 1.1rem;
-}
-
-.dropdown-menu a.logout-btn {
-    color: #e74c3c;
-}
-.dropdown-menu a.logout-btn:hover {
-    background-color: #fdf2f2;
-    color: #c0392b;
-}
-
-
-
-
-
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Content Area Fix */
-/* Navbar එක උඩින් ආපු නිසා content area එකේ margin එකක් තියාගන්න */
-.content-area {
-    margin-top: 20px;
-}
-
-/* --- UPDATED FORM CONTAINER --- */
-.container {
-    width: 520px;          /* Increased from 400px to make the form physically larger */
-    margin: 40px auto;
-    background: #ffffff;
-    padding: 35px 40px;    /* Increased padding for an airy, premium dashboard feel */
-    border-radius: 16px;   /* Slightly punchier rounding */
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
-
-h2 {
-    text-align: center;
-    color: #2a4d44;
-    margin-bottom: 28px;
-    font-size: 26px;       /* Increased text size to match the larger form */
-}
-
-label {
-    font-weight: bold;
-    color: #333;
-    font-size: 15px;       /* Increased slightly for better accessibility */
-}
-
-/* --- UPDATED INPUT FIELDS --- */
-input {
-    width: 100%;
-    padding: 13px 16px;    /* Taller inputs (from 10px) for easier clicking/typing */
-    margin: 8px 0 20px;    /* Generous spacing between input sections */
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    outline: none;
-    font-size: 15px;       /* Increased text size for input fields */
-    transition: 0.3s;
-}
-
-/* Hide spinner arrows on number inputs */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type="number"] {
-    appearance: textfield;
-    -moz-appearance: textfield;
-}
-/* --- UPDATED SUBMIT BUTTON --- */
-button {
-    width: 100%;
-    padding: 14px;         /* Made the main button larger and taller */
-    background: #2a4d44;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 17px;       /* Bigger button text */
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-/* --- GENERAL LAYOUT FIX --- */
-.main-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 30px;              /* Increased gap between form and sidebar to look natural */
-    padding: 20px;
-    max-width: 1200px;      /* Increased layout boundary from 1000px to accept the larger form */
-    margin: 0 auto;
-}
-
-/* Chart Card Container */
-.chart-card {
-    margin-top: 20px;
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    border: 1px solid #eef2f5; /* Subtle border to define the card edge */
-}
-
-/* Card Heading */
-.chart-card h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #333333;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-/* Canvas Wrapper for Chart.js Responsiveness */
-.chart-container {
-    position: relative;
-    width: 100%;
-    height: 220px;
-}
-
-
-
-
-
-/* --- MEDIA QUERY REPAIR --- */
-/* Changed breakpoint from 850px to 950px so layout transitions gracefully before elements overlap */
-@media (max-width: 950px) {
-    .main-wrapper {
-        flex-direction: column;
-        align-items: center;
-    }
-    .dashboard-sidebar {
-        width: 100%;
-        max-width: 520px;   /* Forces sidebar to mimic the form size on small screens */
-        margin-top: 0;
-    }
-    .container {
-        width: 100%;
-        max-width: 520px;
-    }
-}
-
-@media (max-width: 480px) {
-    .container {
-        width: 95%;
-        padding: 20px;
-        margin: 20px auto;
-    }
-    h2 {
-        font-size: 20px;    /* Fixed the tiny 10px bug from your previous media query */
-    }
-    input {
-        padding: 11px;
-        font-size: 14px;
-    }
-    button {
-        padding: 12px;
-        font-size: 15px;
-    }
-}
-
-/* --- SUPPLIER AUTOCOMPLETE DROPDOWN STYLES --- */
-.supplier-search-container {
-    position: relative;
-    width: 100%;
-    margin: 8px 0 20px;
-}
-
-#supplier_search {
-    width: 100%;
-    padding: 13px 16px;
-    margin: 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 15px;
-    outline: none;
-    transition: 0.3s;
-    background: white;
-}
-
-#supplier_search:focus {
-    border-color: #2a4d44;
-    box-shadow: 0 0 5px rgba(42, 77, 68, 0.3);
-}
-
-.supplier-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid #ddd;
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    max-height: 250px;
-    overflow-y: auto;
-    z-index: 1000;
-    display: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.supplier-dropdown.show {
-    display: block;
-}
-
-.supplier-option {
-    padding: 12px 16px;
-    cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
-    transition: background-color 0.2s;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.supplier-option:last-child {
-    border-bottom: none;
-}
-
-.supplier-option:hover {
-    background-color: #e8f5e9;
-}
-
-.supplier-option-id {
-    font-weight: bold;
-    color: #2a4d44;
-    font-size: 14px;
-}
-
-.supplier-option-name {
-    color: #666;
-    font-size: 13px;
-}
-
-.supplier-option-field {
-    color: #999;
-    font-size: 12px;
-    margin-top: 2px;
-}
-
-.supplier-option.selected {
-    background-color: #c8e6c9;
-    font-weight: 600;
-}
-
-/* Scrollbar styling for dropdown */
-.supplier-dropdown::-webkit-scrollbar {
-    width: 6px;
-}
-
-.supplier-dropdown::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-.supplier-dropdown::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
-}
-
-.supplier-dropdown::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
+ /* Modern Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+    background-color: #f3f6f4;
+    background-image: 
+        radial-gradient(#d1dbd5 0.5px, transparent 0.5px),
+        linear-gradient(135deg, #f3f6f4 0%, #e8f0eb 100%);
+    background-size: 20px 20px, 100% 100%;
+    color: #2d3748;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+}
+
+        /* MODERN TOP NAVBAR */
+        .modern-navbar {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-area img {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .factory-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a4d2e;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+
+        .leaf-text {
+            color: #4ed964;
+        }
+
+        .factory-title small {
+            display: block;
+            font-size: 0.65rem;
+            color: #718096;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        /* Horizontal Navigation Menu */
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item a i {
+            font-size: 1.2rem;
+        }
+
+        .nav-item a:hover {
+            background-color: #f0fdf4;
+            color: #1a4d2e;
+        }
+
+        .nav-item.active a {
+            background-color: #1a4d2e;
+            color: #ffffff;
+        }
+
+        /* Profile Dropdown Styling */
+        .nav-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            position: relative;
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            transition: background 0.2s;
+        }
+
+        .nav-profile:hover {
+            background-color: #f7fafc;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #2d3748;
+        }
+
+        .profile-img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #1a4d2e;
+        }
+
+        .drop-arrow {
+            font-size: 0.9rem;
+            color: #718096;
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 220px;
+            display: none;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 15px;
+            background: #f7fafc;
+        }
+
+        .user-role {
+         font-weight: 600;
+          margin: 0;
+          color: #177e42;
+        font-size: 0.9rem;
+}
+
+        .dropdown-header small {
+            color: #718096;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-menu hr {
+            border: 0;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background: #f0fdf4;
+            color: #1a4d2e;
+        }
+
+        .dropdown-menu a.logout-btn {
+            color: #e53e3e;
+        }
+
+        .dropdown-menu a.logout-btn:hover {
+            background: #fff5f5;
+        }
+
+        /* MAIN LAYOUT CONTAINER */
+        .content-area {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .main-wrapper {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 968px) {
+            .main-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* FORM BLOCK STYLING */
+        .container {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
+        }
+
+        .container h2 {
+            font-size: 1.4rem;
+            color: #1a4d2e;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        form label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #4a5568;
+        }
+
+        form input[type="text"],
+        form input[type="date"],
+        form input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e0;
+            background-color: #fff;
+            font-size: 0.95rem;
+            margin-bottom: 1.25rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        form input:focus {
+            border-color: #1a4d2e;
+            box-shadow: 0 0 0 3px rgba(26, 77, 46, 0.1);
+        }
+
+        /* Autocomplete Input Design */
+        .supplier-search-container {
+            position: relative;
+        }
+
+        .supplier-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #cbd5e0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+            display: none;
+        }
+
+        .supplier-dropdown.show {
+            display: block;
+        }
+
+        .supplier-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f7fafc;
+            transition: background 0.2s;
+        }
+
+        .supplier-option:hover {
+            background-color: #f0fdf4;
+        }
+
+        .supplier-option-id {
+            font-size: 0.75rem;
+            color: #718096;
+            font-weight: bold;
+        }
+
+        .supplier-option-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .supplier-option-field {
+            font-size: 0.75rem;
+            color: #2e7d32;
+        }
+
+        /* Advance Card Toggle Switch */
+        .advance-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .advance-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .advance-header i {
+            font-size: 1.3rem;
+            color: #1a4d2e;
+        }
+
+        .advance-header .switch {
+            margin-left: auto;
+        }
+
+        .hidden-field {
+            display: none;
+            margin-top: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Toggle Switch Custom styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e0; transition: .3s; border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: #1a4d2e; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        form button[type="submit"] {
+            width: 100%;
+            background: #1a4d2e;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        form button[type="submit"]:hover {
+            background: #123520;
+        }
+
+        /* RIGHT SIDEBAR (PRICE CARD & CHART) */
+        .dashboard-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .price-gradient-card {
+            background: linear-gradient(135deg, #1a4d2e 0%, #2e7d32 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 1.8rem;
+            box-shadow: 0 10px 20px rgba(26, 77, 46, 0.15);
+        }
+
+        .side-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .side-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
+        }
+
+        .chart-card h3 {
+            font-size: 1.05rem;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
