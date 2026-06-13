@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/session-check.js"></script>
 </head>
 <body>
 
@@ -159,11 +160,10 @@
 
             // LocalStorage Credentials Setup
             const savedEmail = localStorage.getItem('userEmail');
+            const displayName = localStorage.getItem('username') || (savedEmail ? savedEmail.split('@')[0] : 'User');
             if (savedEmail) {
-                document.getElementById('userProfileEmail').textContent = savedEmail;
-                const namePart = savedEmail.split('@')[0];
-                const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-                document.getElementById('userProfileName').textContent = capitalizedName;
+                document.getElementById('userProfileEmail').textContent = displayName;
+                document.getElementById('userProfileName').textContent = displayName;
             }
 
             // Authentication Logout Engine
@@ -181,160 +181,242 @@
             renderPaymentsChart();
             renderMonthlyPaymentsChart();
             loadAdvanceRequests();
+            loadDashboardStats();
         });
+
+        async function loadDashboardStats() {
+            try {
+                // Fetch dashboard statistics
+                const statsRes = await fetch('/api/accountant/dashboard-stats');
+                if (!statsRes.ok) throw new Error('Failed to fetch stats');
+                const stats = await statsRes.json();
+
+                // Update card values
+                document.querySelector('.tea-total').textContent = `${stats.totalKilo.toFixed(2)} kg`;
+                document.querySelector('.price-kilo').textContent = `LKR ${stats.pricePerKilo.toLocaleString()}`;
+                document.querySelector('.total-payments').textContent = `LKR ${stats.totalPayments.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+                document.querySelector('.pending-payments').textContent = `LKR ${stats.pendingPayments.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+
+                console.log('✅ Dashboard stats loaded:', stats);
+            } catch (error) {
+                console.error('❌ Error loading dashboard stats:', error);
+            }
+        }
 
         function renderPaymentsChart() {
             const canvasElement = document.getElementById('paymentsDistributionChart');
             if (!canvasElement) return;
 
-            const ctx = canvasElement.getContext('2d');
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: ['Bank Transfers', 'Cash Settlements', 'Approved Advances'],
-                    datasets: [{
-                        data: [75, 15, 10],
-                        backgroundColor: ['#2a4d44', '#d89b00', '#1769c5'],
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { font: { family: 'Segoe UI', size: 12 }, boxWidth: 15 }
-                        }
-                    }
-                }
-            });
+            try {
+                // Fetch payment distribution data from backend
+                fetch('/api/accountant/payment-distribution')
+                    .then(res => res.json())
+                    .then(data => {
+                        const labels = data.map(d => d.distribution_type);
+                        const counts = data.map(d => d.count);
+
+                        const ctx = canvasElement.getContext('2d');
+                        new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    data: counts,
+                                    backgroundColor: ['#2a4d44', '#d89b00', '#1769c5'],
+                                    borderWidth: 2,
+                                    borderColor: '#ffffff'
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: { font: { family: 'Segoe UI', size: 12 }, boxWidth: 15 }
+                                    }
+                                }
+                            }
+                        });
+                        console.log('✅ Payment distribution chart rendered');
+                    })
+                    .catch(error => console.error('❌ Error fetching payment distribution:', error));
+            } catch (error) {
+                console.error('❌ Error rendering payments chart:', error);
+            }
         }
 
         // NEW: Handles rendering for the newly targeted 6-month historical chart section
-        function renderMonthlyPaymentsChart() {
+        async function renderMonthlyPaymentsChart() {
             const canvasElement = document.getElementById('monthlyPaymentsChart');
             if (!canvasElement) return;
 
-            const ctx = canvasElement.getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Total Payments (LKR)',
-                        data: [420000, 510000, 480000, 590000, 610000, 550000],
-                        backgroundColor: '#2a4d44',
-                        borderRadius: 6,
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
+            try {
+                // Fetch monthly payment data from backend
+                const res = await fetch('/api/accountant/monthly-payments');
+                if (!res.ok) throw new Error('Failed to fetch monthly payments');
+                const monthlyData = await res.json();
+
+                const labels = monthlyData.map(m => m.month);
+                const data = monthlyData.map(m => m.payment);
+
+                const ctx = canvasElement.getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Payments (LKR)',
+                            data: data,
+                            backgroundColor: '#2a4d44',
+                            borderRadius: 6,
+                            borderWidth: 0
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#f0f3f1' },
-                            ticks: { font: { family: 'Segoe UI', size: 11 } }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
                         },
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: { family: 'Segoe UI', size: 11 } }
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#f0f3f1' },
+                                ticks: { font: { family: 'Segoe UI', size: 11 } }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { family: 'Segoe UI', size: 11 } }
+                            }
                         }
                     }
-                }
-            });
+                });
+                console.log('✅ Monthly payments chart rendered');
+            } catch (error) {
+                console.error('❌ Error rendering monthly payments chart:', error);
+            }
         }
 
-        function loadAdvanceRequests() {
+        async function loadAdvanceRequests() {
             const requestsContainer = document.getElementById('advanceRequestsContainer');
             const badge = document.getElementById('requestCountBadge');
             
-            const sampleRequests = [
-                {
-                    requestId: "REQ-8832",
-                    supplierId: "SUP-0041",
-                    name: "Mahinda Rajapaksha",
-                    requestedAmount: 45000,
-                    lastMonthKilos: 420,
-                    thisMonthKilos: 180,
-                    consecutiveMonthsAdvanceCount: 2
-                },
-                {
-                    requestId: "REQ-8835",
-                    supplierId: "SUP-0072",
-                    name: "Kamal Gunaratne",
-                    requestedAmount: 15000,
-                    lastMonthKilos: 310,
-                    thisMonthKilos: 290,
-                    consecutiveMonthsAdvanceCount: 0
-                }
-            ];
-
-            badge.textContent = `${sampleRequests.length} Pending`;
-            requestsContainer.innerHTML = '';
-
-            sampleRequests.forEach(req => {
-                const isDisallowed = req.consecutiveMonthsAdvanceCount >= 2;
-                const card = document.createElement('div');
-                card.className = `request-item-card ${isDisallowed ? 'disallowed' : 'allowed'}`;
+            try {
+                const res = await fetch('/api/advance-requests/pending');
+                if (!res.ok) throw new Error('Failed to fetch pending advance requests');
+                const pendingRequests = await res.json();
                 
-                card.innerHTML = `
-                    <div class="request-main-info" onclick="navigateToDetail('${req.supplierId}')">
-                        <div class="supplier-meta">
-                            <span class="sup-id-tag">${req.supplierId}</span>
-                            <span class="sup-name">${req.name}</span>
-                        </div>
-                        <div class="amount-tag">LKR ${req.requestedAmount.toLocaleString('.2')}</div>
-                    </div>
+                badge.textContent = `${pendingRequests.length} Pending`;
+                if (pendingRequests.length === 0) {
+                    requestsContainer.innerHTML = '<div class="empty-state">No pending advance requests found.</div>';
+                    return;
+                }
+                
+                requestsContainer.innerHTML = '';
+                
+                for (const req of pendingRequests) {
+                    let eligibilityData = {
+                        eligible: false,
+                        statusMessage: 'Loading analysis...',
+                        currentWeight: 0,
+                        prevWeight: 0,
+                        prevPayout: 0,
+                        maxAdvanceAmount: 0
+                    };
                     
-                    <div class="request-expanded-metrics">
-                        <div class="metric-box">
-                            <small>Last Month Weight</small>
-                            <strong>${req.lastMonthKilos} kg</strong>
+                    try {
+                        const eligibilityRes = await fetch(`/api/supplier/${encodeURIComponent(req.supplier_id)}/advance-eligibility`);
+                        if (eligibilityRes.ok) {
+                            eligibilityData = await eligibilityRes.json();
+                        }
+                    } catch (e) {
+                        console.error('Error fetching eligibility for ' + req.supplier_id, e);
+                    }
+                    
+                    const card = document.createElement('div');
+                    const isEligible = eligibilityData.eligible;
+                    const requested = parseFloat(req.requested_amount);
+                    const maxAllowed = eligibilityData.maxAdvanceAmount || 0;
+                    const overLimit = requested > maxAllowed;
+                    
+                    card.className = `request-item-card ${isEligible && !overLimit ? 'allowed' : 'disallowed'}`;
+                    
+                    card.innerHTML = `
+                        <div class="request-main-info" onclick="navigateToDetail('${req.supplier_id}')" title="Click to view full supply history" style="cursor: pointer;">
+                            <div class="supplier-meta">
+                                <span class="sup-id-tag">${req.supplier_id}</span>
+                                <span class="sup-name">${req.supplier_name || 'Unknown Supplier'}</span>
+                            </div>
+                            <div class="amount-tag">LKR ${requested.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                         </div>
-                        <div class="metric-box">
-                            <small>This Month Weight</small>
-                            <strong>${req.thisMonthKilos} kg</strong>
+                        
+                        <div class="request-expanded-metrics" style="margin-top: 10px;">
+                            <div class="metric-box">
+                                <small>Prev Month Weight</small>
+                                <strong>${Number(eligibilityData.prevWeight || 0).toFixed(2)} kg</strong>
+                            </div>
+                            <div class="metric-box">
+                                <small>This Month Weight</small>
+                                <strong>${Number(eligibilityData.currentWeight || 0).toFixed(2)} kg</strong>
+                            </div>
+                            <div class="metric-box">
+                                <small>Prev Month Payout</small>
+                                <strong>LKR ${Number(eligibilityData.prevPayout || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong>
+                            </div>
+                            <div class="metric-box status-msg-box" style="grid-column: span 3; margin-top: 8px;">
+                                <small>System Rule Analysis</small>
+                                <span class="status-badge-text ${isEligible ? 'success-text' : 'error-text'}" style="font-weight: 600;">
+                                    ${eligibilityData.statusMessage}
+                                </span>
+                                ${isEligible && overLimit ? `
+                                    <span class="status-badge-text error-text" style="font-weight: 600; display: block; margin-top: 4px;">
+                                        ⚠️ Warning: Requested amount (Rs. ${requested.toLocaleString()}) exceeds the 50% limit (Rs. ${maxAllowed.toLocaleString()}).
+                                    </span>
+                                ` : ''}
+                            </div>
                         </div>
-                        <div class="metric-box status-msg-box">
-                            <small>System Rule Analysis</small>
-                            <span class="status-badge-text ${isDisallowed ? 'error-text' : 'success-text'}">
-                                ${isDisallowed ? '⚠️ Max consecutive advances reached (Last 2 Months)' : '✅ Eligible for approval evaluation'}
-                            </span>
-                        </div>
-                    </div>
 
-                    <div class="action-buttons-row">
-                        ${isDisallowed ? `
-                            <button class="btn btn-reject custom-wide" onclick="handleAction('${req.requestId}', 'Reject')">
-                                <i class="ph ph-prohibit"></i> Reject Request
-                            </button>
-                        ` : `
-                            <button class="btn btn-reject" onclick="handleAction('${req.requestId}', 'Reject')">
+                        <div class="action-buttons-row" style="margin-top: 15px; display: flex; gap: 10px;">
+                            <button class="btn btn-reject" onclick="handleAction('${req.id}', 'Rejected')">
                                 <i class="ph ph-x-circle"></i> Reject
                             </button>
-                            <button class="btn btn-accept" onclick="handleAction('${req.requestId}', 'Accept')">
-                                <i class="ph ph-check-circle"></i> Accept Advance
+                            <button class="btn btn-accept" onclick="handleAction('${req.id}', 'Approved')" ${!isEligible ? 'style="opacity: 0.5;"' : ''}>
+                                <i class="ph ph-check-circle"></i> Approve Advance
                             </button>
-                        `}
-                    </div>
-                `;
-                requestsContainer.appendChild(card);
-            });
+                        </div>
+                    `;
+                    requestsContainer.appendChild(card);
+                }
+            } catch (err) {
+                console.error(err);
+                requestsContainer.innerHTML = '<div class="empty-state" style="color:red;">Error loading advance requests.</div>';
+            }
         }
 
-        function handleAction(id, action) {
-            alert(`Request ${id} status altered to: ${action}ed`);
+        async function handleAction(id, action) {
+            const notes = prompt(`Enter optional notes for this ${action} action:`);
+            if (notes === null) return;
+            
+            try {
+                const res = await fetch(`/api/advance-requests/${id}/status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ approval_status: action, notes })
+                });
+                
+                if (!res.ok) throw new Error('Status update failed');
+                
+                alert(`✅ Advance Request status updated to: ${action}`);
+                loadAdvanceRequests();
+            } catch (err) {
+                console.error(err);
+                alert('Failed to update advance request status.');
+            }
         }
 
         function navigateToDetail(supplierId) {
-            window.location.href = `/page/Accountant/supplier-collection-detail.html?supId=${supplierId}`;
+            window.location.href = `/page/Accountant/supplier-detail.html?supplier_id=${encodeURIComponent(supplierId)}`;
         }
     </script>
 </body>

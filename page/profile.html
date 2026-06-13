@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - Ceylon Leaf</title>
     <link rel="stylesheet" href="/profile.css">
+    <script src="/js/session-check.js"></script>
 </head>
 <body>
 
@@ -40,7 +41,7 @@
                     <p id="profAddress">Loading...</p>
                 </div>
             </div>
-            <button class="edit-profile-btn" onclick="alert('Edit functionality coming soon!')">Edit Profile</button>
+            <button class="edit-profile-btn" onclick="showEditOptions()" style="margin-bottom: 25px;">Edit Profile</button>
         </div>
     </div>
 
@@ -51,7 +52,7 @@
 
         if (!savedEmail) {
             alert("Session expired or missing email reference. Redirecting to login...");
-            window.location.href = "/login.html";
+            window.location.href = "/page/login.html";
             return;
         }
 
@@ -92,7 +93,277 @@
             document.getElementById('profAddress').textContent = "No address on file";
         }
     });
-</script>
+    </script>
+
+    <!-- EDIT OPTIONS MODAL -->
+    <div id="editOptionsModal" class="modal" style="display: none;">
+        <div class="modal-content" style="width: 300px; padding: 30px; text-align: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #2c3e50;">Edit Profile</h3>
+                <button onclick="closeEditOptions()" style="background: none; border: none; font-size: 24px; cursor: pointer;">✕</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="showEditUsername()" class="edit-option-btn">
+                    <i class="ph ph-user" style="margin-right: 8px;"></i> Change Username
+                </button>
+                <button onclick="showEditPassword()" class="edit-option-btn">
+                    <i class="ph ph-lock" style="margin-right: 8px;"></i> Change Password
+                </button>
+                <button onclick="closeEditOptions()" class="edit-option-btn" style="background: #e74c3c; color: white;">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHANGE USERNAME MODAL -->
+    <div id="changeUsernameModal" class="modal" style="display: none;">
+        <div class="modal-content" style="width: 400px; padding: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #2c3e50;">Change Username</h3>
+                <button onclick="closeChangeUsername()" style="background: none; border: none; font-size: 24px; cursor: pointer;">✕</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div class="detail-group">
+                    <label style="font-weight: 600; color: #2c3e50; margin-bottom: 5px;">Current Username</label>
+                    <input type="text" id="currentUsername" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; box-sizing: border-box;" disabled>
+                </div>
+                <div class="detail-group">
+                    <label style="font-weight: 600; color: #2c3e50; margin-bottom: 5px;">New Username</label>
+                    <input type="text" id="newUsername" placeholder="Enter new username" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; box-sizing: border-box;">
+                </div>
+                <div id="usernameError" style="color: #e74c3c; font-size: 0.9rem; display: none;"></div>
+                <button onclick="submitUsernameChange()" class="edit-profile-btn" style="background: #27ae60;">Update Username</button>
+                <button onclick="closeChangeUsername()" class="edit-profile-btn" style="background: #95a5a6;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHANGE PASSWORD MODAL -->
+    <div id="changePasswordModal" class="modal" style="display: none;">
+        <div class="modal-content" style="width: 400px; padding: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #2c3e50;">Change Password</h3>
+                <button onclick="closeChangePassword()" style="background: none; border: none; font-size: 24px; cursor: pointer;">✕</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div class="detail-group">
+                    <label style="font-weight: 600; color: #2c3e50; margin-bottom: 5px;">Current Password</label>
+                    <input type="password" id="modalOldPassword" placeholder="Enter current password" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; box-sizing: border-box;">
+                </div>
+                <div class="detail-group">
+                    <label style="font-weight: 600; color: #2c3e50; margin-bottom: 5px;">New Password</label>
+                    <input type="password" id="modalNewPassword" placeholder="Enter new password" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; box-sizing: border-box;">
+                </div>
+                <div class="detail-group">
+                    <label style="font-weight: 600; color: #2c3e50; margin-bottom: 5px;">Confirm Password</label>
+                    <input type="password" id="modalConfirmPassword" placeholder="Confirm new password" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; box-sizing: border-box;">
+                </div>
+                <div id="passwordError" style="color: #e74c3c; font-size: 0.9rem; display: none;"></div>
+                <button onclick="submitPasswordChange()" class="edit-profile-btn" style="background: #27ae60;">Update Password</button>
+                <button onclick="closeChangePassword()" class="edit-profile-btn" style="background: #95a5a6;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .edit-option-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #3498db;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .edit-option-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+    </style>
+
+    <script>
+        let currentUserEmail = '';
+        let currentUsername = '';
+
+        // Show edit options modal
+        function showEditOptions() {
+            document.getElementById('editOptionsModal').style.display = 'block';
+        }
+
+        function closeEditOptions() {
+            document.getElementById('editOptionsModal').style.display = 'none';
+        }
+
+        // Show change username modal
+        function showEditUsername() {
+            currentUserEmail = (localStorage.getItem('userEmail') || localStorage.getItem('email') || '').trim();
+            console.log('Current Email:', currentUserEmail);
+            document.getElementById('currentUsername').value = document.getElementById('profName').textContent;
+            document.getElementById('newUsername').value = '';
+            document.getElementById('usernameError').style.display = 'none';
+            document.getElementById('editOptionsModal').style.display = 'none';
+            document.getElementById('changeUsernameModal').style.display = 'block';
+        }
+
+        function closeChangeUsername() {
+            document.getElementById('changeUsernameModal').style.display = 'none';
+        }
+
+        async function submitUsernameChange() {
+            const newUsername = document.getElementById('newUsername').value.trim();
+            const errorDiv = document.getElementById('usernameError');
+            
+            if (!newUsername) {
+                errorDiv.textContent = '❌ Please enter a new username';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (newUsername.length < 3) {
+                errorDiv.textContent = '❌ Username must be at least 3 characters';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/api/user/change-username', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentUserEmail, username: newUsername })
+                });
+
+                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.message || "Failed to update username");
+                }
+
+                alert('✅ Username changed successfully!');
+                document.getElementById('profName').textContent = newUsername;
+                closeChangeUsername();
+            } catch (error) {
+                console.error(error);
+                errorDiv.textContent = '❌ ' + error.message;
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        // Show change password modal
+        function showEditPassword() {
+            currentUserEmail = (localStorage.getItem('userEmail') || localStorage.getItem('email') || '').trim();
+            console.log('Current Email:', currentUserEmail);
+            document.getElementById('modalOldPassword').value = '';
+            document.getElementById('modalNewPassword').value = '';
+            document.getElementById('modalConfirmPassword').value = '';
+            document.getElementById('passwordError').style.display = 'none';
+            document.getElementById('editOptionsModal').style.display = 'none';
+            document.getElementById('changePasswordModal').style.display = 'block';
+        }
+
+        function closeChangePassword() {
+            document.getElementById('changePasswordModal').style.display = 'none';
+        }
+
+        async function submitPasswordChange() {
+            const oldPassword = document.getElementById('modalOldPassword').value;
+            const newPassword = document.getElementById('modalNewPassword').value;
+            const confirmPassword = document.getElementById('modalConfirmPassword').value;
+            const errorDiv = document.getElementById('passwordError');
+
+            if (!oldPassword || !newPassword || !confirmPassword) {
+                errorDiv.textContent = '❌ Please fill in all password fields';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                errorDiv.textContent = '❌ New passwords do not match';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                errorDiv.textContent = '❌ Password must be at least 6 characters';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/api/user/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentUserEmail, oldPassword, newPassword })
+                });
+
+                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.error || "Failed to update password");
+                }
+
+                alert('✅ Password changed successfully!');
+                closeChangePassword();
+            } catch (error) {
+                console.error(error);
+                errorDiv.textContent = '❌ ' + error.message;
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const editOptions = document.getElementById('editOptionsModal');
+            const changeUsername = document.getElementById('changeUsernameModal');
+            const changePassword = document.getElementById('changePasswordModal');
+            
+            if (event.target == editOptions) editOptions.style.display = 'none';
+            if (event.target == changeUsername) changeUsername.style.display = 'none';
+            if (event.target == changePassword) changePassword.style.display = 'none';
+        }
+    </script>
     
 </body>
 </html>

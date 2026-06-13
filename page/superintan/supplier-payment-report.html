@@ -1,133 +1,362 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Supplier Payment Report</title>
-
-<link rel="stylesheet" href="/Sreport-pages.css">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Payment Report</title>
+    <link rel="stylesheet" href="/Sreport-pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        .controls-section {
+            margin: 20px 0;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+        .controls-section select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+        .summary-box {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #2a4d44;
+            border-radius: 4px;
+        }
+        .summary-box h3 {
+            margin: 0 0 10px 0;
+            color: #2a4d44;
+        }
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .stat-item {
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: bold;
+        }
+        .stat-value {
+            font-size: 18px;
+            color: #2a4d44;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        .button-group button, .button-group a {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pdf-btn {
+            background: #28a745;
+            color: white;
+        }
+        .pdf-btn:hover {
+            background: #218838;
+        }
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background: #5a6268;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .badge-yes {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-no {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        @media print {
+            .controls-section, .button-group { display: none; }
+        }
+    </style>
 </head>
 
 <body>
 
-
-<!-- PAYMENT REPORT -->
-
-    <div class="container">
-
+<div class="container">
     <div class="top">
-
-        <h1>Suppliers’ Payment Summary</h1>
-
-        <button onclick="window.print()">
-            <i class="fa fa-print"></i>
-            Print Report
-        </button>
- 
-        
-    <a href="/page/superintan/Superinte_Report.html" class="back-btn">
-    <i class="fa fa-arrow-left"></i>
-    Back to Reports
-</a>
-
+        <h1>Suppliers' Payment Summary Report</h1>
     </div>
 
-    <table>
+    <!-- Month Selection -->
+    <div class="controls-section">
+        <label for="monthSelect" style="font-weight: bold;">Select Month:</label>
+        <select id="monthSelect" onchange="filterByMonth()">
+            <option value="">All Months</option>
+            <option value="2026-06">June 2026</option>
+            <option value="2026-05">May 2026</option>
+            <option value="2026-04">April 2026</option>
+            <option value="2026-03">March 2026</option>
+        </select>
+        <div class="button-group" style="margin-left: auto;">
+            <button class="pdf-btn" onclick="downloadPDF()">
+                <i class="fa fa-download"></i>
+                Download PDF
+            </button>
+            <a href="/page/superintan/Superinte_Report.html" class="back-btn">
+                <i class="fa fa-arrow-left"></i>
+                Back to Reports
+            </a>
+        </div>
+    </div>
 
+    <!-- Summary Section -->
+    <div class="summary-box">
+        <h3>💰 Payment Summary</h3>
+        <div class="summary-stats">
+            <div class="stat-item">
+                <div class="stat-label">Total Suppliers</div>
+                <div class="stat-value" id="totalSuppliers">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Total Kilos Supplied</div>
+                <div class="stat-value" id="totalKilos">0 kg</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Total Payments</div>
+                <div class="stat-value" id="totalPayments">LKR 0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Paid (%)</div>
+                <div class="stat-value" id="paidPercent">0%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Pending (%)</div>
+                <div class="stat-value" id="pendingPercent">0%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Avg Payment/Supplier</div>
+                <div class="stat-value" id="avgPayment">LKR 0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <table id="reportTable">
         <tr>
-
+            <th>Month</th>
             <th>Supplier ID</th>
             <th>Supplier Name</th>
             <th>Total Kilos</th>
             <th>Advance Payment</th>
-            <th>Advance Value</th>
-            <th>Total Payment</th>
+            <th>Advance Value (LKR)</th>
+            <th>Total Payment (LKR)</th>
             <th>Payment Status</th>
-
         </tr>
-
-        <tr>
-
-            <td>SUP001</td>
-            <td>Green Valley</td>
-            <td>4,500 kg</td>
-
-            <td>
-                <span class="yes">
-                    Yes
-                </span>
-            </td>
-
-            <td>LKR 250,000</td>
-
-            <td>LKR 2,500,000</td>
-
-            <td>
-                <span class="paid">
-                    Paid
-                </span>
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>SUP002</td>
-            <td>Tea Land Estate</td>
-            <td>5,100 kg</td>
-
-            <td>
-                <span class="no">
-                    No
-                </span>
-            </td>
-
-            <td>—</td>
-
-            <td>LKR 3,200,000</td>
-
-            <td>
-                <span class="pending">
-                    Not Paid
-                </span>
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>SUP003</td>
-            <td>Hill Side Tea</td>
-            <td>3,200 kg</td>
-
-            <td>
-                <span class="yes">
-                    Yes
-                </span>
-            </td>
-
-            <td>LKR 150,000</td>
-
-            <td>LKR 1,850,000</td>
-
-            <td>
-                <span class="paid">
-                    Paid
-                </span>
-            </td>
-
-        </tr>
-
+        <tbody id="tableBody">
+        </tbody>
     </table>
-
 </div>
+
+<script>
+    function filterByMonth() {
+        const selectedMonth = document.getElementById('monthSelect').value;
+        loadReportData(selectedMonth);
+    }
+
+    async function loadReportData(month) {
+        try {
+            const url = month ? `/api/reports/supplier-payments?month=${month}` : `/api/reports/supplier-payments`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to fetch data');
+            const data = await response.json();
+
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            let visibleCount = 0;
+            let totalKilos = 0;
+            let totalPayment = 0;
+            let paidCount = 0;
+            let pendingCount = 0;
+
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">No data available for selected month</td></tr>';
+            } else {
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    const paymentStatus = row.payout_status === 'Fully Paid' ? 'Paid' : 'Pending';
+                    const statusBadgeClass = paymentStatus === 'Paid' ? 'badge-paid' : 'badge-pending';
+                    const advanceBadgeClass = row.advance_payment === 'Yes' ? 'badge-yes' : 'badge-no';
+                    const advanceValue = row.advance_value > 0 ? row.advance_value.toLocaleString() : '—';
+
+                    tr.innerHTML = `
+                        <td>${row.month}</td>
+                        <td>${row.supplier_id}</td>
+                        <td>${row.supplier_name || 'Unknown'}</td>
+                        <td>${parseInt(row.total_kilos).toLocaleString()}</td>
+                        <td><span class="badge ${advanceBadgeClass}">${row.advance_payment}</span></td>
+                        <td>${advanceValue}</td>
+                        <td>${parseInt(row.total_payment).toLocaleString()}</td>
+                        <td><span class="badge ${statusBadgeClass}">${paymentStatus}</span></td>
+                    `;
+                    tableBody.appendChild(tr);
+
+                    visibleCount++;
+                    totalKilos += parseInt(row.total_kilos);
+                    totalPayment += parseInt(row.total_payment);
+                    if (paymentStatus === 'Paid') paidCount++;
+                    else pendingCount++;
+                });
+            }
+
+            // Update summary
+            document.getElementById('totalSuppliers').textContent = visibleCount;
+            document.getElementById('totalKilos').textContent = totalKilos.toLocaleString() + ' kg';
+            document.getElementById('totalPayments').textContent = 'LKR ' + totalPayment.toLocaleString();
+            document.getElementById('paidPercent').textContent = ((paidCount / Math.max(visibleCount, 1)) * 100).toFixed(1) + '%';
+            document.getElementById('pendingPercent').textContent = ((pendingCount / Math.max(visibleCount, 1)) * 100).toFixed(1) + '%';
+            document.getElementById('avgPayment').textContent = 'LKR ' + (totalPayment / Math.max(visibleCount, 1)).toLocaleString(undefined, {maximumFractionDigits: 0});
+
+            console.log('✅ Supplier payment data loaded:', data.length, 'records');
+        } catch (error) {
+            console.error('❌ Error loading data:', error);
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="8" style="text-align: center; color: red; padding: 20px;">Error loading data</td></tr>';
+        }
+    }
+
+    function downloadPDF() {
+        // Show loading indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = 'pdfLoadingIndicator';
+        loadingDiv.style.position = 'fixed';
+        loadingDiv.style.top = '0';
+        loadingDiv.style.left = '0';
+        loadingDiv.style.width = '100%';
+        loadingDiv.style.height = '100%';
+        loadingDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+        loadingDiv.style.display = 'flex';
+        loadingDiv.style.justifyContent = 'center';
+        loadingDiv.style.alignItems = 'center';
+        loadingDiv.style.zIndex = '9999';
+        
+        const spinnerDiv = document.createElement('div');
+        spinnerDiv.style.textAlign = 'center';
+        spinnerDiv.style.color = 'white';
+        
+        const spinner = document.createElement('div');
+        spinner.style.border = '4px solid rgba(255, 255, 255, 0.3)';
+        spinner.style.borderTop = '4px solid #fff';
+        spinner.style.borderRadius = '50%';
+        spinner.style.width = '40px';
+        spinner.style.height = '40px';
+        spinner.style.animation = 'spin 0.8s linear infinite';
+        spinner.style.margin = '0 auto 15px auto';
+        
+        const style = document.createElement('style');
+        style.textContent = '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
+        document.head.appendChild(style);
+        
+        spinnerDiv.appendChild(spinner);
+        const text = document.createElement('p');
+        text.textContent = 'Processing PDF...';
+        text.style.fontSize = '16px';
+        text.style.fontWeight = 'bold';
+        spinnerDiv.appendChild(text);
+        
+        loadingDiv.appendChild(spinnerDiv);
+        document.body.appendChild(loadingDiv);
+        
+        // Create a temporary container for PDF content
+        const tempContainer = document.createElement('div');
+        tempContainer.style.padding = '20px';
+        tempContainer.style.backgroundColor = 'white';
+        
+        // Add letterhead image
+        const letterheadImg = document.createElement('img');
+        letterheadImg.src = '/assets/letterhead.PNG';
+        letterheadImg.style.width = '100%';
+        letterheadImg.style.maxWidth = 'none';
+        letterheadImg.style.height = 'auto';
+        letterheadImg.style.marginBottom = '20px';
+        letterheadImg.style.display = 'block';
+        letterheadImg.style.margin = '0 0 20px 0';
+        letterheadImg.style.imageRendering = 'crisp-edges';
+        tempContainer.appendChild(letterheadImg);
+        
+        // Clone the main content (without navbar)
+        const originalContainer = document.querySelector('.container');
+        const clonedContent = originalContainer.cloneNode(true);
+        
+        // Hide navbar elements if they exist in the clone
+        const navbar = clonedContent.querySelector('.top-navbar');
+        if (navbar) navbar.style.display = 'none';
+        
+        // Hide the report title
+        const topTitle = clonedContent.querySelector('.top');
+        if (topTitle) topTitle.style.display = 'none';
+        
+        // Hide the controls section (Download PDF, Back to Reports buttons, and month selector)
+        const controlsSection = clonedContent.querySelector('.controls-section');
+        if (controlsSection) controlsSection.style.display = 'none';
+        
+        tempContainer.appendChild(clonedContent);
+        
+        const opt = {
+            margin: 10,
+            filename: 'Supplier-Payment-Report-' + new Date().toISOString().slice(0,10) + '.pdf',
+            image: { type: 'png', quality: 1 },
+            html2canvas: { scale: 4, useCORS: true, allowTaint: true },
+            jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
+        };
+        html2pdf().set(opt).from(tempContainer).save().then(() => {
+            // Remove loading indicator when done
+            if (document.getElementById('pdfLoadingIndicator')) {
+                document.getElementById('pdfLoadingIndicator').remove();
+            }
+        });
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadReportData('');
+    });
+</script>
 
 </body>
 </html>

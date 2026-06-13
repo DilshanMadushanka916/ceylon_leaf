@@ -4,13 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Supplier Monthly Settlement </title>
+<title>Supplier Monthly Settlement</title>
 
 
 <link rel="stylesheet" href="/Spay.css">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 
@@ -32,7 +33,7 @@
             Dashboard
              </a>
             </li>
-            <li class="active">
+            <li >
                 <a href="/page/superintan/factoryOverview.html" id="menu-factory">
             <i class="fa fa-industry"></i>
             Factory Overview
@@ -44,7 +45,7 @@
             Reports
         </a>
             </li>
-            <li>
+            <li class="active">
                 <a href="/page/superintan/Spay.html">
                     <i class="ph ph-wallet"></i>
                     <span>Payments</span>
@@ -52,7 +53,6 @@
             </li>
         </ul>
     </div>
-
 
 
 
@@ -81,19 +81,20 @@
         <!-- SUMMARY ACTION HERO BANNER -->
         <div class="settlement-banner">
             <div class="meta-info">
-                <h2>May 2026 Sheet Summary</h2>
+                <h2 id="sheetMonthTitle">Monthly Settlement Sheet</h2>
                 <p>Accountant: Anura Perera | Total Gross Leaf Weight Evaluated</p>
             </div>
             <div class="banner-actions">
-                <!-- අවුලක් තිබ්බොත් Note එකක් දාලා Hold කරන්න බටන් එක -->
-                <button class="btn btn-danger" onclick="openNoteModal()">
-                    <i class="fa-solid fa-circle-exclamation"></i> Flag Discrepancy
-                </button>
-                <!-- ඔක්කොම හරි නම් බාගන්න සහ Approve කරන්න බටන් එක -->
-                <button class="btn btn-success" onclick="generatePDFAndApprove()">
-                    <i class="fa-solid fa-file-pdf"></i> Accept & Save PDF
+                <button class="btn btn-primary" onclick="generateAllPDFs()">
+                    <i class="fa-solid fa-file-pdf"></i> Save Full Sheet PDF
                 </button>
             </div>
+        </div>
+
+        <div id="noPaymentsMessage" style="display:none; text-align:center; padding: 60px 20px;">
+            <i class="ph ph-warning" style="font-size: 60px; color: #ccc; margin-bottom: 20px;"></i>
+            <h2 style="color: #666;">No Payments Awaiting Superintendent Review</h2>
+            <p style="color: #999;">There are no monthly payouts processed by the accountant at the moment.</p>
         </div>
 
         <!-- DETAILS DATA SHEET CONTAINER -->
@@ -107,48 +108,12 @@
                         <th>Advance Taken</th>
                         <th>Payment Method</th>
                         <th>Net Payout (LKR)</th>
+                        <th>Review Status</th>
+                        <th class="actions-header">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <div class="supplier-profile">
-                                <span>M.G. Bandara</span>
-                                <span>SUP-2041</span>
-                            </div>
-                        </td>
-                        <td><b>480 Kg</b></td>
-                        <td>LKR 120,000.00</td>
-                        <td style="color: var(--danger-red); font-weight: 500;">- LKR 25,000.00</td>
-                        <td><span class="badge-method bank"><i class="fa-solid fa-building-columns"></i> Bank Transfer</span></td>
-                        <td class="payout-text">LKR 95,000.00</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="supplier-profile">
-                                <span>S. Vimukthi</span>
-                                <span>SUP-1092</span>
-                            </div>
-                        </td>
-                        <td><b>310 Kg</b></td>
-                        <td>LKR 77,500.00</td>
-                        <td style="color: var(--danger-red); font-weight: 500;">- LKR 10,000.00</td>
-                        <td><span class="badge-method"><i class="fa-solid fa-money-bill-wave"></i> Cash Handout</span></td>
-                        <td class="payout-text">LKR 67,500.00</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="supplier-profile">
-                                <span>K.P. Gunawardena</span>
-                                <span>SUP-3055</span>
-                            </div>
-                        </td>
-                        <td><b>650 Kg</b></td>
-                        <td>LKR 162,500.00</td>
-                        <td style="color: #94a3b8;">LKR 0.00</td>
-                        <td><span class="badge-method bank"><i class="fa-solid fa-building-columns"></i> Bank Transfer</span></td>
-                        <td class="payout-text">LKR 162,500.00</td>
-                    </tr>
+                <tbody id="supplierTableBody">
+                    <!-- Loaded dynamically -->
                 </tbody>
             </table>
         </div>
@@ -169,25 +134,126 @@
 
     <!-- ENGINE SCRIPT -->
     <script>
-        // 1. PDF Generation & Accept Action Engine
-        function generatePDFAndApprove() {
-            const element = document.getElementById('printable-area');
-            const options = {
-                margin:       15,
-                filename:     'Supplier_Settlement_May_2026.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
-            };
-            
-            // Execute HTML to PDF engine conversion
-            html2pdf().set(options).from(element).save().then(() => {
-                alert("Monthly Statement Approved and Sheet downloaded successfully as PDF!");
-            });
+        let paymentsData = [];
+        let currentTarget = null; // { supplier_id, summary_month }
+
+        async function fetchPayments() {
+            try {
+                const res = await fetch('/api/superintendent/payments');
+                if (!res.ok) throw new Error('Failed to fetch payments data');
+                paymentsData = await res.json();
+                renderPayments();
+            } catch (err) {
+                console.error(err);
+                alert('Error loading payments data from database.');
+            }
         }
 
-        // 2. Modals Control & State Management
-        function openNoteModal() {
+        function renderPayments() {
+            const tbody = document.getElementById('supplierTableBody');
+            const noPaymentsMsg = document.getElementById('noPaymentsMessage');
+            const printableArea = document.getElementById('printable-area');
+
+            if (!paymentsData || paymentsData.length === 0) {
+                tbody.innerHTML = '';
+                printableArea.style.display = 'none';
+                noPaymentsMsg.style.display = 'block';
+                return;
+            }
+
+            printableArea.style.display = 'block';
+            noPaymentsMsg.style.display = 'none';
+
+            // Set banner month to the latest sheet month
+            const latestMonth = paymentsData[0].summary_month;
+            document.getElementById('sheetMonthTitle').textContent = `${latestMonth} Payout Sheet`;
+
+            tbody.innerHTML = paymentsData.map(item => {
+                const totalEarned = Number(item.total_amount_earned || 0);
+                const advance = Number(item.total_advance_deductions || 0);
+                const netPayout = totalEarned - advance;
+                const payMethod = item.payment_method || 'Not Specified';
+                const status = item.superintendent_status || 'Pending';
+                
+                let statusBadge = '<span class="badge-status pending">Pending</span>';
+                if (status === 'Approved') {
+                    statusBadge = '<span class="badge-status approved">Approved</span>';
+                } else if (status === 'Rejected') {
+                    statusBadge = `<span class="badge-status rejected" title="${item.superintendent_comment || 'No comment'}">Rejected ℹ️</span>`;
+                }
+
+                return `
+                    <tr data-supplier="${item.supplier_id}" data-month="${item.summary_month}">
+                        <td>
+                            <div class="supplier-profile">
+                                <span><b>${item.supplier_name || 'Unknown'}</b></span>
+                                <span style="font-size: 12px; color: #64748b;">${item.supplier_id}</span>
+                            </div>
+                        </td>
+                        <td><b>${Number(item.total_net_weight || 0).toFixed(2)} Kg</b></td>
+                        <td>LKR ${totalEarned.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td style="color: var(--danger-red); font-weight: 500;">
+                            ${advance > 0 ? `- LKR ${advance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'LKR 0.00'}
+                        </td>
+                        <td>
+                            <span class="badge-method ${payMethod.toLowerCase().includes('bank') ? 'bank' : ''}">
+                                <i class="fa-solid ${payMethod.toLowerCase().includes('bank') ? 'fa-building-columns' : 'fa-money-bill-wave'}"></i> 
+                                ${payMethod}
+                            </span>
+                        </td>
+                        <td class="payout-text">LKR ${netPayout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td>${statusBadge}</td>
+                        <td class="actions-cell">
+                            <button class="btn btn-success btn-xs" onclick="approvePayment('${item.supplier_id}', '${item.summary_month}')" title="Approve & Download PDF">
+                                <i class="fa-solid fa-check"></i> Accept & Save PDF
+                            </button>
+                            <button class="btn btn-danger btn-xs" onclick="openNoteModal('${item.supplier_id}', '${item.summary_month}')" title="Flag Issue">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Flag
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function approvePayment(supplierId, summaryMonth) {
+            try {
+                const res = await fetch('/api/superintendent/payments/approve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ supplier_id: supplierId, summary_month: summaryMonth })
+                });
+                
+                if (!res.ok) throw new Error('Approve request failed');
+                
+                // Get row to generate PDF
+                const row = document.querySelector(`tr[data-supplier="${supplierId}"][data-month="${summaryMonth}"]`);
+                // Temporarily hide actions column for PDF print
+                const actionsCell = row.querySelector('.actions-cell');
+                if (actionsCell) actionsCell.style.display = 'none';
+
+                const options = {
+                    margin:       15,
+                    filename:     `Supplier_Settlement_${supplierId}_${summaryMonth}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2 },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+                };
+
+                html2pdf().set(options).from(row).save().then(() => {
+                    if (actionsCell) actionsCell.style.display = '';
+                    alert(`Payout for supplier ${supplierId} (${summaryMonth}) Approved and PDF downloaded!`);
+                    fetchPayments();
+                });
+            } catch (err) {
+                console.error(err);
+                alert('Failed to approve payout.');
+            }
+        }
+
+        function openNoteModal(supplierId, summaryMonth) {
+            currentTarget = { supplier_id: supplierId, summary_month: summaryMonth };
+            document.getElementById('discrepancyNote').value = '';
             document.getElementById('noteModal').style.display = 'block';
         }
 
@@ -195,15 +261,62 @@
             document.getElementById('noteModal').style.display = 'none';
         }
 
-        function submitHoldNote() {
-            const noteText = document.getElementById('discrepancyNote').value;
-            if(noteText.trim() === "") {
+        async function submitHoldNote() {
+            const noteText = document.getElementById('discrepancyNote').value.trim();
+            if(noteText === "") {
                 alert("Please enter a note describing the issue before holding.");
                 return;
             }
-            alert("Settlement Sheet Status updated to 'FLAGGED HELD'. Note sent to Accountant:\n\n" + noteText);
-            closeNoteModal();
+            
+            try {
+                const res = await fetch('/api/superintendent/payments/reject', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        supplier_id: currentTarget.supplier_id, 
+                        summary_month: currentTarget.summary_month, 
+                        comment: noteText 
+                    })
+                });
+
+                if (!res.ok) throw new Error('Reject request failed');
+
+                alert(`Payout flagged and returned to accountant: "${noteText}"`);
+                closeNoteModal();
+                fetchPayments();
+            } catch (err) {
+                console.error(err);
+                alert('Failed to submit discrepancy flag.');
+            }
         }
+
+        function generateAllPDFs() {
+            const element = document.getElementById('printable-area');
+            // Hide Actions column headers and cells during print
+            const actionsHeader = document.querySelector('.actions-header');
+            if (actionsHeader) actionsHeader.style.display = 'none';
+            const actionCells = document.querySelectorAll('.actions-cell');
+            actionCells.forEach(c => c.style.display = 'none');
+
+            const month = document.getElementById('sheetMonthTitle').textContent;
+            const options = {
+                margin:       15,
+                filename:     `Supplier_Settlement_${month.replace(' ', '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+            
+            html2pdf().set(options).from(element).save().then(() => {
+                if (actionsHeader) actionsHeader.style.display = '';
+                actionCells.forEach(c => c.style.display = '');
+                alert("Full settlement sheet downloaded successfully as PDF!");
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchPayments();
+        });
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -229,11 +342,10 @@
             });
 
             const savedEmail = localStorage.getItem('userEmail');
+            const displayName = localStorage.getItem('username') || (savedEmail ? savedEmail.split('@')[0] : 'User');
             if (savedEmail) {
-                document.getElementById('userProfileEmail').textContent = savedEmail;
-                const namePart = savedEmail.split('@')[0];
-                const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-                document.getElementById('userProfileName').textContent = capitalizedName;
+                document.getElementById('userProfileEmail').textContent = displayName;
+                document.getElementById('userProfileName').textContent = displayName;
             }
 
             const logoutBtn = document.getElementById('logoutBtn');

@@ -67,8 +67,8 @@
                 
                 <div class="dropdown-menu" id="profileDropdownMenu">
                     <div class="dropdown-header">
-                        <p class="user-role">Accountant Account</p>
-                        <small id="userProfileEmail">Dilshan@gmail.com</small>
+                        <p class="user-role">Superintant Account</p>
+                        <small id="userProfileEmail">Dilshan</small>
                     </div>
                     <hr>
                     <a href="/page/profile.html"><i class="ph ph-user"></i> My Profile</a>
@@ -117,31 +117,12 @@
                     <th>Age</th>
                     <th>Phone Number</th>
                     <th>Address</th>
+                    <th>Status</th>
                 </tr>
             </thead>
 
-            <tbody id="accountantTable">
-
-                <tr>
-                    <td><input type="radio" name="accountant"></td>
-                    <td>Kasun</td>
-                    <td>kasun@gmail.com</td>
-                    <td>200012345678</td>
-                    <td>30</td>
-                    <td>0771234567</td>
-                    <td>Colombo</td>
-                </tr>
-
-                <tr>
-                    <td><input type="radio" name="accountant"></td>
-                    <td>Amal</td>
-                    <td>amal@gmail.com</td>
-                    <td>199812345678</td>
-                    <td>35</td>
-                    <td>0712345678</td>
-                    <td>Kandy</td>
-                </tr>
-
+            <tbody id="collectorTable">
+                <!-- Loaded dynamically -->
             </tbody>
 
         </table>
@@ -191,11 +172,10 @@
             });
 
             const savedEmail = localStorage.getItem('userEmail');
+            const displayName = localStorage.getItem('username') || (savedEmail ? savedEmail.split('@')[0] : 'User');
             if (savedEmail) {
-                document.getElementById('userProfileEmail').textContent = savedEmail;
-                const namePart = savedEmail.split('@')[0];
-                const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-                document.getElementById('userProfileName').textContent = capitalizedName;
+                document.getElementById('userProfileEmail').textContent = displayName;
+                document.getElementById('userProfileName').textContent = displayName;
             }
 
             const logoutBtn = document.getElementById('logoutBtn');

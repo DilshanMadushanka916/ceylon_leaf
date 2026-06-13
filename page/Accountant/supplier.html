@@ -6,6 +6,7 @@
     <title>Suppliers - Ceylon Leaf Tea</title>
     <link rel="stylesheet" href="/suppliers.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="/js/session-check.js"></script>
 </head>
 <body>
      <div class="sidebar">
@@ -127,11 +128,10 @@
             });
 
             const savedEmail = localStorage.getItem('userEmail');
+            const displayName = localStorage.getItem('username') || (savedEmail ? savedEmail.split('@')[0] : 'User');
             if (savedEmail) {
-                document.getElementById('userProfileEmail').textContent = savedEmail;
-                const namePart = savedEmail.split('@')[0];
-                const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-                document.getElementById('userProfileName').textContent = capitalizedName;
+                document.getElementById('userProfileEmail').textContent = displayName;
+                document.getElementById('userProfileName').textContent = displayName;
             }
 
             const logoutBtn = document.getElementById('logoutBtn');

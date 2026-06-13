@@ -8,6 +8,7 @@
      <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/pay.css">
+    <script src="/js/session-check.js"></script>
 </head>
 <body>
 
@@ -134,11 +135,10 @@
             });
 
             const savedEmail = localStorage.getItem('userEmail');
+            const displayName = localStorage.getItem('username') || (savedEmail ? savedEmail.split('@')[0] : 'User');
             if (savedEmail) {
-                document.getElementById('userProfileEmail').textContent = savedEmail;
-                const namePart = savedEmail.split('@')[0];
-                const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-                document.getElementById('userProfileName').textContent = capitalizedName;
+                document.getElementById('userProfileEmail').textContent = displayName;
+                document.getElementById('userProfileName').textContent = displayName;
             }
 
             const logoutBtn = document.getElementById('logoutBtn');
@@ -169,20 +169,36 @@
                     paymentsContent.style.display = 'block';
                     emptyStateMessage.style.display = 'none';
                     paymentTableBody.innerHTML = summaries.map(item => {
-                        const statusClass = 'pending-status';
+                        let statusText = item.payout_status || 'Pending';
+                        let statusColor = '#f39c12'; // orange
+                        let commentHtml = '';
+                        let buttonText = 'Process Pay';
+                        
+                        if (item.superintendent_status === 'Rejected') {
+                            statusText = 'Flagged: Rejected';
+                            statusColor = '#e74c3c'; // red
+                            commentHtml = `<div style="color: #c0392b; font-size: 11px; margin-top: 4px; font-weight: 500;">
+                                              ⚠️ <b>Comment:</b> ${item.superintendent_comment || 'No comment provided'}
+                                           </div>`;
+                            buttonText = 'Revise Pay';
+                        }
+                        
                         return `
                             <tr data-supplier-id="${item.supplier_id}" data-summary-month="${item.summary_month || ''}">
                                 <td class="highlight-code">${item.supplier_id}</td>
-                                <td><b>${item.supplier_name || '-'}</b></td>
+                                <td>
+                                    <b>${item.supplier_name || '-'}</b>
+                                    ${commentHtml}
+                                </td>
                                 <td>${item.supplier_field || '-'}</td>
                                 <td>${Number(item.total_tea_leaves || 0).toFixed(2)} kg</td>
                                 <td>${Number(item.total_moisture_deduction || 0).toFixed(2)} kg</td>
                                 <td>${Number(item.total_net_weight || 0).toFixed(2)} kg</td>
                                 <td>Rs. ${Number(item.total_amount_earned || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                <td><span class="${statusClass}">● ${item.payout_status || 'Pending'}</span></td>
+                                <td><span class="pending-status" style="color: ${statusColor}; border-color: ${statusColor}; font-weight: 600; padding: 4px 8px; border: 1px solid ${statusColor}; border-radius: 12px;">● ${statusText}</span></td>
                                 <td>
                                     <a href="pay.html?supplier_id=${encodeURIComponent(item.supplier_id)}&summary_month=${encodeURIComponent(item.summary_month || '')}" class="view-btn-link">
-                                        <button class="view-btn">Process Pay</button>
+                                        <button class="view-btn" style="${item.superintendent_status === 'Rejected' ? 'background: #e74c3c; border-color: #e74c3c;' : ''}">${buttonText}</button>
                                     </a>
                                 </td>
                             </tr>

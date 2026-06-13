@@ -6,7 +6,7 @@
     --light-green: #e8f5e9;
     --accent-green: #37a77c;
     --text-white: #ffffff;
-    --background-grey: #eef3ef;
+    --background-grey: #eeeff3;
 }
 
 * {
@@ -288,7 +288,7 @@ body {
 .method-option-card input[type="radio"]:checked + .option-content .method-icon { color: #27ae60; }
 
 /* Financial Statement Layout split panels */
-.statement-card { background: #ffffff; border-radius: 16px; padding: 30px; border: 1px solid #eef2f0; }
+.statement-card { background: #f0f7f0; border-radius: 16px; padding: 30px; border: 1px solid #eef2f0; }
 .statement-header-title { margin-bottom: 25px; color: #2a4d44; display: flex; align-items: center; gap: 10px; font-size: 1.15rem; }
 .statement-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 25px; }
 .calculation-side, .bank-side { display: flex; flex-direction: column; gap: 16px; }
@@ -325,4 +325,43 @@ body {
     .statement-grid { grid-template-columns: 1fr; gap: 30px; }
     .payment-options-group { grid-template-columns: 1fr; }
     .hero-extra-details { grid-template-columns: 1fr; }
+}
+
+
+
+
+/* ... පෙර තිබූ කේත වලට අමතරව මෙය එකතු කරන්න ... */
+
+/* බැංකු විස්තර සඳහා නවීන Animation */
+.bank-side {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    max-height: 500px; /* animation සඳහා අවශ්‍ය වේ */
+    overflow: hidden;
+}
+
+.bank-side.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px);
+    max-height: 0;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* බැංකු පෙට්ටිය වඩාත් කැපී පෙනෙන ලෙස */
+.bank-info-box {
+    background: #f8faf9;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e5ece7;
+    border-left: 4px solid #27ae60;
+    transition: background 0.3s ease;
+}
+
+.bank-info-box:hover {
+    background: #f0f7f3;
 }

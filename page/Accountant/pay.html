@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/pays.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="/js/session-check.js"></script>
 </head>
 <body>
 
@@ -116,6 +117,15 @@
             </div>
         </div>
 
+        <!-- SUPERINTENDENT REJECTION FLAG BOX -->
+        <div id="superintendentFlagBox" style="display:none; background:#ffebee; border:1px solid #ffcdd2; color:#c62828; padding:16px 20px; border-radius:12px; margin: 20px; font-weight:600; display:flex; align-items:center; gap:10px;">
+            <i class="fas fa-exclamation-triangle" style="font-size:20px;"></i>
+            <div>
+                <div style="font-size:15px; text-transform:uppercase; font-weight:700;">Flagged by Superintendent</div>
+                <div id="superintendentCommentText" style="font-weight:500; font-size:14px; margin-top:4px;"></div>
+            </div>
+        </div>
+
         <div id="payErrorMessage" class="error-message" style="display:none;color:#e74c3c;text-align:center;margin:16px 0;font-weight:700;"></div>
         <!-- METRICS CARDS GRID (AUTO RE-SIZE ACROSS ALL SCREEN WIDTHS) -->
         <div class="metrics-grid">
@@ -201,25 +211,31 @@
                     </div>
                 </div>
 
-                <!-- දකුණුපස: බැංකු ගිණුම් / වෙනත් විස්තර -->
-                <div class="bank-side" id="payoutDetailsContainer">
-                    <span class="calc-label" style="margin-bottom: 5px;">Supplier Bank Account</span>
-                    <div class="bank-info-box">
-                        <div class="bank-row">
-                            <span class="bank-lbl">Bank Name:</span>
-                            <span class="bank-val">Commercial Bank</span>
-                        </div>
-                        <div class="bank-row">
-                            <span class="bank-lbl">Account No:</span>
-                            <span class="bank-val" style="font-family: monospace; font-size: 1rem;">8010245591</span>
-                        </div>
-                        <div class="bank-row">
-                            <span class="bank-lbl">Status:</span>
-                            <span class="bank-val" style="color: #27ae60;"><i class="fas fa-check-circle"></i> Verified Account</span>
-                        </div>
-                    </div>
-                </div>
+             <div class="bank-side" id="payoutDetailsContainer">
+    
+    <div id="bankView" class="toggle-view">
+        <span class="calc-label" style="margin-bottom: 5px;">Supplier Bank Account</span>
+        <div class="bank-info-box">
+            <div class="bank-row"><span class="bank-lbl">Bank Name:</span><span class="bank-val">Commercial Bank</span></div>
+            <div class="bank-row"><span class="bank-lbl">Account No:</span><span class="bank-val" style="font-family: monospace; font-size: 1rem;">8010245591</span></div>
+            <div class="bank-row"><span class="bank-lbl">Branch:</span><span class="bank-val">Ratnapura</span></div>
+            <div class="bank-row"><span class="bank-lbl">Status:</span><span class="bank-val" style="color: #27ae60;"><i class="fas fa-check-circle"></i> Verified Account</span></div>
+        </div>
+    </div>
+
+    <div id="cashView" class="toggle-view hidden">
+        <span class="calc-label" style="margin-bottom: 5px;">Cash Payout Information</span>
+        <div class="bank-info-box" style="border-left-color: #e67e22;">
+            <div class="bank-row">
+                <i class="fas fa-money-bill-wave" style="margin-right:10px; color:#e67e22;"></i> 
+                <span class="bank-val">Counter Payment</span>
             </div>
+            <p style="font-size: 0.85rem; color: #7f8c8d; margin-top: 10px;">
+               This amount is to be paid in cash from the factory accounts department. Please obtain a signature upon receipt of the money..
+            </p>
+        </div>
+    </div>
+</div>
 
             <!-- අවසාන ගෙවීම් එකතුව -->
             <div class="final-payout-banner">
@@ -264,11 +280,10 @@
         });
 
         const savedEmail = localStorage.getItem('userEmail');
+        const displayName = localStorage.getItem('username') || (savedEmail ? savedEmail.split('@')[0] : 'User');
         if (savedEmail) {
-            document.getElementById('userProfileEmail').textContent = savedEmail;
-            const namePart = savedEmail.split('@')[0];
-            const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-            document.getElementById('userProfileName').textContent = capitalizedName;
+            document.getElementById('userProfileEmail').textContent = displayName;
+            document.getElementById('userProfileName').textContent = displayName;
         }
 
         const logoutBtn = document.getElementById('logoutBtn');
@@ -280,6 +295,32 @@
                 window.location.href = '/page/login.html';
             });
         }
+        let currentNetWeight = 0;
+        let currentAdvanceDeduction = 0;
+
+        function showSuperintendentFlag(status, comment) {
+            const flagBox = document.getElementById('superintendentFlagBox');
+            const commentText = document.getElementById('superintendentCommentText');
+            if (flagBox && commentText) {
+                if (status === 'Rejected') {
+                    commentText.textContent = comment || 'No comment provided';
+                    flagBox.style.display = 'flex';
+                } else {
+                    flagBox.style.display = 'none';
+                }
+            }
+        }
+
+        function recalculatePayout() {
+            const perKiloPriceInput = document.getElementById('txtPerKiloPrice');
+            const price = parseFloat(perKiloPriceInput.value) || 0;
+            const grossSalary = currentNetWeight * price;
+            const finalPayout = grossSalary - currentAdvanceDeduction;
+
+            document.getElementById('payGrossSalary').textContent = 'Rs. ' + grossSalary.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('payFinalPayout').textContent = 'Rs. ' + finalPayout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
         const query = new URLSearchParams(window.location.search);
         const summaryId = query.get('summary_id');
         const supplierId = query.get('supplier_id');
@@ -314,14 +355,15 @@
                     document.getElementById('payTotalLeaves').textContent = Number(data.total_tea_leaves || 0).toFixed(2) + ' kg';
                     document.getElementById('payMoisture').textContent = Number(data.total_moisture_deduction || 0).toFixed(2) + ' kg';
                     document.getElementById('payNetWeight').textContent = Number(data.total_net_weight || 0).toFixed(2) + ' kg';
+                    
+                    currentNetWeight = Number(data.total_net_weight || 0);
+                    currentAdvanceDeduction = Number(data.requested_advance_deductions || 0);
                     const grossAmount = Number(data.total_amount_earned || 0);
-                    const advanceAmount = Number(data.requested_advance_deductions || 0);
-                    const netWeight = Number(data.total_net_weight || 0);
-                    const perKiloPrice = netWeight > 0 ? (grossAmount / netWeight).toFixed(2) : 0;
+                    const perKiloPrice = currentNetWeight > 0 ? (grossAmount / currentNetWeight).toFixed(2) : 0;
                     
                     document.getElementById('payGrossSalary').textContent = 'Rs. ' + grossAmount.toLocaleString();
-                    document.getElementById('payAdvanceDeduction').textContent = '- Rs. ' + advanceAmount.toLocaleString();
-                    document.getElementById('payFinalPayout').textContent = 'Rs. ' + (grossAmount - advanceAmount).toLocaleString();
+                    document.getElementById('payAdvanceDeduction').textContent = '- Rs. ' + currentAdvanceDeduction.toLocaleString();
+                    document.getElementById('payFinalPayout').textContent = 'Rs. ' + (grossAmount - currentAdvanceDeduction).toLocaleString();
                     if (data.summary_month) {
                         const monthNum = data.summary_month.split('-')[1];
                         document.getElementById('paymentDateMonth').value = monthNum;
@@ -334,6 +376,8 @@
                     if (data.bank_name) document.querySelector('.bank-row:nth-child(1) .bank-val').textContent = data.bank_name;
                     if (data.bank_account_number) document.querySelector('.bank-row:nth-child(2) .bank-val').textContent = data.bank_account_number;
                     if (data.branch_location) document.querySelector('.bank-row:nth-child(3) .bank-val').textContent = data.branch_location;
+                    
+                    showSuperintendentFlag(data.superintendent_status, data.superintendent_comment);
                 } catch (err) {
                     console.error(err);
                     showPayError('Unable to load the selected payment summary. Please refresh the page or try again later.');
@@ -350,12 +394,14 @@
                     document.getElementById('payTotalLeaves').textContent = Number(data.total_tea_leaves || 0).toFixed(2) + ' kg';
                     document.getElementById('payMoisture').textContent = Number(data.total_moisture_deduction || 0).toFixed(2) + ' kg';
                     document.getElementById('payNetWeight').textContent = Number(data.total_net_weight || 0).toFixed(2) + ' kg';
+                    
+                    currentNetWeight = Number(data.total_net_weight || 0);
+                    currentAdvanceDeduction = Number(data.requested_advance_deductions || 0);
                     const grossAmount = Number(data.total_amount_earned || 0);
-                    const advanceAmount = Number(data.requested_advance_deductions || 0);
                     
                     document.getElementById('payGrossSalary').textContent = 'Rs. ' + grossAmount.toLocaleString();
-                    document.getElementById('payAdvanceDeduction').textContent = '- Rs. ' + advanceAmount.toLocaleString();
-                    document.getElementById('payFinalPayout').textContent = 'Rs. ' + (grossAmount - advanceAmount).toLocaleString();
+                    document.getElementById('payAdvanceDeduction').textContent = '- Rs. ' + currentAdvanceDeduction.toLocaleString();
+                    document.getElementById('payFinalPayout').textContent = 'Rs. ' + (grossAmount - currentAdvanceDeduction).toLocaleString();
                     document.getElementById('txtPerKiloPrice').value = Number(data.price_per_kg || 0).toFixed(2);
                     if (summaryMonth) {
                         document.getElementById('paymentDateMonth').value = summaryMonth.split('-')[1];
@@ -365,6 +411,8 @@
                     if (data.bank_name) document.querySelector('.bank-row:nth-child(1) .bank-val').textContent = data.bank_name;
                     if (data.bank_account_number) document.querySelector('.bank-row:nth-child(2) .bank-val').textContent = data.bank_account_number;
                     if (data.branch_location) document.querySelector('.bank-row:nth-child(3) .bank-val').textContent = data.branch_location;
+                    
+                    showSuperintendentFlag(data.superintendent_status, data.superintendent_comment);
                 } catch (err) {
                     console.error(err);
                     showPayError('Unable to load pending supplier payment details.');
@@ -383,14 +431,15 @@
                         document.getElementById('payTotalLeaves').textContent = Number(data.total_tea_leaves || 0).toFixed(2) + ' kg';
                         document.getElementById('payMoisture').textContent = Number(data.total_moisture_deduction || 0).toFixed(2) + ' kg';
                         document.getElementById('payNetWeight').textContent = Number(data.total_net_weight || 0).toFixed(2) + ' kg';
+                        
+                        currentNetWeight = Number(data.total_net_weight || 0);
+                        currentAdvanceDeduction = Number(data.requested_advance_deductions || 0);
                         const grossAmount = Number(data.total_amount_earned || 0);
-                        const advanceAmount = Number(data.requested_advance_deductions || 0);
-                        const netWeight = Number(data.total_net_weight || 0);
-                        const perKiloPrice = netWeight > 0 ? (grossAmount / netWeight).toFixed(2) : 0;
+                        const perKiloPrice = currentNetWeight > 0 ? (grossAmount / currentNetWeight).toFixed(2) : 0;
                         
                         document.getElementById('payGrossSalary').textContent = 'Rs. ' + grossAmount.toLocaleString();
-                        document.getElementById('payAdvanceDeduction').textContent = '- Rs. ' + advanceAmount.toLocaleString();
-                        document.getElementById('payFinalPayout').textContent = 'Rs. ' + (grossAmount - advanceAmount).toLocaleString();
+                        document.getElementById('payAdvanceDeduction').textContent = '- Rs. ' + currentAdvanceDeduction.toLocaleString();
+                        document.getElementById('payFinalPayout').textContent = 'Rs. ' + (grossAmount - currentAdvanceDeduction).toLocaleString();
                         if (data.summary_month) {
                             const monthNum = data.summary_month.split('-')[1];
                             document.getElementById('paymentDateMonth').value = monthNum;
@@ -403,6 +452,8 @@
                         if (data.bank_name) document.querySelector('.bank-row:nth-child(1) .bank-val').textContent = data.bank_name;
                         if (data.bank_account_number) document.querySelector('.bank-row:nth-child(2) .bank-val').textContent = data.bank_account_number;
                         if (data.branch_location) document.querySelector('.bank-row:nth-child(3) .bank-val').textContent = data.branch_location;
+                        
+                        showSuperintendentFlag(data.superintendent_status, data.superintendent_comment);
                     } else {
                         const supplierRes = await fetch(`/api/supplier/${supplierId}`);
                         if (supplierRes.ok) {
@@ -433,13 +484,14 @@
             }
 
             const selectedMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'bank';
+            const pricePerKg = document.getElementById('txtPerKiloPrice')?.value;
             const payUrl = summaryId
                 ? `/api/monthly-payment-summaries/${summaryId}/pay`
                 : `/api/pending-supplier-payments/${encodeURIComponent(supplierId)}/${encodeURIComponent(summaryMonth)}/pay`;
             const response = await fetch(payUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ payment_method: selectedMethod })
+                body: JSON.stringify({ payment_method: selectedMethod, price_per_kg: pricePerKg })
             });
 
             if (!response.ok) {
@@ -455,6 +507,11 @@
             window.location.href = '/page/Accountant/Payment.html?t=' + Date.now();
         }
 
+        const perKiloPriceInput = document.getElementById('txtPerKiloPrice');
+        if (perKiloPriceInput) {
+            perKiloPriceInput.addEventListener('input', recalculatePayout);
+        }
+
         const approveButton = document.querySelector('.actions-container .btn-primary');
         if (approveButton) {
             approveButton.addEventListener('click', (event) => {
@@ -466,7 +523,30 @@
         loadPayDetails();
     });
     </script>  
-    
+  <script>
+    const radioBank = document.getElementById('radioBank');
+    const radioCash = document.getElementById('radioCash');
+    const bankView = document.getElementById('bankView');
+    const cashView = document.getElementById('cashView');
+
+    function updateView() {
+        if (radioBank.checked) {
+            bankView.style.display = 'block'; // Bank පෙන්වන්න
+            cashView.style.display = 'none';  // Cash සඟවන්න
+        } else if (radioCash.checked) {
+            bankView.style.display = 'none';  // Bank සඟවන්න
+            cashView.style.display = 'block'; // Cash පෙන්වන්න
+        }
+    }
+
+    // වෙනස්කම් සිදු වූ වහාම ක්‍රියාත්මක වීමට
+    radioBank.addEventListener('change', updateView);
+    radioCash.addEventListener('change', updateView);
+
+    // --- මෙන්න මේ කොටස අමතක කරන්න එපා ---
+    // පිටුව ලෝඩ් වූ වහාම තත්ත්වය පරීක්ෂා කර නිවැරදි දේ පෙන්වීමට:
+    updateView(); 
+</script>
 
 </body>
 </html>

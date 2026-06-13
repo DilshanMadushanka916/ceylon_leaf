@@ -262,9 +262,12 @@ body{
     font-size: 0.9rem;
 }
 
+
 .dropdown-header small {
-    color: #7f8c8d;
+            color: #718096;
+            font-size: 0.8rem;
 }
+
 
 .dropdown-menu hr {
     border: 0;

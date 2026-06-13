@@ -82,12 +82,6 @@
         <div>
             <p style="color: #6b7280; margin-top: 5px;">Factory operational reports and summaries</p>
         </div>
-        <div class="top-actions">
-            <button class="month-btn">
-                This Month
-                <i class="fa fa-chevron-down"></i>
-            </button>
-        </div>
     </div>
 
     <!-- REPORTS CONTAINER -->
@@ -122,10 +116,6 @@
 
                 <button class="view-btn">
                     View
-                </button>
-
-                <button class="download-btn">
-                    Download
                 </button>
 
             </div>
@@ -163,9 +153,7 @@
                     View
                 </button>
 
-                <button class="download-btn">
-                    Download
-                </button>
+                
 
             </div>
 
@@ -202,9 +190,7 @@
                     View
                 </button>
 
-                <button class="download-btn">
-                    Download
-                </button>
+              
 
             </div>
 
@@ -239,11 +225,10 @@
             });
 
             const savedEmail = localStorage.getItem('userEmail');
+            const displayName = localStorage.getItem('username') || (savedEmail ? savedEmail.split('@')[0] : 'User');
             if (savedEmail) {
-                document.getElementById('userProfileEmail').textContent = savedEmail;
-                const namePart = savedEmail.split('@')[0];
-                const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-                document.getElementById('userProfileName').textContent = capitalizedName;
+                document.getElementById('userProfileEmail').textContent = displayName;
+                document.getElementById('userProfileName').textContent = displayName;
             }
 
             const logoutBtn = document.getElementById('logoutBtn');

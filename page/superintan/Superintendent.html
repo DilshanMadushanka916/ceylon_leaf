@@ -12,6 +12,8 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 </head>
 
 
@@ -126,14 +128,18 @@
                 <div class="chart-top">
                     <h2>Tea Collection Overview</h2>
 
-                    <button>This Week</button>
+                    <div class="month-selector">
+                        <button class="month-btn" data-month="2026-04">April</button>
+                        <button class="month-btn" data-month="2026-05">May</button>
+                        <button class="month-btn" data-month="2026-06" style="background-color: #16a34a; color: white;">June</button>
+                    </div>
                 </div>
 
                 <canvas id="teaChart"></canvas>
             </div>
 
             <div class="pie-box">
-                <h2>Collection By Grade</h2>
+                <h3>Collection By Grade</h3>
 
                 <canvas id="gradeChart"></canvas>
             </div>
@@ -149,7 +155,11 @@
                 <div class="chart-top">
                     <h2>Payments Overview</h2>
 
-                    <button>This Week</button>
+                    <div class="month-selector">
+                        <button class="payment-month-btn" data-month="2026-04">April</button>
+                        <button class="payment-month-btn" data-month="2026-05">May</button>
+                        <button class="payment-month-btn" data-month="2026-06" style="background-color: #3b82f6; color: white;">June</button>
+                    </div>
                 </div>
 
                 <canvas id="paymentChart"></canvas>
@@ -233,11 +243,10 @@
             });
 
             const savedEmail = localStorage.getItem('userEmail');
+            const displayName = localStorage.getItem('username') || (savedEmail ? savedEmail.split('@')[0] : 'User');
             if (savedEmail) {
-                document.getElementById('userProfileEmail').textContent = savedEmail;
-                const namePart = savedEmail.split('@')[0];
-                const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-                document.getElementById('userProfileName').textContent = capitalizedName;
+                document.getElementById('userProfileEmail').textContent = displayName;
+                document.getElementById('userProfileName').textContent = displayName;
             }
 
             const logoutBtn = document.getElementById('logoutBtn');

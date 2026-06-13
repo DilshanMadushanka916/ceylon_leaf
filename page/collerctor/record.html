@@ -7,6 +7,7 @@
    
     <link rel="stylesheet" href="/records-style.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="/js/session-check.js"></script>
 </head>
 <body>
      <header>
@@ -258,13 +259,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. LocalStorage එකෙන් Login වෙච්ච user ගේ email එක අරන් navbar එකට දාන්න
     const savedEmail = localStorage.getItem('userEmail');
+    const displayName = localStorage.getItem('username') || (savedEmail ? savedEmail.split('@')[0] : 'User');
     if (savedEmail) {
-        document.getElementById('userProfileEmail').textContent = savedEmail;
-        
         // Email එකෙන් නම විතරක් වෙන් කරලා ගන්න (උදා: Dilshan@gmail.com -> Dilshan)
-        const namePart = savedEmail.split('@')[0];
-        const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-        document.getElementById('userProfileName').textContent = capitalizedName;
+        document.getElementById('userProfileEmail').textContent = displayName;
+        document.getElementById('userProfileName').textContent = displayName;
     }
 
     // 4. Log Out button එක ක්‍රියා කරවීම

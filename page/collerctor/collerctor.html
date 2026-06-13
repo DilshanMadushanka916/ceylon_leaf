@@ -8,6 +8,7 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/collcss.css"> 
+    <script src="/js/session-check.js"></script>
 </head>
 <body>
 
@@ -76,7 +77,7 @@
                     <input type="text" id="field_no_input" name="field_no" placeholder="Waiting for selection..." readonly style="background-color: #f7fafc; cursor: not-allowed; border-color: #e2e8f0;">
 
                     <label>Add the Weight (kg)</label>
-                    <input type="number" name="kilos_collected" id="kilos_input" placeholder="Enter kilos">
+                    <input type="number" step="0.01" name="kilos_collected" id="kilos_input" placeholder="Enter kilos" required>
 
                     <div class="advance-card">
                         <div class="advance-header">
@@ -90,10 +91,48 @@
                         <div id="advanceAmountField" class="hidden-field">
                             <label>Amount (LKR)</label>
                             <input type="number" name="advance_amount" placeholder="0.00">
+                            <small id="maxAdvanceNotice" style="color: #e67e22; font-weight: 600; display: block; margin-top: 4px; font-size: 0.8rem;"></small>
                         </div>
                     </div>
                     <button type="submit">Save Data</button>
                 </form>
+
+                <!-- SUPPLIER DASHBOARD & ELIGIBILITY CONTAINER -->
+                <div id="supplierStatusContainer" style="display:none; margin-top:24px; background: #ffffff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <h3 style="color: #2d3748; font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                        <i class="ph ph-user-circle" style="font-size: 24px; color: #2e7d32;"></i>
+                        Supplier Status & Eligibility
+                    </h3>
+                    
+                    <!-- ELIGIBILITY CARD -->
+                    <div id="eligibilityCard" style="margin-bottom: 20px; background: #f0fff4; border: 1px solid #c6f6d5; border-radius: 12px; padding: 16px 20px; display: flex; align-items: flex-start; gap: 12px;">
+                        <i id="eligibilityIcon" class="ph ph-check-circle" style="font-size: 24px; color: #38a169; margin-top: 2px;"></i>
+                        <div>
+                            <div style="font-weight: 700; color: #276749; font-size: 0.95rem;">Advance Eligibility</div>
+                            <div id="eligibilityStatusText" style="font-size: 0.875rem; color: #2f855a; margin-top: 4px; font-weight: 500; line-height: 1.4;">Checking eligibility...</div>
+                        </div>
+                    </div>
+
+                    <!-- RECENT ADVANCES -->
+                    <h4 style="color: #4a5568; font-size: 0.95rem; font-weight: 600; margin-bottom: 12px;">Recent Advance Requests</h4>
+                    <div style="overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr style="background-color: #f7fafc; border-bottom: 1px solid #edf2f7;">
+                                    <th style="padding: 10px 14px; font-size: 0.75rem; font-weight: 700; color: #718096; text-transform: uppercase;">Date</th>
+                                    <th style="padding: 10px 14px; font-size: 0.75rem; font-weight: 700; color: #718096; text-transform: uppercase;">Amount</th>
+                                    <th style="padding: 10px 14px; font-size: 0.75rem; font-weight: 700; color: #718096; text-transform: uppercase;">Scheme</th>
+                                    <th style="padding: 10px 14px; font-size: 0.75rem; font-weight: 700; color: #718096; text-transform: uppercase;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentAdvancesTableBody" style="font-size: 0.85rem; color: #4a5568;">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 20px; color: #a0aec0;">Select a supplier to load history.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <div class="dashboard-sidebar">
@@ -126,13 +165,31 @@
         }
 
         const formData = new FormData(e.target);
+        const advanceRequested = document.getElementById('requestAdvance').checked;
+        const advanceAmount = parseFloat(formData.get('advance_amount')) || 0;
+        
+        if (advanceRequested) {
+            if (!supplierEligible) {
+                alert("❌ Error: Supplier is not eligible for advance requests.");
+                return;
+            }
+            if (advanceAmount <= 0) {
+                alert("❌ Error: Advance amount must be greater than zero.");
+                return;
+            }
+            if (advanceAmount > currentMaxAdvanceAmount) {
+                alert(`❌ Error: Requested advance amount (Rs. ${advanceAmount.toLocaleString()}) exceeds the maximum allowed limit of Rs. ${currentMaxAdvanceAmount.toLocaleString()} (50% of previous month's payout).`);
+                return;
+            }
+        }
+
         const data = {
             collection_date: formData.get('collection_date'),
             field_no: formData.get('field_no'),
             supplier_id: formData.get('supplier_id'),
             kilos_collected: formData.get('kilos_collected'),
-            advance_requested: document.getElementById('requestAdvance').checked,
-            advance_amount: formData.get('advance_amount') || 0,
+            advance_requested: advanceRequested,
+            advance_amount: advanceRequested ? advanceAmount : 0,
             collector_email: loggedInEmail 
         };
 
@@ -143,7 +200,10 @@
                 body: JSON.stringify(data)
             });
 
-            if (!response.ok) throw new Error('Server responded with an error');
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.message || 'Server responded with an error');
+            }
 
             const result = await response.json();
             if (result.success) {
@@ -158,10 +218,13 @@
                 
                 const advanceField = document.getElementById('advanceAmountField');
                 if (advanceField) advanceField.classList.add('hidden-field');
+
+                const statusContainer = document.getElementById('supplierStatusContainer');
+                if (statusContainer) statusContainer.style.display = 'none';
             }
         } catch (error) {
             console.error('Fetch Error:', error);
-            alert('❌ Could not connect to server. Make sure your Node.js terminal is running.');
+            alert('❌ ' + error.message);
         }
     });
     </script>
@@ -199,6 +262,8 @@
     </script>
 
     <script>
+        let currentMaxAdvanceAmount = 0;
+        let supplierEligible = false;
         const supplierSearchInput = document.getElementById('supplier_search');
         const supplierDropdown = document.getElementById('supplierDropdown');
         const supplierIdInput = document.getElementById('supplier_id_input');
@@ -232,15 +297,30 @@
             }
 
             supplierList.forEach(supplier => {
+                const isDeactive = supplier.account_status === 'Deactive';
                 const option = document.createElement('div');
-                option.className = 'supplier-option';
+                option.className = 'supplier-option' + (isDeactive ? ' deactivated-supplier' : '');
+                option.style.opacity = isDeactive ? '0.7' : '1';
+                
                 option.innerHTML = `
-                    <div class="supplier-option-id">${supplier.sup_id}</div>
-                    <div class="supplier-option-name">${supplier.supplier_name}</div>
+                    <div class="supplier-option-id" style="${isDeactive ? 'color: red;' : ''}">${supplier.sup_id}</div>
+                    <div class="supplier-option-name" style="${isDeactive ? 'color: red; font-weight: 600;' : ''}">
+                        ${supplier.supplier_name} ${isDeactive ? '<span style="color: red; font-size: 0.75rem; background: #ffebee; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">[DEACTIVATED]</span>' : ''}
+                    </div>
                     <div class="supplier-option-field">Field: ${supplier.supplier_field}</div>
                 `;
 
                 option.addEventListener('click', () => {
+                    if (isDeactive) {
+                        alert("❌ Error: This supplier is deactivated and cannot supply tea.");
+                        supplierSearchInput.value = '';
+                        supplierIdInput.value = '';
+                        fieldNoInput.value = '';
+                        supplierDropdown.classList.remove('show');
+                        const statusContainer = document.getElementById('supplierStatusContainer');
+                        if (statusContainer) statusContainer.style.display = 'none';
+                        return;
+                    }
                     selectSupplier(supplier);
                 });
                 supplierDropdown.appendChild(option);
@@ -248,11 +328,133 @@
             supplierDropdown.classList.add('show');
         }
 
+        async function loadSupplierDashboardData(supplierId) {
+            const container = document.getElementById('supplierStatusContainer');
+            if (!container) return;
+            
+            container.style.display = 'block';
+            
+            // 1. Fetch Eligibility
+            const eligibilityCard = document.getElementById('eligibilityCard');
+            const eligibilityIcon = document.getElementById('eligibilityIcon');
+            const eligibilityStatusText = document.getElementById('eligibilityStatusText');
+            
+            try {
+                const eligibilityRes = await fetch(`http://localhost:3000/api/supplier/${encodeURIComponent(supplierId)}/advance-eligibility`);
+                if (eligibilityRes.ok) {
+                    const elig = await eligibilityRes.json();
+                    eligibilityStatusText.textContent = elig.statusMessage;
+                    
+                    currentMaxAdvanceAmount = elig.maxAdvanceAmount || 0;
+                    supplierEligible = elig.eligible;
+                    
+                    const maxNotice = document.getElementById('maxAdvanceNotice');
+                    const requestCheckbox = document.getElementById('requestAdvance');
+                    const advanceAmountField = document.getElementById('advanceAmountField');
+                    
+                    if (elig.eligible) {
+                        eligibilityCard.style.backgroundColor = '#f0fff4';
+                        eligibilityCard.style.borderColor = '#c6f6d5';
+                        eligibilityStatusText.style.color = '#2f855a';
+                        eligibilityIcon.className = 'ph ph-check-circle';
+                        eligibilityIcon.style.color = '#38a169';
+                    } else {
+                        eligibilityCard.style.backgroundColor = '#fff5f5';
+                        eligibilityCard.style.borderColor = '#fed7d7';
+                        eligibilityStatusText.style.color = '#9b2c2c';
+                        eligibilityIcon.className = 'ph ph-warning-circle';
+                        eligibilityIcon.style.color = '#e53e3e';
+                    }
+                    
+                    if (!supplierEligible || currentMaxAdvanceAmount <= 0) {
+                        requestCheckbox.checked = false;
+                        requestCheckbox.disabled = true;
+                        if (advanceAmountField) advanceAmountField.classList.add('hidden-field');
+                        if (maxNotice) maxNotice.textContent = "Supplier is not eligible for advance requests.";
+                    } else {
+                        requestCheckbox.disabled = false;
+                        if (maxNotice) maxNotice.textContent = `Max allowed: Rs. ${currentMaxAdvanceAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                    }
+                } else {
+                    eligibilityStatusText.textContent = 'Unable to check advance eligibility.';
+                }
+            } catch (err) {
+                console.error(err);
+                eligibilityStatusText.textContent = 'Error checking advance eligibility.';
+            }
+
+            // 2. Fetch Advances History
+            const tableBody = document.getElementById('recentAdvancesTableBody');
+            tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #a0aec0;">Loading advance history...</td></tr>';
+            
+            try {
+                const advancesRes = await fetch(`http://localhost:3000/api/supplier/${encodeURIComponent(supplierId)}/advances`);
+                if (advancesRes.ok) {
+                    const advances = await advancesRes.json();
+                    if (!advances || advances.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #a0aec0;">No advance requests found for this supplier.</td></tr>';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = advances.map(adv => {
+                        const dateStr = adv.request_date ? new Date(adv.request_date).toLocaleDateString() : '-';
+                        const amountStr = adv.requested_amount ? `Rs. ${Number(adv.requested_amount).toLocaleString(undefined, {minimumFractionDigits: 2})}` : 'Rs. 0.00';
+                        const scheme = adv.deduction_scheme || 'N/A';
+                        
+                        let badgeBg = '#feebc8';
+                        let badgeColor = '#744210';
+                        let status = adv.approval_status || 'Pending';
+                        let displayStatus = 'Waiting Accept';
+                        
+                        if (status === 'Approved') {
+                            badgeBg = '#e6fffa';
+                            badgeColor = '#006d77';
+                            displayStatus = 'Accepted';
+                        } else if (status === 'Pending') {
+                            badgeBg = '#feebc8';
+                            badgeColor = '#744210';
+                            displayStatus = 'Waiting Accept';
+                        } else if (status === 'Rejected') {
+                            badgeBg = '#ffebee';
+                            badgeColor = '#c62828';
+                            displayStatus = 'Rejected';
+                        } else {
+                            displayStatus = status;
+                        }
+                        
+                        const reasonHtml = (status === 'Rejected' && adv.notes) 
+                            ? `<div style="font-size:0.75rem; color:#c62828; margin-top:4px; font-weight:500;">Reason: ${adv.notes}</div>` 
+                            : '';
+                        
+                        return `
+                            <tr style="border-bottom: 1px solid #edf2f7;">
+                                <td style="padding: 12px 14px;">${dateStr}</td>
+                                <td style="padding: 12px 14px; font-weight: 600;">${amountStr}</td>
+                                <td style="padding: 12px 14px;">${scheme}</td>
+                                <td style="padding: 12px 14px;">
+                                    <span style="display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; background: ${badgeBg}; color: ${badgeColor}; text-transform: uppercase;">
+                                        ${displayStatus}
+                                    </span>
+                                    ${reasonHtml}
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #e53e3e;">Failed to load advance history.</td></tr>';
+                }
+            } catch (err) {
+                console.error(err);
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #e53e3e;">Error loading advance history.</td></tr>';
+            }
+        }
+
         function selectSupplier(supplier) {
             supplierSearchInput.value = `${supplier.sup_id} - ${supplier.supplier_name}`;
             supplierIdInput.value = supplier.sup_id;
             fieldNoInput.value = supplier.supplier_field;
             supplierDropdown.classList.remove('show');
+            loadSupplierDashboardData(supplier.sup_id);
         }
 
         document.addEventListener('click', (e) => {
@@ -286,11 +488,10 @@
         });
 
         const savedEmail = localStorage.getItem('userEmail');
+        const displayName = localStorage.getItem('username') || (savedEmail ? savedEmail.split('@')[0] : 'User');
         if (savedEmail) {
-            document.getElementById('userProfileEmail').textContent = savedEmail;
-            const namePart = savedEmail.split('@')[0];
-            const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-            document.getElementById('userProfileName').textContent = capitalizedName;
+            document.getElementById('userProfileEmail').textContent = displayName;
+            document.getElementById('userProfileName').textContent = displayName;
         }
 
         const logoutBtn = document.getElementById('logoutBtn');

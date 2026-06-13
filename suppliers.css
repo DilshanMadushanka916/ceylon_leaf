@@ -260,6 +260,12 @@ body {
     padding: 8px 20px;
 }
 
+.dropdown-header small {
+   color: #718096;
+   font-size: 0.8rem;
+}
+
+
 .user-role {
     font-weight: 600;
     margin: 0;
